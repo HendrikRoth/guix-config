@@ -1,238 +1,458 @@
-* Emacs
-** straight.el
-#+begin_src emacs-lisp
-  ;; Bootstrap straight.el
-  (defvar bootstrap-version)
-  (let ((bootstrap-file
-	(expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-	(bootstrap-version 5))
-    (unless (file-exists-p bootstrap-file)
-      (with-current-buffer
-	  (url-retrieve-synchronously
-	   "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-	   'silent 'inhibit-cookies)
-	(goto-char (point-max))
-	(eval-print-last-exp)))
-    (load bootstrap-file nil 'nomessage))
+#+TITLE: System Configuration
+#+PROPERTY: header-args :tangle-mode
+#+PROPERTY: header-args:sh :tangle-mode
 
-  ;; Use straight.el for use-package expressions
-  (straight-use-package 'use-package)
+* Table of Contents
+:PROPERTIES:
+:TOC: :include all :ignore this
+:END:
+:CONTENTS:
+- [[#channels][Channels]]
+:END:
+
+* Channels
+*.config/guix/channels.scm*
+#+BEGIN_SRC scheme :tangle ~/.config/guix/channels.scm
+  (list (channel
+	 (name 'nonguix)
+	 (commit "ee35a1f1cd50ba0d4bfee37f2b084bc0797885c")
+	 (url "https://gitlab.com/nonguix/nonguix"))
+	(channel
+	 (name 'guix)
+	 (commit "190187326ad7516dd6728eed7bb6ef2d4f92897a")
+	 (url "https://git.savannah.gnu.org/git/guix.git")
+	 (introduction
+	  (make-channel-introduction
+	   "9edb3f66fd807b096b48283debdcddccfea34bad"
+	   (openpgp-fingerprint
+	    "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA")))))
+#+END_SRC
+
+* Systems
+** Base Configuration
+*.config/guix/systems/base-system.scm:*
+#+BEGIN_SRC scheme :tangle ~/.config/guix/systems/base-system.scm
+  (define-module (base-system)
+    #:use-module (gnu)
+    #:use-module (gnu system nss)
+    #:use-module (gnu services cups)
+    #:use-module (gnu services desktop)
+    #:use-module (gnu services docker)
+    #:use-module (gnu services networking)
+    #:use-module (gnu packages wm)
+    #:use-module (gnu packages cups)
+    #:use-module (gnu packages gtk)
+    #:use-module (gnu packages xorg)
+    #:use-module (gnu packages emacs)
+    #:use-module (gnu packages linux)
+    #:use-module (gnu packages web-browsers)
+    #:use-module (gnu packages version-control)
+    #:use-module (gnu packages package-management)
+    #:use-module (nongnu packages linux)
+    #:use-module (nongnu system linux-initrd))
+
+  (use-service-modules desktop org)
+  (use-package-modules certs)
+  (use-package-modules shells)
+#+END_SRC
+
+Define the =base-operating-system= which will be inherited by all machine configurations.
+
+#+BEGIN_SRC scheme :tangle ~/.config/guix/systems/base-system.scm
+  (define-public base-operating-system
+    (operating-system
+     (host-name "hendrik")
+     (timezone "Europe/Berlin")
+     (locale "en_US.utf-8")
+
+     ;; Use non-free Linux and firmware
+     (kernel linux)
+     (firmware (list linux-firmware))
+     (initrd microcode-initrd)
+
+     ;; Keyboard layout
+     (keyboard-layout (keyboard-layout "us" "altgr-intl"))
+
+     ;; Dummy filesystem, will be overridden
+     (file-systems (cons*
+		    (file-system
+		     (mount-point "/tmp")
+		     (device "none")
+		     (type "tmpfs")
+		     (check? #f))
+		    %base-file-systems))
+
+     ;; User account
+     (users (cons (user-account
+		   (name "hendrik")
+		   (comment "Hendrik Roth")
+		   (group "users")
+		   (home-directory "/home/hendrik")
+		   (supplementary-groups '(
+					   "wheel"
+					   "netdev"
+					   "tty"
+					   "input"
+					   "docker"
+					   "lp"
+					   "audio"
+					   "video")))
+		  %base-user-accounts))
+#+END_SRC
+
+** Machines
+   
+*** work
+    
+My work machine at the office.
+
+#+BEGIN_SRC scheme :tangle ~/.config/guix/systems/work.scm
+  (define-module (work)
+    #:use-module (base-system)
+    #:use-module (gnu))
+
+  (operating-system
+   (inherit base-operating-system)
+   (host-name "work")
+
+   (mapped-devices
+    (list (mapped-device
+	   (source (uuid ""))
+	   (target "system-root")
+	   (type luks-device-mapping))))
+
+   (file-systems (cons*
+		  (file-system
+		   (device (file-system-label "root"))
+		   (mount-pount "/")
+		   (type "ext4")
+		   (dependencies mapped-devices))
+		  %base-file-systems)))
+#+END_SRC
+
+*** desktop
+
+My home workstation.
+
+*** notebook
+
+My travel notebook.
+
+* Programs
+** Emacs
+*** Use straight.el for emacs package management
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(defvar bootstrap-version)
+(let ((bootstrap-file
+      (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+     (bootstrap-version 5))
+     (unless (file-exists-p bootstrap-file)
+       (with-current-buffer
+         (url-retrieve-synchronously
+          "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+          'silent 'inhibit-cookies)
+         (goto-char (point-max))
+         (eval-print-last-sexp)))
+(load bootstrap-file nil 'nomessage))
+
+(straight-use-package 'use-package)
+(setq straight-use-package-by-default t)
 #+end_src
+*** Basic settings
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+;; ESC cancels all
+(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
-** Keep emacs.d clean
-#+begin_src emacs-lisp
-  ;; Change user-emacs-directory to keep unwanted things out of .emacs.d
-  (setq user-emacs-directory (expand-file-name "url/history" user-emacs-directory))
+;; UTF-8
+(set-default-coding-systems 'utf-8)
 
-  ;; no-littering
-  (use-package no-littering)
+;; Tabs
+(setq-default tab-width 2)
+(setq-default evil-shift-width tab-width)
 #+end_src
+*** Interface
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(setq inhibit-startup-message t)
 
-** UTF-8
-#+begin_src emacs-lisp
-  (set-default-coding-systems 'utf-8)
+(scroll-bar-mode -1) ; Disable visual scrollbar
+(tool-bar-mode -1) ; Disable toolbar
+(tooltip-mode -1) ; Disable tooltips
+(menu-bar-mode -1) ; Disable menu bar
+
+(setq visible-bell t) ; Visual bell
 #+end_src
+*** Line numbers
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(column-number-mode)
 
-** ESC cancels all
-#+begin_src emacs-lisp
-  (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+;; Enable line numbers for some modes
+(dolist (mode '(text-mode-hook
+                prog-mode-hook
+		conf-mode-hook))
+	(add-hook mode (lambda () (display-line-numbers-mode 1))))
+
+;; Override some modes
+(dolist (mode '(org-mode-hook))
+        (add-hook mode (lambda () (display-line-numbers-mode 0))))
 #+end_src
-
-** Evil
-#+begin_src emacs-lisp
-  (use-package undo-tree
-	       :init
-	       (global-undo-tree-mode 1))
-
-  (use-package evil
-	       :init
-	       (setq evil-want-integration t)
-	       (setq evil-want-keybinding nil)
-	       (setq evil-want-C-u-scroll t)
-	       (setq evil-want-C-i-jump nil)
-	       (setq evil-respect-visual-line-mode t)
-	       (setq evil-undo-system 'undo-tree)
-	       :config
-	       (evil-mode 1)
-	       (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
-	       (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
-
-	       ;; Use visual line motions even outside of visual-line-mode-buffers
-	       (evil-global-set-key 'motion "j" 'evil-next-visual-line)
-	       (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
-
-	       (evil-set-initial-state 'messages-buffer-mode 'normal)
-	       (evil-set-initial-state 'dashboard-mode 'normal))
-
-  (use-package evil-collection
-	       :after evil
-	       :init
-	       :config
-	       (evil-collection-init))
+*** Theme
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package twilight-bright-theme :defer t)
+(load-theme 'twilight-bright t)
 #+end_src
+*** Evil: Vim keybindings
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package undo-tree
+             :init
+	     (global-undo-tree-mode 1))
 
-** which-key
-#+begin_src emacs-lisp
-  (use-package which-key
-	       :init (which-key-mode)
-	       :diminish which-key-mode
-	       :config
-	       (setq which-key-idle-delay 0.2)
+(use-package evil
+             :after undo-tree
+             :init
+	     (setq evil-want-integration t)
+	     (setq evil-want-keybinding nil)
+	     (setq evil-want-C-u-scroll nil)
+	     (setq evil-want-C-i-jump nil)
+	     (setq evil-respect-visual-line-mode t)
+	     (setq evil-undo-system 'undo-tree)
+	     :config
+	     (evil-mode 1)
+	     (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+	     (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+
+	     ;; Use visual line motions even outside of visual-line-mode-buffers
+	     (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+	     (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+
+	     (evil-set-initial-state 'messages-buffer-mode 'normal)
+	     (evil-set-initial-state 'dashboard-mode 'normal))
+
+(use-package evil-collection
+             :after evil
+	     :init
+	     :config
+	     (evil-collection-init))
 #+end_src
-
-** Leader bindings
-#+begin_src emacs-lisp
-  (use-package general
-	       :config
-	       (general-evil-setup t)
-
-	       (general-create-definer hen/leader-key-def
-				       :keymaps '(normal insert visual emacs)
-				       :prefix "SPC"
-				       :global-prefix "C-SPC")
-
-	       (general-create-definer hen/ctrl-c-keys
-				       :prefix "C-c"))
+*** Keybindings
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package general
+             :config
+						 (general-evil-setup t)
+						 (general-create-definer hr/leader-key-def
+						   :kepmaps '(normal insert visual emacs)
+							 :prefix "SPC"
+							 :global-prefix "C-SPC")
+						 (general-create-definer hr/ctrl-c-keys
+               :prefix "C-c"))
 #+end_src
-
-** Interface
-#+begin_src emacs-lisp
-  (setq inhibit-startup-message t)
-
-  (scroll-bar-mode -1) ; Disable visible scrollbar
-  (tool-bar-mode -1) ; Disable tool bar
-  (tooltip-mode -1) ; Disable tooltips
-  (menu-bar-mode -1) ; Disable menu bar
-
-  ;; Visible bell
-  (setq visible-bell t)
-
-  ;; Maximize window
-  (add-to-list 'default-frame-alist '(fullscreen . maximized))
+*** Which-key
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package which-key
+             :init (which-key-mode)
+	     :diminish which-key-mode
+	     :config
+	     (setq which-key-idle-delay 0.2))
 #+end_src
-
-** Line numbers
-#+begin_src emacs-lisp
-  (column-number-mode)
-
-  ;; Enable line numbers for some modes
-  (dolist (mode '(text-mode-hook
-		  prog-mode-hook
-		  conf-mode-hook))
-    (add-hook mode (lambda () (display-line-numbers-mode 1))))
-
-  ;; Override some modes
-  (dolist (mode '(org-mode-hook))
-    (add-hook mode (lambda () (display-line-numbers-mode 0))))
+*** Commenting
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package evil-nerd-commenter
+             :bind ("M-/" . evilnc-comment-or-uncomment-lines))
 #+end_src
-
-** Theme
-#+begin_src emacs-lisp
-  (use-package dracula-theme :defer t)
-  (load-theme 'dacula t)
+*** Docker
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package docker
+             :ensure t
+						 :bind ("C-c d" . docker))
 #+end_src
-
-** Font
-#+begin_src emacs-lisp
+*** Feeds
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package elfeed
+             :commands elfeed
+						 :bind ("C-x w" . elfeed)
+						 :config
+						 (setq elfeed-feeds
+						       '("https://reddit.com/r/emacs/.rss")))
 #+end_src
-
-** Emojis
-#+begin_src emacs-lisp
-  (use-package emojify
-	       :hook (after-init . global-emojify-mode))
+*** Emojis
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package emojify
+             :hook (after-init . global-emojify-mode))
 #+end_src
-
-** Mode line
-#+begin_src emacs-lisp
+*** Clean whitespace
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package ws-butler
+             :hook ((text-mode . ws-butler-mode)
+						        (prog-mode . ws-butler-mode)))
 #+end_src
+*** Completion
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package ivy
+             :diminish
+						 :init
+						 (ivy-mode 1)
+						 :config
+						 (setq ivy-use-virtual-buffers t)
+						 (setq ivy-wrap t)
+						 (setq ivy-count-format "(%d/%d) ")
+						 (setq enable-recursive-minibuffers t))
 
-** Docker
-#+begin_src emacs-lisp
-  (use-package docker
-	       :straight t
-	       :ensure t
-	       :bind ("C-c d" . docker))
+(use-package counsel
+             :after ivy)
+
+(use-package wgrep)
+
+;; Improves sorting for fuzzy-matched results
+(use-package flx
+             :after ivy
+						 :defer t
+						 :init
+						 (setq ivy-flx-limit 10000))
+
+(use-package prescient
+             :after counsel
+						 :config
+						 (prescient-persist-mode 1))
+
+(use-package ivy-prescient
+             :after prescient
+						 :config
+						 (ivy-prescient-mode 1))
+
+(use-package company
+             :after lsp-mode
+						 :hook (lsp-mode . company-mode)
+						 :bind (:map company-active-map
+						        ("<tab>" . company-complete-selection))
+									 (:map lsp-mode-map
+									  ("<tab>" . company-indent-or-complete-common))
+						 :custom
+						 (company-minimum-prefix-length 1)
+						 (company-idle-delay 0.0))
+
+(use-package company-box
+             :hook (company-mode . company-box-mode))
 #+end_src
-
-** Feeds
-#+begin_src emacs-lisp
-  (use-package elfeed
-	       :straight t
-	       :commands elfeed
-	       :bind ("C-x w" . elfeed)
-	       :config
-	       (setq elfeed-feeds
-		     '("https://reddit.com/r/emacs/.rss")))
+*** Development
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
 #+end_src
+*** Modeline
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package all-the-icons)
 
-** Mails
-#+begin_src emacs-lisp
-  (use-package mu4e-alert
-	       :straight t
-	       :hook ((after-init . mu4e-alert-enable-notifications)
-		      (after-init . mu4e-alert-enable-mode-line-display))
+(use-package doom-modeline
+             :ensure t
+						 :init (doom-modeline-mode 1))
 #+end_src
-
-** Tabs
-#+begin_src emacs-lisp
-  (setq-default tab-width 2)
-  (setq-default evil-shift-width tab-width)
+*** Dashboard
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package dashboard
+             :ensure t
+						 :config
+						 (dashboard-setup-startup-hook)
+						 (setq dashboard-center-content t)
+						 (setq dashboard-show-shortcuts t)
+						 (setq dashboard-startup-banner 2)
+						 (setq dashboard-set-file-icons t)
+						 (setq dashboard-set-heading-icons t)
+						 (setq dashboard-set-footer nil)
+						 (setq dashboard-items '((recents . 5)
+						                         (bookmarks . 5)
+																		 (projects . 5)
+																		 (agenda . 5)
+																		 (registers . 5)))
+				     (setq dashboard-week-agenda t))
 #+end_src
-
-** Commenting
-#+begin_src emacs-lisp
-  (use-package evil-nerd-commenter
-	       :straight t
-	       :bind ("M-/" . evilnc-comment-or-uncomment-lines))
+*** OpenSCAD
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package scad-mode
+             :defer t
+             :config
+						 (autoload 'scad-mode "scad-mode" "A major mode for editing OpenSCAD code." t)
+						 (add-to-list 'auto-mode-alist '("\\.scad$" . scad-mode)))
 #+end_src
+*** Parenthesis/Delimiters
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+;; Colorful delimiters
+(use-package rainbow-mode
+             :defer t
+						 :hook (org-mode
+						        emacs-lisp-mode
+										web-mode
+										typescript-mode
+										js2-mode))
 
-** Automatically clean whitespace
-#+begin_src emacs-lisp
-  (use-package ws-butler
-	       :straight t
-	       :hook ((text-mode . ws-butler-mode)
-		      (prog-mode . ws-butler-mode))
+(use-package paren
+             :config
+						 (show-paren-mode 1))
 #+end_src
+*** Writing
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package darkroom
+             :commands darkroom-mode
+						 :config
+						 (setq darkroom-text-scale-increase 0))
 
-** Completion
-#+begin_src emacs-lisp
-  (use-package ivy
-	       :straight t
-	       :diminish
-	       :init
-	       (ivy-mode 1)
-	       :config
-	       (setq ivy-use-virtual-buffers t)
-	       (setq ivy-wrap t)
-	       (setq ivy-count-format "(%d/%d) ")
-	       (setq enable-recursive-minibuffers t))
+(defun hr/enter-focus-mode()
+             (interactive)
+						 (darkroom-mode 1)
+						 (display-line-numbers-mode 0))
 
-  (use-package counsel
-	       :straight t
-	       :after ivy)
+(defun hr/leave-focus-mode()
+             (interactive)
+						 (darkroom-mode 0)
+						 (display-line-numbers-mode 1))
 
-  (use-package wgrep)
+(defun hr/toggle-focus-mode()
+             (interactive)
+						 (if (symbol-value darkroom-mode)
+						     (hr/leave-focus-mode)
+								 (hr/enter-focus-mode)))
 
-  ;; Improves sorting for fuzzy-matched results
-  (use-package flx
-	       :after ivy
-	       :defer t
-	       :init
-	       (setq ivy-flx-limit 10000))
-
-  (use-package prescient
-	       :after counsel
-	       :config
-	       (prescient-persist-mode 1))
-
-  (use-package ivy-prescient
-	       :after prescient
-	       :config
-	       (ivy-prescient-mode 1))
+;; (hr/leader-key-def
+  ;; "tf" '(hr/toggle-focus-mode :which-key "focus mode"))
 #+end_src
+*** Projectile
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package projectile
+             :diminish projectile-mode
+						 :config (projectile-mode)
+						 :custom ((projectile-completion-system 'ivy))
+						 :bind-keymap ("C-c p" . projectile-command-map)
+						 :init
+						 (when (file-directory-p "~/git")
+						       (setq projectile-project-search-path '("~/git")))
+						 (setq projectile-switch-project-action #'projectile-dired))
 
-** App launcher
-#+begin_src emacs-lisp
-  (use-package app-launcher
-	       :straight '(app-launcher :host github :repo "SebastienWae/app-launcher"))
+(use-package counsel-projectile
+             :after projectile
+						 :config (counsel-projectile-mode))
+#+end_src
+*** Git
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package magit
+             :commands magit-status
+						 :custom
+						 (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+#+end_src
+*** Dired
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package dired
+             :straight nil
+             :ensure nil
+						 :commands (dired dired-jump)
+						 :bind (("C-x C-j" . dired-jump))
+						 :custom ((dired-listing-switches "-agho --group-directories-first"))
+						 :config
+						 (evil-collection-define-key 'normal 'dired-mode-map
+						   "h" 'dired-single-up-directory
+							 "l" 'dired-single-buffer))
+
+(use-package dired-single
+             :commands (dired dired-jump))
+
+(use-package all-the-icons-dired
+             :hook (dired-mode . all-the-icons-dired-mode))
+						 
+(hr/leader-key-def
+  "d" '(:ignore t :which-key "dired"))
 #+end_src
