@@ -333,7 +333,112 @@ My travel notebook.
              :hook (company-mode . company-box-mode))
 #+end_src
 *** Development
+**** LSP
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+	(use-package lsp-mode
+							 :commands lsp
+							 :hook ((typescript-mode js2-mode web-mode) . lsp)
+							 :bind (:map lsp-mode-map
+											("TAB" . completion-at-point)))
+
+	;; (hr/leader-key-def
+	;;   "l" '(:ignore t :which-key "lsp")
+	;; 	"ld" 'xref-find-definitions
+	;; 	"lr" 'xref-find-references
+	;; 	"ln" 'lsp-ui-find-next-reference
+	;; 	"lp" 'lsp-ui-find-prev-reference
+	;; 	"ls" 'counsel-imenu
+	;; 	"le" 'lsp-ui-flycheck-list
+	;; 	"lS" 'lsp-ui-sideline-mode
+	;; 	"lX" 'lsp-execute-code-action)
+
+	(use-package lsp-ui
+							 :hook (lsp-mode . lsp-ui-mode)
+							 :config
+							 (setq lsp-ui-sideline-enable t)
+							 (setq lsp-ui-sideline-show-hover t)
+							 (setq lsp-ui-doc-position 'bottom)
+							 (ls-ui-doc-show))
+#+end_src
+**** Debug
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package dap-mode)
+#+end_src
+**** Languages
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+;; Typescript
+(use-package nvm :defer t)
+(use-package typescript-mode
+             :mode "\\.ts\\'"
+						 :config
+						 (setq typescript-indent-level 2))
+
+;; Svelte
+(use-package svelte-mode
+             :mode "\\.svelte\\'"
+						 :config
+						 (setq svelte-basic-offset 2)
+						 (setq svelte-tag-relative-indent t))
+
+;; Vue
+(use-package vue-mode
+             :mode "\\.vue\\'")
+
+;; JSX
+(use-package js2-mode
+             :mode "\\.jsx?\\'"
+						 :config
+						 ;; Use js2-mode for NodeJS scripts
+						 (add-to-list 'magic-mode-alist '("#!/usr/bin/env node" . js2-mode))
+
+						 ;; Don't use the builtin syntax checking
+						 (setq js2-mode-show-strict-warnings nil))
+
+;; Markdown
+(use-package markdown-mode
+             :mode "\\.md\\'"
+						 :config
+						 (setq markdown-command "marked")
+						 (defun hr/set-markdown-header-font-sizes ()
+						        (dolist (face '((markdown-header-face-1 . 1.2)
+										                (markdown-header-face-2 . 1.1)
+																		(markdown-header-face-3 . 1.0)
+																		(markdown-header-face-4 . 1.0)
+																		(markdown-header-face-5 . 1.0)))
+													  (set-face-attribute (car face) nil :weight 'normal :height (cdr face))))
+						 (defun hr/markdown-mode-hook ()
+						        (hr/set-markdown-header-font-sizes))
+
+						 (add-hook 'markdown-mode-hook 'hr/markdown-mode-hook))
+
+;; HTML
+(use-package web-mode
+             :mode "(\\.\\(html?\\|ejs\\|tsx\\|jsx\\)\\'"
+						 :config
+						 (setq-default web-mode-code-indent-offset 2)
+						 (setq-default web-mode-markup-indent-offset 2)
+						 (setq-default web-mode-attribute-indent-offset 2))
+
+;; HTML colors
+(use-package rainbow-mode
+             :defer t
+						 :hook (org-mode
+						        emacs-lisp-mode
+										typescript-mode
+										js2-mode))
+
+;; YAML
+(use-package yaml-mode
+             :mode "\\.ya?ml\\'")
+
+;; Code formatting
+(use-package apheleia
+             :config
+						 (apheleia-global-mode +1))
+
+(use-package prettier-js
+             :config
+						 (setq prettier-js-show-errors nil))
 #+end_src
 *** Modeline
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -341,7 +446,12 @@ My travel notebook.
 
 (use-package doom-modeline
              :ensure t
-						 :init (doom-modeline-mode 1))
+						 :init (doom-modeline-mode 1)
+						 :custom
+						 (doom-modeline-lsp t)
+						 (doom-modeline-github t)
+						 (doom-modeline-mu4e t)
+						 (doom-modeline-minor-modes t))
 #+end_src
 *** Dashboard
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -372,6 +482,9 @@ My travel notebook.
 #+end_src
 *** Parenthesis/Delimiters
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package smartparens
+             :hook (prog-mode . smartparens-mode))
+
 ;; Colorful delimiters
 (use-package rainbow-mode
              :defer t
@@ -380,10 +493,6 @@ My travel notebook.
 										web-mode
 										typescript-mode
 										js2-mode))
-
-(use-package paren
-             :config
-						 (show-paren-mode 1))
 #+end_src
 *** Writing
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -455,4 +564,26 @@ My travel notebook.
 						 
 (hr/leader-key-def
   "d" '(:ignore t :which-key "dired"))
+#+end_src
+*** Productivity
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+;; Spelling check
+(use-package flycheck
+             :defer t
+						 :hook (lsp-mode . flycheck-mode))
+
+(use-package yasnippet
+             :hook (prog-mode . yas-minor-mode)
+						 :config
+						 (yas-reload-all))
+#+end_src
+*** Calendar
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package calfw
+						 :commands cfw:open-org-calendar)
+
+(use-package calfw-org
+             :after calfw
+             :config
+						 (setq cfw:org-agenda-schedule-args '(:timestamp)))
 #+end_src
