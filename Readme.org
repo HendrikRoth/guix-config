@@ -191,7 +191,7 @@ My travel notebook.
 #+end_src
 *** Keybindings
 **** Vim keybindings
-#+begin_src emaccs-lisp :tangle ~/.emacs.d/init.el
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
 (use-package undo-tree
              :init
 	     (global-undo-tree-mode 1))
