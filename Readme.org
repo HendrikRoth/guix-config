@@ -1,4 +1,4 @@
-#+TITLE: System Configuration
+#+TITLE: My personal guix system configuration [in progress]
 #+PROPERTY: header-args :tangle-mode
 #+PROPERTY: header-args:sh :tangle-mode
 
@@ -89,21 +89,38 @@ Define the =base-operating-system= which will be inherited by all machine config
 		   (group "users")
 		   (home-directory "/home/hendrik")
 		   (supplementary-groups '(
-					   "wheel"
-					   "netdev"
+					   "wheel" ;; sudo
+					   "netdev" ;; network devices
 					   "tty"
 					   "input"
 					   "docker"
-					   "lp"
-					   "audio"
-					   "video")))
+					   "lp" ;; control bluetooth devices
+					   "audio" ;; control audio devices
+					   "video" ;; control video devices
+      )))
 		  %base-user-accounts))
+
+      ;; Bare minimum system packages
+      (packages (append (list
+        git
+        ntfs-3g
+        exfat-utils
+        fuse-exfat
+        vim
+        emacs
+        xterm
+        bluez
+        bluez-alsa
+        pulseaudio
+        tlp
+        xf86-video-libinput
+        nss-certs ;; for https access
+        gvfs) ;; for user mounts
+        %base-packages))
 #+END_SRC
 
 ** Machines
-   
 *** work
-    
 My work machine at the office.
 
 #+BEGIN_SRC scheme :tangle ~/.config/guix/systems/work.scm
@@ -131,12 +148,45 @@ My work machine at the office.
 #+END_SRC
 
 *** desktop
-
 My home workstation.
 
 *** notebook
-
 My travel notebook.
+
+** USB Installation image
+#+begin_src scheme :tangle ~/.config/guix/systems/install.scm
+(define-module (nongnu system install)
+  #:use-module (gnu system)
+  #:use-module (gnu system install)
+  #:use-module (gnu packages version-control)
+  #:use-module (gnu packages vim)
+  #:use-module (gnu curl)
+  #:use-module (gnu packages emacs)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages mtools)
+  #:use-module (gnu packages package-management)
+  #:use-module (nongnu packages linux)
+  #:export (installation-os-nonfree))
+
+(define installation-os-nonfree
+  (operating-system
+    (inherit installation-os)
+    (kernel linux)
+    (firmware (list linux-firmware))
+  (kernel-arguments '("net.iframes=0"))
+  (packages (append (list
+    exfat-utils fuse-exfat git curl vim emacs-no-x-toolkit)
+    (operation-system-packages installation-os)))))
+
+installation-os-nonfree
+#+end_src
+
+To build the image, run the command:
+#+begin_src sh
+guix system image ./install.scm --image-size=5G
+#+end_src
+
+Choose the install method =Install using the shell based process.= on boot.
 
 * Programs
 ** Emacs
@@ -393,6 +443,11 @@ My travel notebook.
 	(unless (equal persp-mode t)
 		(persp-mode)))
 #+end_src
+**** Distraction free writing
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package darkroom
+		:hook (org-mode . darkroom-tentative-mode))
+#+end_src
 *** Dired
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
 (use-package dired
@@ -619,6 +674,32 @@ Not finished yet.
   "ot"  '(org-todo-list :which-key "todos")
   "oc"  '(org-capture t :which-key "capture")
   "ox"  '(org-export-dispatch t :which-key "export"))
+#+end_src
+**** Tangle on save
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(defun hr/org-babel-tangle-dont-ask ()
+(let ((org-confirm-babel-evaluate nil))
+(org-babel-tangle)))
+
+(add-hook 'org-mode-hook (lambda()
+  (add-hook
+    'after-save-hook #'hr/org-babel-tangle-dont-ask
+    'run-at-end 'only-in-org-mode)))
+#+end_src
+**** Update TOCs on save
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package org-make-toc
+  :hook (org-mode . org-make-toc-mode))
+#+end_src
+**** Reminder
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package org-wild-notifier
+:after org
+:config
+  (setq org-wild-notifier-keyword-whitelist nil)
+  (setq org-wild-notifier-notification-title "Agenda Reminder")
+  (setq org-wild-notifier-alert-time 15)
+  (org-wild-notifier-mode))
 #+end_src
 **** TODO Roam
 Not started yet.
