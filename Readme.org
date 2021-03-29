@@ -349,8 +349,7 @@ Choose the install method =Install using the shell based process.= on boot.
     :custom
     (doom-modeline-lsp t)
     (doom-modeline-github t)
-    (doom-modeline-mu4e t)
-    (doom-modeline-minor-modes t))
+    (doom-modeline-mu4e t))
 #+end_src
 **** Braces/Parenthesis/Delimiters
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -543,9 +542,34 @@ Choose the install method =Install using the shell based process.= on boot.
 **** Git
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
 (use-package magit
-    :commands magit-status
-    :custom
-    (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+  :commands (magit-status magit-get-current-branch)
+  :custom
+  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+
+(use-package magit-todos
+  :defer t)
+
+(use-package git-gutter
+  :diminish
+  :hook ((text-mode . git-gutter-mode)
+         (prog-mode . git-gutter-mode))
+  :config
+  (setq git-gutter:update-interval 2))
+
+(hr/leader-key-def
+  "g" '(:ignore t :which-key "git")
+  "gs" 'magit-status
+  "gd" 'magit-diff-unstaged
+  "gc" 'magit-branch-or-checkout
+  "gl" '(:ignore t :which-key "log")
+  "glc" 'magit-log-current
+  "glf" 'magit-log-buffer-file
+  "gb" 'magit-branch
+  "gP" 'magit-push-current
+  "gp" 'magit-pull-branch
+  "gf" 'magit-fetch
+  "gF" 'magit-fetch-all
+  "gr" 'magit-rebase)
 #+end_src
 **** Projectile
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -708,6 +732,12 @@ Not finished yet.
   (setq org-wild-notifier-notification-title "Agenda Reminder")
   (setq org-wild-notifier-alert-time 15)
   (org-wild-notifier-mode))
+#+end_src
+**** Styling
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+  (use-package org-bullets
+    :after org
+    :hook (org-mode . org-bullets-mode))
 #+end_src
 **** TODO Roam
 Not started yet.
