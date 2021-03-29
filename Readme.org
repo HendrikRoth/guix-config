@@ -430,18 +430,26 @@ Choose the install method =Install using the shell based process.= on boot.
 #+end_src
 **** Workspaces
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(use-package perspective
-	:demand t
-	:bind (("C-M-j" . persp-counsel-switch-buffer)
-	("C-M-k" . persp-switch)
-	("C-M-n" . persp-next)
-	("C-x k" . persp-kill-buffer*))
-	:custom
-	(persp-initial-frame-name "Main")
-	:config
-	;; Running `persp-mode' multiple times resets the perspective list...
-	(unless (equal persp-mode t)
-		(persp-mode)))
+    (use-package perspective
+      :demand t
+      :bind (("C-M-j" . persp-counsel-switch-buffer)
+      ("C-M-k" . persp-switch)
+      ("C-M-n" . persp-next)
+      ("C-x k" . persp-kill-buffer*))
+      :custom
+      (persp-initial-frame-name "Main")
+      :config
+      ;; Running `persp-mode' multiple times resets the perspective list...
+      (unless (equal persp-mode t)
+        (persp-mode)))
+
+  (hr/leader-key-def
+    "b"  '(:ignore t :which-key "buffers")
+    "bs" '(persp-counsel-switch-buffer :which-key "switch")
+    "bk" '(persp-kill-buffer :which-key "kill")
+    "w"  '(:ignore t :which-key "workspace")
+    "ws" '(persp-switch :which-key "switch")
+    "wn" '(persp-next :which-key "next"))
 #+end_src
 **** Distraction free writing
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
