@@ -580,12 +580,21 @@ Choose the install method =Install using the shell based process.= on boot.
     :bind-keymap ("C-c p" . projectile-command-map)
     :init
     (when (file-directory-p "~/git")
-	(setq projectile-project-search-path '("~/git")))
+  (setq projectile-project-search-path '("~/git")))
     (setq projectile-switch-project-action #'projectile-dired))
 
 (use-package counsel-projectile
     :after projectile
     :config (counsel-projectile-mode))
+
+(hr/leader-key-def
+  "p" '(:ignore t :which-key "projectile")
+  "pf" 'counsel-projectile-find-file
+  "ps" 'counsel-projectile-switch-project
+  "pF" 'counsel-projectile-rg
+  "pp" 'counsel-projectile
+  "pc" 'projectile-compile-project
+  "pd" 'projectile-dired)
 #+end_src
 **** Direnv
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
