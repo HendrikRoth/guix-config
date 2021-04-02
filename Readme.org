@@ -209,6 +209,11 @@ Choose the install method =Install using the shell based process.= on boot.
 (setq straight-use-package-by-default t)
 #+end_src
 *** Basic settings
+**** Personal information
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(setq user-full-name "Hendrik Roth")
+(setq user-mail-address "hi@hendrikroth.com")
+#+end_src
 **** ESC cancels all
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
@@ -238,6 +243,18 @@ Choose the install method =Install using the shell based process.= on boot.
 **** Tramp
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
 (setq tramp-default-method "ssh")
+#+end_src
+**** Moving deleted files to trash
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(setq-default delete-by-moving-to-trash t)
+#+end_src
+**** Increase undo limit (10mb)
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(setq undo-limit 10000000)
+#+end_src
+**** Handle CamelCase as seperate words
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(global-subword-mode 1)
 #+end_src
 *** Keybindings
 **** Vim keybindings
@@ -303,11 +320,14 @@ Choose the install method =Install using the shell based process.= on boot.
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
 (column-number-mode)
 
+;; Relative line numbers
+(setq display-line-numbers-type 'relative)
+
 ;; Enable line numbers for some modes
 (dolist (mode '(text-mode-hook
                 prog-mode-hook
-		conf-mode-hook))
-	(add-hook mode (lambda () (display-line-numbers-mode 1))))
+    conf-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 1))))
 
 ;; Override some modes
 (dolist (mode '(org-mode-hook))
@@ -319,7 +339,7 @@ Choose the install method =Install using the shell based process.= on boot.
              :init (which-key-mode)
 	     :diminish which-key-mode
 	     :config
-	     (setq which-key-idle-delay 0.0))
+	     (setq which-key-idle-delay 0.5))
 #+end_src
 **** Dashboard
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -381,51 +401,52 @@ Choose the install method =Install using the shell based process.= on boot.
 #+end_src
 **** Completion
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(use-package ivy
-    :diminish
-    :init
-    (ivy-mode 1)
-    :config
-    (setq ivy-use-virtual-buffers t)
-    (setq ivy-wrap t)
-    (setq ivy-count-format "(%d/%d) ")
-    (setq enable-recursive-minibuffers t))
+  (use-package ivy
+      :diminish
+      :init
+      (ivy-mode 1)
+      :config
+      (setq ivy-use-virtual-buffers t)
+      (setq ivy-wrap t)
+      (setq ivy-count-format "(%d/%d) ")
+      (setq enable-recursive-minibuffers t))
 
-(use-package counsel
-    :after ivy)
+  (use-package counsel
+      :after ivy)
 
-(use-package wgrep)
+  (use-package wgrep)
 
-;; Improves sorting for fuzzy-matched results
-(use-package flx
-    :after ivy
-    :defer t
-    :init
-    (setq ivy-flx-limit 10000))
+  ;; Improves sorting for fuzzy-matched results
+  (use-package flx
+      :after ivy
+      :defer t
+      :init
+      (setq ivy-flx-limit 10000))
 
-(use-package prescient
-    :after counsel
-    :config
-    (prescient-persist-mode 1))
+  (use-package prescient
+      :after counsel
+      :config
+      (prescient-persist-mode 1))
 
-(use-package ivy-prescient
-    :after prescient
-    :config
-    (ivy-prescient-mode 1))
+  (use-package ivy-prescient
+      :after prescient
+      :config
+      (ivy-prescient-mode 1))
 
-(use-package company
-    :after lsp-mode
-    :hook (lsp-mode . company-mode)
-    :bind (:map company-active-map
-	    ("<tab>" . company-complete-selection))
-	(:map lsp-mode-map
-	    ("<tab>" . company-indent-or-complete-common))
-    :custom
-    (company-minimum-prefix-length 1)
-    (company-idle-delay 0.0))
+  (use-package company
+      :after lsp-mode
+      :hook (lsp-mode . company-mode)
+      :bind (:map company-active-map
+      ("<tab>" . company-complete-selection))
+      (:map lsp-mode-map
+      ("<tab>" . company-indent-or-complete-common))
+      :custom
+      (company-minimum-prefix-length 1)
+      (company-idle-delay 0.5)
+      (add-hook 'evil-normal-state-entry-hook #'company-abort))
 
-(use-package company-box
-    :hook (company-mode . company-box-mode))
+  (use-package company-box
+      :hook (company-mode . company-box-mode))
 #+end_src
 **** Workspaces
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -454,6 +475,17 @@ Choose the install method =Install using the shell based process.= on boot.
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
 (use-package darkroom
 		:hook (org-mode . darkroom-tentative-mode))
+#+end_src
+**** TODO Windows
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+;; Window management like in tmux
+(use-package rotate)
+#+end_src
+**** TODO Buffers
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package all-the-icons-ibuffer
+:ensure t
+:init (all-the-icons-ibuffer-mode 1))
 #+end_src
 *** Dired
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
