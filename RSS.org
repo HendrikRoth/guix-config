@@ -1,0 +1,6 @@
+* Emacs :emacs:
+** https://reddit.com/r/emacs/.rss
+* Web :web:
+** Svelte :svelte:
+*** https://svelte.dev/blog.rss.xml
+* Linux :linux:
