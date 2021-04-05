@@ -8,6 +8,72 @@
 :END:
 :CONTENTS:
 - [[#channels][Channels]]
+- [[#systems][Systems]]
+  - [[#base-configuration][Base Configuration]]
+  - [[#machines][Machines]]
+    - [[#work][work]]
+    - [[#desktop][desktop]]
+    - [[#notebook][notebook]]
+  - [[#usb-installation-image][USB Installation image]]
+- [[#programs][Programs]]
+  - [[#emacs][Emacs]]
+    - [[#package-management][Package management]]
+    - [[#basic-settings][Basic settings]]
+      - [[#personal-information][Personal information]]
+      - [[#esc-cancels-all][ESC cancels all]]
+      - [[#utf-8][UTF-8]]
+      - [[#tabs][Tabs]]
+      - [[#yes-or-no][Yes or no]]
+      - [[#fill-column-to-80-characters][Fill column to 80 characters]]
+      - [[#keep-emacsd-clean][Keep .emacs.d clean]]
+      - [[#tramp][Tramp]]
+      - [[#moving-deleted-files-to-trash][Moving deleted files to trash]]
+      - [[#increase-undo-limit-10mb][Increase undo limit (10mb)]]
+      - [[#handle-camelcase-as-seperate-words][Handle CamelCase as seperate words]]
+    - [[#keybindings][Keybindings]]
+      - [[#vim-keybindings][Vim keybindings]]
+      - [[#leader-bindings][Leader bindings]]
+    - [[#interface][Interface]]
+      - [[#remove-distractions][Remove distractions]]
+      - [[#line-numbers][Line numbers]]
+      - [[#which-key][Which-key]]
+      - [[#dashboard][Dashboard]]
+      - [[#modeline][Modeline]]
+      - [[#bracesparenthesisdelimiters][Braces/Parenthesis/Delimiters]]
+      - [[#theme][Theme]]
+      - [[#completion][Completion]]
+      - [[#workspaces][Workspaces]]
+      - [[#distraction-free-writing][Distraction free writing]]
+      - [[#windows][Windows]]
+      - [[#buffers][Buffers]]
+    - [[#dired][Dired]]
+    - [[#productivity][Productivity]]
+      - [[#spelling-check][Spelling check]]
+      - [[#clean-whitespace][Clean whitespace]]
+      - [[#snippets][Snippets]]
+      - [[#emojis][Emojis!]]
+      - [[#commenting][Commenting]]
+      - [[#dictionary][Dictionary]]
+    - [[#applications][Applications]]
+      - [[#calendar][Calendar]]
+      - [[#docker][Docker]]
+      - [[#rss-feeds][RSS Feeds]]
+      - [[#openscad][OpenSCAD]]
+    - [[#development][Development]]
+      - [[#git][Git]]
+      - [[#projectile][Projectile]]
+      - [[#direnv][Direnv]]
+      - [[#lsp][LSP]]
+      - [[#debug][Debug]]
+      - [[#languages][Languages]]
+      - [[#code-formatting][Code formatting]]
+    - [[#org-mode][Org-Mode]]
+      - [[#vim-keybindings][Vim keybindings]]
+      - [[#tangle-on-save][Tangle on save]]
+      - [[#update-tocs-on-save][Update TOCs on save]]
+      - [[#reminder][Reminder]]
+      - [[#styling][Styling]]
+      - [[#roam][Roam]]
 :END:
 
 * Channels
@@ -293,16 +359,16 @@ Choose the install method =Install using the shell based process.= on boot.
 **** Leader bindings
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
 (use-package general
-	:config
-	(general-evil-setup t)
+  :config
+  (general-evil-setup t)
 
 (general-create-definer hr/leader-key-def
-	:keymaps '(normal insert visual emacs)
-	:prefix "SPC"
-	:global-prefix "C-SPC")
+  :keymaps '(normal insert visual emacs)
+  :prefix "SPC"
+  :global-prefix "C-SPC")
 
 (general-create-definer hr/ctrl-c-keys
-	:prefix "C-c"))
+  :prefix "C-c"))
 #+end_src
 *** Interface
 **** Remove distractions
@@ -395,9 +461,21 @@ Choose the install method =Install using the shell based process.= on boot.
 #+end_src
 **** Theme
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(use-package twilight-bright-theme :defer t)
-(use-package twilight-theme :defer t)
-(load-theme 'twilight-bright t)
+(use-package twilight-bright-theme :ensure :defer)
+(use-package twilight-theme :ensure :defer)
+(straight-use-package '(soothe-theme
+:ensure :defer :type git :host github
+:repo "emacsfodder/emacs-soothe-theme"))
+;;(load-theme 'twilight-bright t)
+
+(use-package circadian
+:ensure t
+:config
+  (setq calendar-latitude 51.5)
+  (setq calendar-longitude 7.5)
+  (setq circadian-themes '((:sunrise . twilight-bright)
+  (:sunset . soothe)))
+  (circadian-setup))
 #+end_src
 **** Completion
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -478,8 +556,8 @@ Choose the install method =Install using the shell based process.= on boot.
 #+end_src
 **** TODO Windows
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-;; Window management like in tmux
-(use-package rotate)
+(use-package ace-window
+  :ensure t)
 #+end_src
 **** TODO Buffers
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -535,6 +613,10 @@ Choose the install method =Install using the shell based process.= on boot.
 (use-package evil-nerd-commenter
 	:bind ("M-/" . evilnc-comment-or-uncomment-lines))
 #+end_src
+**** Dictionary
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package define-word)
+#+end_src
 *** Applications
 **** Calendar
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -551,15 +633,41 @@ Choose the install method =Install using the shell based process.= on boot.
 (use-package docker
     :ensure t
     :bind ("C-c d" . docker))
+
+(hr/leader-key-def
+  "D" '(docker :which-key "docker"))
 #+end_src
 **** RSS Feeds
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(use-package elfeed
-    :commands elfeed
-    :bind ("C-x w" . elfeed)
+  (use-package elfeed
+      :commands elfeed
+      :bind ("C-x w" . elfeed)
+      :config
+      (add-to-list 'evil-motion-state-modes 'elfeed-search-mode)
+      (add-to-list 'evil-motion-state-modes 'elfeed-show-mode)
+
+      (evil-define-key* 'motion elfeed-search-mode-map
+        "gb" #'elfeed-search-browse-url
+        "gr" #'elfeed-search-update--force
+        "gR" #'elfeed-seach-fetch)
+
+      (evil-define-key* 'motion elfeed-show-mode-map
+        "gb" #'elfeed-show-visit
+        "gj" #'elfeed-show-next
+        "gk" #'elfeed-show-prev))
+
+  (use-package elfeed-org
     :config
-    (setq elfeed-feeds
-    '("https://reddit.com/r/emacs/.rss")))
+    (setq rmh-elfeed-org-files (list "./RSS.org")))
+
+  (use-package elfeed-dashboard
+    :ensure t
+    :config
+    (setq elfeed-dashboard-file "./RSS-Dashboard.org")
+    (advice-add 'elfeed-search-quit-window :after #'elfeed-dashboard-update-links))
+
+  (hr/leader-key-def
+    "R" '(elfeed :which-key "elfeed"))
 #+end_src
 **** OpenSCAD
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
