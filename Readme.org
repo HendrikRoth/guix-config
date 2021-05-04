@@ -30,6 +30,7 @@
       - [[#moving-deleted-files-to-trash][Moving deleted files to trash]]
       - [[#increase-undo-limit-10mb][Increase undo limit (10mb)]]
       - [[#handle-camelcase-as-seperate-words][Handle CamelCase as seperate words]]
+      - [[#clipboard][Clipboard]]
     - [[#keybindings][Keybindings]]
       - [[#vim-keybindings][Vim keybindings]]
       - [[#leader-bindings][Leader bindings]]
@@ -69,6 +70,7 @@
       - [[#code-formatting][Code formatting]]
       - [[#graphql][GraphQL]]
     - [[#org-mode][Org-Mode]]
+      - [[#basic-settings][Basic settings]]
       - [[#vim-keybindings][Vim keybindings]]
       - [[#tangle-on-save][Tangle on save]]
       - [[#update-tocs-on-save][Update TOCs on save]]
@@ -323,39 +325,43 @@ Choose the install method =Install using the shell based process.= on boot.
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
 (global-subword-mode 1)
 #+end_src
+**** Clipboard
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(setq-default select-enable-clipboard t)
+#+end_src
 *** Keybindings
 **** Vim keybindings
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
 (use-package undo-tree
-             :init
-	     (global-undo-tree-mode 1))
+  :init
+  (global-undo-tree-mode 1))
 
 (use-package evil
-             :after undo-tree
-             :init
-	     (setq evil-want-integration t)
-	     (setq evil-want-keybinding nil)
-	     (setq evil-want-C-u-scroll nil)
-	     (setq evil-want-C-i-jump nil)
-	     (setq evil-respect-visual-line-mode t)
-	     (setq evil-undo-system 'undo-tree)
-	     :config
-	     (evil-mode 1)
-	     (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
-	     (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+  :after undo-tree
+  :init
+  (setq evil-want-integration t)
+  (setq evil-want-keybinding nil)
+  (setq evil-want-C-u-scroll nil)
+  (setq evil-want-C-i-jump nil)
+  (setq evil-respect-visual-line-mode t)
+  (setq evil-undo-system 'undo-tree)
+  :config
+  (evil-mode 1)
+  (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+  (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
 
-	     ;; Use visual line motions even outside of visual-line-mode-buffers
-	     (evil-global-set-key 'motion "j" 'evil-next-visual-line)
-	     (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+  ;; Use visual line motions even outside of visual-line-mode-buffers
+  (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+  (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
-	     (evil-set-initial-state 'messages-buffer-mode 'normal)
-	     (evil-set-initial-state 'dashboard-mode 'normal))
+  (evil-set-initial-state 'messages-buffer-mode 'normal)
+  (evil-set-initial-state 'dashboard-mode 'normal))
 
 (use-package evil-collection
-             :after evil
-	     :init
-	     :config
-	     (evil-collection-init))
+  :after evil
+  :init
+  :config
+  (evil-collection-init))
 #+end_src
 **** Leader bindings
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -374,14 +380,16 @@ Choose the install method =Install using the shell based process.= on boot.
 *** Interface
 **** Remove distractions
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(setq inhibit-startup-message t)
+  (setq inhibit-startup-message t)
+  (setq-default inhibit-startup-screen t)
+  (setq-default inhibit-scratch-message "")
 
-(scroll-bar-mode -1) ; Disable visual scrollbar
-(tool-bar-mode -1) ; Disable toolbar
-(tooltip-mode -1) ; Disable tooltips
-(menu-bar-mode -1) ; Disable menu bar
+  (scroll-bar-mode -1) ; Disable visual scrollbar
+  (tool-bar-mode -1) ; Disable toolbar
+  (tooltip-mode -1) ; Disable tooltips
+  (menu-bar-mode -1) ; Disable menu bar
 
-(setq visible-bell t) ; Visual bell
+  (setq visible-bell t) ; Visual bell
 #+end_src
 **** Line numbers
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -546,21 +554,32 @@ Choose the install method =Install using the shell based process.= on boot.
     "b"  '(:ignore t :which-key "buffers")
     "bs" '(persp-counsel-switch-buffer :which-key "switch")
     "bk" '(persp-kill-buffer :which-key "kill")
-    "w"  '(:ignore t :which-key "workspace")
-    "ws" '(persp-switch :which-key "switch")
-    "wn" '(persp-next :which-key "next"))
+    "W"  '(:ignore t :which-key "workspace")
+    "Ws" '(persp-switch :which-key "switch")
+    "Wn" '(persp-next :which-key "next"))
 #+end_src
 **** Distraction free writing
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
 (use-package darkroom
 		:hook (org-mode . darkroom-tentative-mode))
 #+end_src
-**** TODO Windows
+**** Windows
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(use-package ace-window
-  :ensure t)
+    (use-package ace-window
+      :ensure t)
+
+    (hr/leader-key-def
+      "w"  '(:ignore t :which-key "windows")
+      "ws" '(ace-window :which-key "select window")
+      "wh" '(windmove-left :which-key "left")
+      "wj" '(windmove-up :which-key "up")
+      "wk" '(windmove-down :which-key "down")
+      "wl" '(windmove-right :which-key "right")
+      "wz" '(split-window-vertically :which-key "split vertically")
+      "wx" '(split-window-horizontally :which-key "split horizontally")
+      "wc" '(delete-window :which-key "close window"))
 #+end_src
-**** TODO Buffers
+**** Buffers
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
 (use-package all-the-icons-ibuffer
 :ensure t
@@ -612,11 +631,16 @@ Choose the install method =Install using the shell based process.= on boot.
 **** Commenting
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
 (use-package evil-nerd-commenter
-	:bind ("M-/" . evilnc-comment-or-uncomment-lines))
+  :bind ("M-/" . evilnc-comment-or-uncomment-lines))
+
+(hr/leader-key-def
+  "/" '(evilnc-comment-or-uncomment-lines :which-key "comment"))
 #+end_src
 **** Dictionary
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
 (use-package define-word)
+(hr/leader-key-def
+  "." '(define-word-at-point :which-key "word definition"))
 #+end_src
 *** Applications
 **** Calendar
@@ -682,35 +706,36 @@ Choose the install method =Install using the shell based process.= on boot.
 *** Development
 **** Git
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(use-package magit
-  :commands (magit-status magit-get-current-branch)
-  :custom
-  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+  (use-package magit
+    :commands (magit-status magit-get-current-branch)
+    :custom
+    (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 
-(use-package magit-todos
-  :defer t)
+  (use-package magit-todos
+    :defer t)
 
-(use-package git-gutter
-  :diminish
-  :hook ((text-mode . git-gutter-mode)
-         (prog-mode . git-gutter-mode))
-  :config
-  (setq git-gutter:update-interval 2))
+  (use-package git-gutter
+    :diminish
+    :hook ((text-mode . git-gutter-mode)
+           (prog-mode . git-gutter-mode))
+    :config
+    (setq git-gutter:update-interval 2))
 
-(hr/leader-key-def
-  "g" '(:ignore t :which-key "git")
-  "gs" 'magit-status
-  "gd" 'magit-diff-unstaged
-  "gc" 'magit-branch-or-checkout
-  "gl" '(:ignore t :which-key "log")
-  "glc" 'magit-log-current
-  "glf" 'magit-log-buffer-file
-  "gb" 'magit-branch
-  "gP" 'magit-push-current
-  "gp" 'magit-pull-branch
-  "gf" 'magit-fetch
-  "gF" 'magit-fetch-all
-  "gr" 'magit-rebase)
+  (hr/leader-key-def
+    "g" '(:ignore t :which-key "git")
+    "gs" 'magit-status
+    "gd" 'magit-diff-unstaged
+    "gc" 'magit-branch-or-checkout
+    "gi" 'magit-init
+    "gl" '(:ignore t :which-key "log")
+    "glc" 'magit-log-current
+    "glf" 'magit-log-buffer-file
+    "gb" 'magit-branch
+    "gP" 'magit-push-current
+    "gp" 'magit-pull-branch
+    "gf" 'magit-fetch
+    "gF" 'magit-fetch-all
+    "gr" 'magit-rebase)
 #+end_src
 **** Projectile
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -765,59 +790,89 @@ Choose the install method =Install using the shell based process.= on boot.
 #+end_src
 **** Languages
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-;; Typescript
-(use-package nvm :defer t)
-(use-package typescript-mode
-    :mode "\\.ts\\'"
-    :config
-    (setq typescript-indent-level 2))
+  ;; Typescript
+  (use-package nvm :defer t)
+  (use-package typescript-mode
+      :ensure nil
+      :mode "\\.ts\\'"
+      :config
+      (setq typescript-indent-level 2))
 
-;; Svelte
-(use-package svelte-mode
-    :mode "\\.svelte\\'"
-    :config
-    (setq svelte-basic-offset 2)
-    (setq svelte-tag-relative-indent t))
+  ;; Svelte
+  (use-package svelte-mode
+      :ensure nil
+      :mode "\\.svelte\\'"
+      :config
+      (setq svelte-basic-offset 2)
+      (setq svelte-tag-relative-indent t))
 
-;; Vue
-(use-package vue-mode
-    :mode "\\.vue\\'")
+  ;; Vue
+  (use-package vue-mode
+      :ensure nil
+      :mode "\\.vue\\'")
 
-;; JSX
-(use-package js2-mode
-    :mode "\\.jsx?\\'"
-    :config
-    ;; Use js2-mode for NodeJS scripts
-    (add-to-list 'magic-mode-alist '("#!/usr/bin/env node" . js2-mode))
+  ;; JavaScript & JSX
+  (use-package js2-mode
+      :ensure nil
+      :mode "\\.js?\\|\\.jsx?\\'"
+      :custom
+      (js-indent-level 2)
+      (js-switch-indent-offset 2)
+      (js2-highlight-level 3)
+      (js2-idle-timer-delay 0)
+      :config
+      ;; Use js2-mode for NodeJS scripts
+      (add-to-list 'magic-mode-alist '("#!/usr/bin/env node" . js2-mode))
 
-    ;; Don't use the builtin syntax checking
-    (setq js2-mode-show-strict-warnings nil))
+      ;; Don't use the builtin syntax checking
+      (setq js2-mode-show-strict-warnings nil))
 
-;; Markdown
-(use-package markdown-mode
-    :mode "\\.md\\'"
-    :config
-    (setq markdown-command "marked"))
+  ;; Markdown
+  (use-package markdown-mode
+      :ensure nil
+      :mode "\\.md\\'"
+      :config
+      (setq markdown-command "marked"))
 
-;; HTML
-(use-package web-mode
-    :mode "(\\.\\(html?\\|ejs\\|tsx\\|jsx\\)\\'"
-    :config
-    (setq-default web-mode-code-indent-offset 2)
-    (setq-default web-mode-markup-indent-offset 2)
-    (setq-default web-mode-attribute-indent-offset 2))
+  ;; HTML
+  (use-package web-mode
+      :ensure nil
+      :mode "(\\.\\(html?\\|ejs\\|tsx\\|jsx\\)\\'"
+      :config
+      (setq-default web-mode-code-indent-offset 2)
+      (setq-default web-mode-markup-indent-offset 2)
+      (setq-default web-mode-attribute-indent-offset 2))
 
-;; HTML colors
-(use-package rainbow-mode
+  ;; HTML colors
+  (use-package rainbow-mode
     :defer t
     :hook (org-mode
-	emacs-lisp-mode
-	typescript-mode
-	js2-mode))
+      emacs-lisp-mode
+      typescript-mode
+      js2-mode))
 
-;; YAML
-(use-package yaml-mode
+    ;; Emmet
+  (use-package emmet-mode
+    :hook
+      (css-mode . emmet-mode)
+      (html-mode . emmet-mode)
+      (svelte-mode . emmet-mode)
+      (typescript-mode . emmet-mode)
+      (js2-mode . emmet-mode)
+      (web-mode . emmet-mode))
+
+  ;; CSS
+  (use-package css-mode
+    :ensure nil
+    :custom (css-indent-offset 2))
+
+  ;; YAML
+  (use-package yaml-mode
     :mode "\\.ya?ml\\'")
+
+  ;; JSON
+  (use-package json-mode
+    :mode "\\.json\\'")
 #+end_src
 **** Code formatting
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -844,6 +899,14 @@ Choose the install method =Install using the shell based process.= on boot.
      
 *** TODO Org-Mode
 Not finished yet.
+**** Basic settings
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package org
+  :ensure nil
+  :custom
+  (org-startup-folded 'content)
+  (org-startup-truncated nil))
+#+end_src
 **** Vim keybindings
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
 (use-package evil-org-mode
