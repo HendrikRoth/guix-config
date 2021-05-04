@@ -67,6 +67,7 @@
       - [[#debug][Debug]]
       - [[#languages][Languages]]
       - [[#code-formatting][Code formatting]]
+      - [[#graphql][GraphQL]]
     - [[#org-mode][Org-Mode]]
       - [[#vim-keybindings][Vim keybindings]]
       - [[#tangle-on-save][Tangle on save]]
@@ -828,6 +829,19 @@ Choose the install method =Install using the shell based process.= on boot.
     :config
     (setq prettier-js-show-errors nil))
 #+end_src
+**** GraphQL
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package graphql-doc
+  :straight '(graphql-doc :type git :host github :repo "ifitzpatrick/graphql-doc.el")
+  :config
+  (graphql-doc-add-api "vivid" `(:url "http://localhost:8999/graphql" :data nil :headers nil)))
+
+(hr/leader-key-def
+  "G" '(:ignore t :which-key "graphlql")
+  "Ge" 'graphql-doc :which-key "open endpoint"
+  "Gu" 'graphql-doc-open-url :which-key "open url")
+#+end_src
+     
 *** TODO Org-Mode
 Not finished yet.
 **** Vim keybindings
