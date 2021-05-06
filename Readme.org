@@ -77,6 +77,7 @@
       - [[#reminder][Reminder]]
       - [[#styling][Styling]]
       - [[#roam][Roam]]
+      - [[#calendar-sync][Calendar sync]]
 :END:
 
 * Channels
@@ -652,6 +653,9 @@ Choose the install method =Install using the shell based process.= on boot.
     :after calfw
     :config
     (setq cfw:org-agenda-schedule-args '(:timestamp)))
+
+(hr/leader-key-def
+  "C" '(cfw:open-org-calendar :which-key "calendar"))
 #+end_src
 **** Docker
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -897,8 +901,7 @@ Choose the install method =Install using the shell based process.= on boot.
   "Gu" 'graphql-doc-open-url :which-key "open url")
 #+end_src
      
-*** TODO Org-Mode
-Not finished yet.
+*** Org-Mode
 **** Basic settings
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
 (use-package org
@@ -918,6 +921,13 @@ Not finished yet.
   (require 'evil-org-agenda)
   (evil-org-agenda-set-keys))
 
+(evil-define-key '(normal insert visual) org-mode-map (kbd "C-j") 'org-next-visible-heading)
+(evil-define-key '(normal insert visual) org-mode-map (kbd "C-k") 'org-previous-visible-heading)
+
+(defun hr/search-org-files ()
+  (interactive)
+  (counsel-rg "" "~/Notes" nil "Search notes:"))
+
 (hr/leader-key-def
   "o"   '(:ignore t :which-key "org mode")
 
@@ -926,7 +936,7 @@ Not finished yet.
 
   "on"  '(org-toggle-narrow-to-subtree :which-key "toggle narrow")
 
-  "os"  '(dw/counsel-rg-org-files :which-key "search notes")
+  "os"  '(hr/search-org-files :which-key "search notes")
 
   "oa"  '(org-agenda :which-key "status")
   "ot"  '(org-todo-list :which-key "todos")
@@ -965,7 +975,29 @@ Not finished yet.
     :after org
     :hook (org-mode . org-bullets-mode))
 #+end_src
-**** TODO Roam
-Not started yet.
+**** Roam
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package org-roam
+  :ensure t
+  :hook
+    (after-init . org-roam-mode)
+  :custom
+    (org-roam-directory "~/Notes/Roam")
+    (org-roam-completion-everywhere t)
+    (org-roam-system 'ivy))
+#+end_src
+**** Calendar sync
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package org-caldav
+  :defer t
+  :init
+  (setq org-caldav-url ""
+    org-caldav-inbox nil
+    org-caldav-delete-org-entries 'always
+    org-caldav-delete-calendar-entries 'never
+    org-caldav-calendars
+    '((:calendar-id ""
+       :inbox "~/Notes/Calendar/Personal.org")
+      (:calendar-id ""
+       :inbox "~/Notes/Calendar/Work.org"))))
 #+end_src
