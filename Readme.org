@@ -473,17 +473,24 @@ Choose the install method =Install using the shell based process.= on boot.
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
 (use-package twilight-bright-theme :ensure :defer)
 (straight-use-package '(twilight-anti-bright-theme
-:ensure :defer :type git :host github
-:repo "jimeh/twilight-anti-bright-theme"))
+  :ensure :defer :type git :host github
+  :repo "jimeh/twilight-anti-bright-theme"))
 
 (use-package circadian
-:ensure t
-:config
-  (setq calendar-latitude 51.5)
-  (setq calendar-longitude 7.5)
-  (setq circadian-themes '((:sunrise . twilight-bright)
-  (:sunset . twilight-anti-bright)))
-  (circadian-setup))
+  :ensure t
+  :config
+    (setq calendar-latitude 51.5)
+    (setq calendar-longitude 7.5)
+    (setq circadian-themes '((:sunrise . twilight-bright)
+    (:sunset . twilight-anti-bright)))
+    (circadian-setup)
+  :custom
+    (add-hook 'circadian-after-load-theme-hook
+      #'(lambda (twilight-anti-bright)
+      (set-face-foreground 'linum "#F52503")))
+    (add-hook 'circadian-after-load-theme-hook
+      #'(lambda (twilight-bright)
+      (set-face-foreground 'linum "#F52503"))))
 #+end_src
 **** Completion
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -583,6 +590,12 @@ Choose the install method =Install using the shell based process.= on boot.
 (use-package all-the-icons-ibuffer
 :ensure t
 :init (all-the-icons-ibuffer-mode 1))
+#+end_src
+**** Cursor highlighting effect
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package beacon
+:ensure t
+:init (beacon-mode 1))
 #+end_src
 *** Dired
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
