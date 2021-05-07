@@ -472,11 +472,9 @@ Choose the install method =Install using the shell based process.= on boot.
 **** Theme
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
 (use-package twilight-bright-theme :ensure :defer)
-(use-package twilight-theme :ensure :defer)
-(straight-use-package '(soothe-theme
+(straight-use-package '(twilight-anti-bright-theme
 :ensure :defer :type git :host github
-:repo "emacsfodder/emacs-soothe-theme"))
-;;(load-theme 'twilight-bright t)
+:repo "jimeh/twilight-anti-bright-theme"))
 
 (use-package circadian
 :ensure t
@@ -484,7 +482,7 @@ Choose the install method =Install using the shell based process.= on boot.
   (setq calendar-latitude 51.5)
   (setq calendar-longitude 7.5)
   (setq circadian-themes '((:sunrise . twilight-bright)
-  (:sunset . soothe)))
+  (:sunset . twilight-anti-bright)))
   (circadian-setup))
 #+end_src
 **** Completion
