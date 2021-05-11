@@ -47,6 +47,7 @@
       - [[#distraction-free-writing][Distraction free writing]]
       - [[#windows][Windows]]
       - [[#buffers][Buffers]]
+      - [[#cursor-highlighting-effect][Cursor highlighting effect]]
     - [[#dired][Dired]]
     - [[#productivity][Productivity]]
       - [[#spelling-check][Spelling check]]
@@ -55,6 +56,7 @@
       - [[#emojis][Emojis!]]
       - [[#commenting][Commenting]]
       - [[#dictionary][Dictionary]]
+      - [[#uml][UML]]
     - [[#applications][Applications]]
       - [[#calendar][Calendar]]
       - [[#docker][Docker]]
@@ -67,8 +69,19 @@
       - [[#lsp][LSP]]
       - [[#debug][Debug]]
       - [[#languages][Languages]]
+        - [[#typescript][Typescript]]
+        - [[#svelte][Svelte]]
+        - [[#vue][Vue]]
+        - [[#javascript--jsx][JavaScript & JSX]]
+        - [[#markdown][Markdown]]
+        - [[#html][HTML]]
+        - [[#css][CSS]]
+        - [[#yaml][YAML]]
+        - [[#json][JSON]]
       - [[#code-formatting][Code formatting]]
       - [[#graphql][GraphQL]]
+      - [[#snippets][Snippets]]
+        - [[#svelte][Svelte]]
     - [[#org-mode][Org-Mode]]
       - [[#basic-settings][Basic settings]]
       - [[#vim-keybindings][Vim keybindings]]
@@ -78,6 +91,15 @@
       - [[#styling][Styling]]
       - [[#roam][Roam]]
       - [[#calendar-sync][Calendar sync]]
+      - [[#snippets][Snippets]]
+        - [[#author][Author]]
+        - [[#date][Date]]
+        - [[#e-mail][E-Mail]]
+        - [[#source-blocks][Source blocks]]
+        - [[#image][Image]]
+        - [[#table][Table]]
+        - [[#uml][UML]]
+        - [[#video][Video]]
 :END:
 
 * Channels
@@ -101,7 +123,7 @@
 * Systems
 ** Base Configuration
 *.config/guix/systems/base-system.scm:*
-#+BEGIN_SRC scheme :tangle ~/.config/guix/systems/base-system.scm
+#+BEGIN_SRC scheme :mkdirp yes :tangle ~/.config/guix/systems/base-system.scm
   (define-module (base-system)
     #:use-module (gnu)
     #:use-module (gnu system nss)
@@ -128,7 +150,7 @@
 
 Define the =base-operating-system= which will be inherited by all machine configurations.
 
-#+BEGIN_SRC scheme :tangle ~/.config/guix/systems/base-system.scm
+#+BEGIN_SRC scheme :mkdirp yes :tangle ~/.config/guix/systems/base-system.scm
   (define-public base-operating-system
     (operating-system
      (host-name "hendrik")
@@ -193,7 +215,7 @@ Define the =base-operating-system= which will be inherited by all machine config
 *** work
 My work machine at the office.
 
-#+BEGIN_SRC scheme :tangle ~/.config/guix/systems/work.scm
+#+BEGIN_SRC scheme :mkdirp yes :tangle ~/.config/guix/systems/work.scm
   (define-module (work)
     #:use-module (base-system)
     #:use-module (gnu))
@@ -224,7 +246,7 @@ My home workstation.
 My travel notebook.
 
 ** USB Installation image
-#+begin_src scheme :tangle ~/.config/guix/systems/install.scm
+#+begin_src scheme :mkdirp yes :tangle ~/.config/guix/systems/install.scm
 (define-module (nongnu system install)
   #:use-module (gnu system)
   #:use-module (gnu system install)
@@ -451,23 +473,23 @@ Choose the install method =Install using the shell based process.= on boot.
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
 ;; Highlight matching braces
 (use-package paren
-	:config
-	(show-paren-mode 1))
-
-(use-package smartparens
-    :hook (prog-mode . smartparens-mode))
+  :config
+  (show-paren-mode 1))
 
 ;; Colorful delimiters
 (use-package rainbow-delimiters
-	:hook (prog-mode . rainbow-delimiters-mode))
+  :hook (prog-mode . rainbow-delimiters-mode))
+
+(use-package smartparens
+  :hook (prog-mode . smartparens-mode))
 
 (use-package rainbow-mode
-    :defer t
-    :hook (org-mode
-			emacs-lisp-mode
-			web-mode
-			typescript-mode
-			js2-mode))
+  :defer t
+  :hook (org-mode
+    emacs-lisp-mode
+    web-mode
+    typescript-mode
+    js2-mode))
 #+end_src
 **** Theme
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -494,52 +516,45 @@ Choose the install method =Install using the shell based process.= on boot.
 #+end_src
 **** Completion
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-  (use-package ivy
-      :diminish
-      :init
-      (ivy-mode 1)
-      :config
-      (setq ivy-use-virtual-buffers t)
-      (setq ivy-wrap t)
-      (setq ivy-count-format "(%d/%d) ")
-      (setq enable-recursive-minibuffers t))
+  (use-package vertico
+    :straight '(vertico :host github :repo "minad/vertico" :branch "main")
+    :bind (:map vertico-map
+      ("C-j" . vertico-next)
+      ("C-j" . vertico-previous)
+      ("C-f" . vertico-exit-input)
+      ("C-l" . vertico-exit-input)
+    :map minibuffer-local-map
+      ("M-h" . backward-kill-word))
+    :custom
+      (vertico-cycle t)
+    :init
+      (vertico-mode))
 
-  (use-package counsel
-      :after ivy)
+  ;; Completions in regions
+  (use-package corfu
+    :straight '(corfu :host github :repo "minad/corfu")
+    :bind(:map corfu-map
+      ("C-j" . corfu-next)
+      ("C-k" . corfu-previous)
+      ("C-f" . corfu-insert))
+    :custom
+      (corfu-cycle t)
+    :config
+      (corfu-global-mode))
 
-  (use-package wgrep)
+  ;; Improved candidate filtering
+  (use-package orderless
+    :init
+      (setq completion-styles '(orderless)
+      completion-category-defaults nil
+      completion-category-overrides '((file (styles . (partial-completion))))))
 
-  ;; Improves sorting for fuzzy-matched results
-  (use-package flx
-      :after ivy
-      :defer t
-      :init
-      (setq ivy-flx-limit 10000))
-
-  (use-package prescient
-      :after counsel
-      :config
-      (prescient-persist-mode 1))
-
-  (use-package ivy-prescient
-      :after prescient
-      :config
-      (ivy-prescient-mode 1))
-
-  (use-package company
-      :after lsp-mode
-      :hook (lsp-mode . company-mode)
-      :bind (:map company-active-map
-      ("<tab>" . company-complete-selection))
-      (:map lsp-mode-map
-      ("<tab>" . company-indent-or-complete-common))
-      :custom
-      (company-minimum-prefix-length 1)
-      (company-idle-delay 0.5)
-      (add-hook 'evil-normal-state-entry-hook #'company-abort))
-
-  (use-package company-box
-      :hook (company-mode . company-box-mode))
+  (use-package marginalia
+    :after vertico
+    :custom
+      (marginalia-annotators '(marginalia-annnotators-heavy marginalia-annotators-light nil))
+    :init
+      (marginalia-mode))
 #+end_src
 **** Workspaces
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -567,7 +582,9 @@ Choose the install method =Install using the shell based process.= on boot.
 **** Distraction free writing
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
 (use-package darkroom
-		:hook (org-mode . darkroom-tentative-mode))
+  :hook (org-mode . darkroom-tentative-mode)
+  :config
+    (setq darkroom-text-scale-increase 0))
 #+end_src
 **** Windows
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -633,8 +650,10 @@ Choose the install method =Install using the shell based process.= on boot.
 **** Snippets
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
 (use-package yasnippet
-    :hook (prog-mode . yas-minor-mode)
-    :config
+  :hook ((prog-mode . yas-minor-mode)
+          (org-mode . yas-minor-mode))
+  :config
+    (setq yas-snippet-dirs '("~/.emacs.d/snippets"))
     (yas-reload-all))
 #+end_src
 **** Emojis!
@@ -653,6 +672,14 @@ Choose the install method =Install using the shell based process.= on boot.
 (use-package define-word)
 (hr/leader-key-def
   "." '(define-word-at-point :which-key "word definition"))
+#+end_src
+**** UML
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package plantuml-mode
+    :ensure nil
+    :mode "\\.plantuml\\'")
+;;    :config
+;;      (add-to-list '(org-src-lang-modes '("plantuml" . plantuml))))
 #+end_src
 *** Applications
 **** Calendar
@@ -757,7 +784,7 @@ Choose the install method =Install using the shell based process.= on boot.
 (use-package projectile
     :diminish projectile-mode
     :config (projectile-mode)
-    :custom ((projectile-completion-system 'ivy))
+    :custom ((projectile-completion-system 'vertico))
     :bind-keymap ("C-c p" . projectile-command-map)
     :init
     (when (file-directory-p "~/git")
@@ -804,29 +831,32 @@ Choose the install method =Install using the shell based process.= on boot.
 (use-package dap-mode)
 #+end_src
 **** Languages
+***** Typescript
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-  ;; Typescript
   (use-package nvm :defer t)
   (use-package typescript-mode
       :ensure nil
       :mode "\\.ts\\'"
       :config
       (setq typescript-indent-level 2))
-
-  ;; Svelte
+#+end_src
+***** Svelte
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
   (use-package svelte-mode
       :ensure nil
       :mode "\\.svelte\\'"
       :config
       (setq svelte-basic-offset 2)
       (setq svelte-tag-relative-indent t))
-
-  ;; Vue
+#+end_src
+***** Vue
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
   (use-package vue-mode
       :ensure nil
       :mode "\\.vue\\'")
-
-  ;; JavaScript & JSX
+#+end_src
+***** JavaScript & JSX
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
   (use-package js2-mode
       :ensure nil
       :mode "\\.js?\\|\\.jsx?\\'"
@@ -841,14 +871,17 @@ Choose the install method =Install using the shell based process.= on boot.
 
       ;; Don't use the builtin syntax checking
       (setq js2-mode-show-strict-warnings nil))
-
-  ;; Markdown
+#+end_src
+***** Markdown
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
   (use-package markdown-mode
       :ensure nil
       :mode "\\.md\\'"
       :config
       (setq markdown-command "marked"))
-
+#+end_src
+***** HTML
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
   ;; HTML
   (use-package web-mode
       :ensure nil
@@ -875,17 +908,20 @@ Choose the install method =Install using the shell based process.= on boot.
       (typescript-mode . emmet-mode)
       (js2-mode . emmet-mode)
       (web-mode . emmet-mode))
-
-  ;; CSS
+#+end_src
+***** CSS
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
   (use-package css-mode
     :ensure nil
     :custom (css-indent-offset 2))
-
-  ;; YAML
+#+end_src
+***** YAML
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
   (use-package yaml-mode
     :mode "\\.ya?ml\\'")
-
-  ;; JSON
+#+end_src
+***** JSON
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
   (use-package json-mode
     :mode "\\.json\\'")
 #+end_src
@@ -911,23 +947,39 @@ Choose the install method =Install using the shell based process.= on boot.
   "Ge" 'graphql-doc :which-key "open endpoint"
   "Gu" 'graphql-doc-open-url :which-key "open url")
 #+end_src
-     
+
+**** Snippets
+***** Svelte
+#+begin_src html :mkdirp yes :tangle ~/.emacs.d/snippets/svelte/svelte
+# -*- mode: snippet -*-
+# name: svelte
+# key: /svelte
+# --
+<script lang="ts">
+$0
+</script>
+
+$1
+
+<style lang="postcss">
+$2
+</style>
+#+end_src
 *** Org-Mode
 **** Basic settings
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
 (use-package org
-  :ensure nil
+  :defer t
   :custom
-  (org-startup-folded 'content)
-  (org-startup-truncated nil))
+    (org-startup-folded 'content)
+    (org-startup-truncated nil))
 #+end_src
 **** Vim keybindings
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(use-package evil-org-mode
+(use-package evil-org
+  :ensure t
   :after org
-  :hook ((org-mode . evil-org-mode)
-    (org-agenda-mode . evil-org-mode)
-    (evil-org-mode . (lambda () (evil-org-set-key-theme '(navigation todo insert textobjects additional)))))
+  :hook (org-mode . (lambda () evil-org-mode))
   :config
   (require 'evil-org-agenda)
   (evil-org-agenda-set-keys))
@@ -1011,4 +1063,79 @@ Choose the install method =Install using the shell based process.= on boot.
        :inbox "~/Notes/Calendar/Personal.org")
       (:calendar-id ""
        :inbox "~/Notes/Calendar/Work.org"))))
+#+end_src
+
+**** Snippets
+***** Author
+#+begin_src yasnippet :mkdirp yes :tangle ~/.emacs.d/snippets/org-mode/author
+# -*- mode: snippet -*-
+# name: author
+# key: /author
+# --
+#+author: ${0:`(user-full-name)`}
+#+email: ${1:`(user-mail-address)`}
+#+end_src
+***** Date
+#+begin_src yasnippet :mkdirp yes :tangle ~/.emacs.d/snippets/org-mode/date
+# -*- mode: snippet -*-
+# name: date
+# key: /date
+# --
+#+date: ${1:date}/${2:month}/${3:day}
+#+end_src
+***** E-Mail
+#+begin_src yasnippet :mkdirp yes :tangle ~/.emacs.d/snippets/org-mode/email
+# -*- mode: snippet -*-
+# name: email
+# key: /email
+# --
+#+email: ${0:`(user-mail-address)`}
+#+end_src
+***** Source blocks
+#+begin_src yasnippet :mkdirp yes :tangle ~/.emacs.d/snippets/org-mode/src
+# -*- mode: snippet -*-
+# name: src
+# key: /src
+# --
+\#+begin_src ${0:emacs-lisp} :tangle $1
+$2
+\#+end_src
+#+end_src
+***** Image
+#+begin_src yasnippet :mkdirp yes :tangle ~/.emacs.d/snippets/org-mode/image
+# -*- mode: snippet -*-
+# name: image
+# key: /image
+# --
+#+caption ${1:caption of the image}
+[[file:${2:image_path}]]$0
+#+end_src
+***** Table
+#+begin_src yasnippet :mkdirp yes :tangle ~/.emacs.d/snippets/org-mode/table
+# -*- mode: snippet -*-
+# name: table
+# key: /table
+# --
+#+caption: ${1:caption of the table}
+| ${2:column 1} | ${3:column 2} |
++---------------+---------------+
+#+end_src
+***** UML
+#+begin_src yasnippet :mkdirp yes :tangle ~/.emacs.d/snippets/org-mode/uml
+# -*- mode: snippet -*-
+# name: uml
+# key: /uml
+# --
+\#+begin_src plantuml
+$0
+\#+end_src
+#+end_src
+
+***** Video
+#+begin_src yasnippet :mkdirp yes :tangle ~/.emacs.d/snippets/org-mode/video
+# -*- mode: snippet -*-
+# name: video
+# key: /video
+# --
+[[${1:link of the video}][file:${2:link of the image}]
 #+end_src
