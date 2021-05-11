@@ -1097,9 +1097,9 @@ $2
 # name: src
 # key: /src
 # --
-\#+begin_src ${0:emacs-lisp} :tangle $1
+,#+begin_src ${0:emacs-lisp} :tangle $1
 $2
-\#+end_src
+,#+end_src
 #+end_src
 ***** Image
 #+begin_src yasnippet :mkdirp yes :tangle ~/.emacs.d/snippets/org-mode/image
