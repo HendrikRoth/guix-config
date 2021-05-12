@@ -1223,8 +1223,8 @@ background-color: #${0:DDD};
 # name: author
 # key: /author
 # --
-#+author: ${0:`(user-full-name)`}
-#+email: ${1:`(user-mail-address)`}
+#+author: ${0:`user-full-name`}
+#+email: ${1:`user-mail-address`}
 #+end_src
 ***** Date
 #+begin_src yasnippet :mkdirp yes :tangle ~/.emacs.d/snippets/org-mode/date
@@ -1240,7 +1240,7 @@ background-color: #${0:DDD};
 # name: email
 # key: /email
 # --
-#+email: ${0:`(user-mail-address)`}
+#+email: ${0:`user-mail-address`}
 #+end_src
 ***** Source blocks
 #+begin_src yasnippet :mkdirp yes :tangle ~/.emacs.d/snippets/org-mode/src
