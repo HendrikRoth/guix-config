@@ -26,6 +26,10 @@
       - [[#yes-or-no][Yes or no]]
       - [[#fill-column-to-80-characters][Fill column to 80 characters]]
       - [[#keep-emacsd-clean][Keep .emacs.d clean]]
+      - [[#backup-files][Backup Files]]
+      - [[#auto-save-files][Auto Save Files]]
+      - [[#lock-files][Lock Files]]
+      - [[#projectile-files][Projectile Files]]
       - [[#tramp][Tramp]]
       - [[#moving-deleted-files-to-trash][Moving deleted files to trash]]
       - [[#increase-undo-limit-10mb][Increase undo limit (10mb)]]
@@ -42,6 +46,7 @@
       - [[#modeline][Modeline]]
       - [[#bracesparenthesisdelimiters][Braces/Parenthesis/Delimiters]]
       - [[#theme][Theme]]
+      - [[#fonts][Fonts]]
       - [[#completion][Completion]]
       - [[#workspaces][Workspaces]]
       - [[#distraction-free-writing][Distraction free writing]]
@@ -337,7 +342,30 @@ Choose the install method =Install using the shell based process.= on boot.
 #+end_src
 **** Keep .emacs.d clean
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(setq user-emacs-directory (expand-file-name "~/.cache/emacs"))
 (use-package no-littering)
+#+end_src
+**** Backup Files
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(make-directory (expand-file-name "tmp/backups/" user-emacs-directory) t)
+(setq backup-directory-alist `(("." . ,(expand-file-name "tmp/backups/" user-emacs-directory))))
+#+end_src
+**** Auto Save Files
+Don't create =#Name.file#= files
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(make-directory (expand-file-name "tmp/auto-saves/" user-emacs-directory) t)
+(setq auto-save-list-file-prefix (expand-file-name "tmp/auto-saves/sessions/" user-emacs-directory)
+      auto-save-file-name-transforms `((".*" ,(expand-file-name "tmp/auto-saves/" user-emacs-directory) t)))
+#+end_src
+**** Lock Files
+Don't create =.#Name.file= files.
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(setq create-lockfiles nil)
+#+end_src
+**** Projectile Files
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(setq projectile-known-projects-file (expand-file-name "tmp/projectile-bookmarks.eld" user-emacs-directory)
+      lsp-session-file (expand-file-name "tmp/.lsp-session-v1" user-emacs-directory))
 #+end_src
 **** Tramp
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -522,6 +550,16 @@ Choose the install method =Install using the shell based process.= on boot.
     (add-hook 'circadian-after-load-theme-hook
       #'(lambda (twilight-bright)
       (set-face-foreground 'linum "#F52503"))))
+#+end_src
+**** Fonts
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(set-face-attribute 'default nil :font "Fira Code" :height 110)
+
+;; Set the fixed pitch face
+(set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 110)
+
+;; Set the variable pitch face
+(set-face-attribute 'variable-pitch nil :font "Fira Code" :height 110 :weight 'regular)
 #+end_src
 **** Completion
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -1215,7 +1253,6 @@ background-color: #${0:DDD};
       (:calendar-id ""
        :inbox "~/Notes/Calendar/Work.org"))))
 #+end_src
-
 **** Snippets
 ***** Author
 #+begin_src yasnippet :mkdirp yes :tangle ~/.emacs.d/snippets/org-mode/author
@@ -1223,8 +1260,8 @@ background-color: #${0:DDD};
 # name: author
 # key: /author
 # --
-#+author: ${0:`user-full-name`}
-#+email: ${1:`user-mail-address`}
+#+author: ${1:`user-full-name`}
+#+email: ${2:`user-mail-address`}
 #+end_src
 ***** Date
 #+begin_src yasnippet :mkdirp yes :tangle ~/.emacs.d/snippets/org-mode/date
@@ -1240,7 +1277,7 @@ background-color: #${0:DDD};
 # name: email
 # key: /email
 # --
-#+email: ${0:`user-mail-address`}
+#+email: ${1:`user-mail-address`}
 #+end_src
 ***** Source blocks
 #+begin_src yasnippet :mkdirp yes :tangle ~/.emacs.d/snippets/org-mode/src
@@ -1248,8 +1285,8 @@ background-color: #${0:DDD};
 # name: src
 # key: /src
 # --
-,#+begin_src ${0:emacs-lisp} :tangle $1
-$2
+,#+begin_src ${1:emacs-lisp} :tangle $2
+$0
 ,#+end_src
 #+end_src
 ***** Image
