@@ -48,8 +48,10 @@
       - [[#windows][Windows]]
       - [[#buffers][Buffers]]
       - [[#cursor-highlighting-effect][Cursor highlighting effect]]
+      - [[#whitespaces][Whitespaces]]
     - [[#dired][Dired]]
     - [[#productivity][Productivity]]
+      - [[#alerts][Alerts]]
       - [[#spelling-check][Spelling check]]
       - [[#clean-whitespace][Clean whitespace]]
       - [[#snippets][Snippets]]
@@ -62,6 +64,7 @@
       - [[#docker][Docker]]
       - [[#rss-feeds][RSS Feeds]]
       - [[#openscad][OpenSCAD]]
+      - [[#mail][Mail]]
     - [[#development][Development]]
       - [[#git][Git]]
       - [[#projectile][Projectile]]
@@ -69,6 +72,7 @@
       - [[#lsp][LSP]]
       - [[#debug][Debug]]
       - [[#languages][Languages]]
+        - [[#emacs-lisp][Emacs Lisp]]
         - [[#typescript][Typescript]]
         - [[#svelte][Svelte]]
         - [[#vue][Vue]]
@@ -82,6 +86,8 @@
       - [[#graphql][GraphQL]]
       - [[#snippets][Snippets]]
         - [[#svelte][Svelte]]
+        - [[#css][CSS]]
+          - [[#background][Background]]
     - [[#org-mode][Org-Mode]]
       - [[#basic-settings][Basic settings]]
       - [[#vim-keybindings][Vim keybindings]]
@@ -100,6 +106,7 @@
         - [[#table][Table]]
         - [[#uml][UML]]
         - [[#video][Video]]
+        - [[#lisp][Lisp]]
 :END:
 
 * Channels
@@ -474,7 +481,9 @@ Choose the install method =Install using the shell based process.= on boot.
 ;; Highlight matching braces
 (use-package paren
   :config
-  (show-paren-mode 1))
+    (setq show-paren-delay 0)
+    (set-face-attribute 'show-paren-match nil :weight 'extra-bold)
+    (show-paren-mode 1))
 
 ;; Colorful delimiters
 (use-package rainbow-delimiters
@@ -614,6 +623,10 @@ Choose the install method =Install using the shell based process.= on boot.
 :ensure t
 :init (beacon-mode 1))
 #+end_src
+**** Whitespaces
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(require 'whitespace)
+#+end_src
 *** Dired
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
 (use-package dired
@@ -635,6 +648,13 @@ Choose the install method =Install using the shell based process.= on boot.
 
 #+end_src
 *** Productivity
+**** Alerts
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package alert
+  :commands alert
+  :config
+    (setq alert-default-style 'notifications))
+#+end_src
 **** Spelling check
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
 (use-package flycheck
@@ -677,9 +697,9 @@ Choose the install method =Install using the shell based process.= on boot.
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
 (use-package plantuml-mode
     :ensure nil
-    :mode "\\.plantuml\\'")
-;;    :config
-;;      (add-to-list '(org-src-lang-modes '("plantuml" . plantuml))))
+    :mode "\\.plantuml\\'"
+    :config
+      (add-to-list 'org-src-lang-modes '("plantuml" . plantuml)))
 #+end_src
 *** Applications
 **** Calendar
@@ -744,7 +764,95 @@ Choose the install method =Install using the shell based process.= on boot.
     (autoload 'scad-mode "scad-mode" "A major mode for editing OpenSCAD code." t)
     (add-to-list 'auto-mode-alist '("\\.scad$" . scad-mode)))
 #+end_src
+**** Mail
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package mu4e
+  :defer 20
+  :config
+    (require 'org-mu4e)
+    (setq mu4e-update-interval (* 10 60))
+    (setq mu4e-get-mail-command "mbsync -a")
+    (setq mu4e-maildir "~/Mail")
+    (setq mu4e-change-filenames-when-moving t)
+    (setq mu4e-contexts
+    `(,(make-mu4e-context
+        :name "Henn1nk"
+        :match-func (lambda (msg)
+                    (when msg (string-prefix-p "/Henn1nk" (mu4e-message-field msg :maildir))))
+        :vars '(
+          (user-full-name . "Hendrik Roth")
+          (user-mail-address . "mail@henn1nk.com")
+          (mu4e-sent-folder . "/Henn1nk/Sent Items")
+          (mu4e-trash-folder . "/Henn1nk/Trash")
+          (mu4e-drafts-folder . "/Henn1nk/Drafts")
+          (mu4e-refile-folder . "/Henn1nk/Archive")
+          (mu4e-sent-messages-behavior . sent)
+    ))
+    ,(make-mu4e-context
+        :name "Personal"
+        :match-func (lambda (msg)
+                    (when msg (string-prefix-p "/Personal" (mu4e-message-field msg :maildir))))
+        :vars '(
+          (mu4e-sent-folder . "/Personal/Sent")
+          (mu4e-trash-folder . "/Personal/Trash")
+          (mu4e-refile-folder . "/Personal/Archive")
+          (mu4e-sent-messages-behavior . sent)
+        ))
+    ))
 
+  (setq mu4e-context-policy 'pick-first)
+
+  (setq mu4e-view-show-images t)
+  (setq mu4e-view-show-addresses 't)
+
+  (setq mu4e-compose-dont-reply-to-self t)
+
+  (setq mail-user-agent 'mu4e-user-agent
+    message-send-mail-function 'smtpmail-send-it
+    smtpmail-smtp-server "smtp.zoho.eu"
+    smtpmail-smtp-service 465
+    smtpmail-stream-type 'ssl)
+
+  (setq mu4e-maildir-shortcuts
+    '(("/Henn1nk/INBOX" . ?i)
+    ("/Henn1nk/Lists/*" . ?l)
+    ("/Henn1nk/Sent Mail" . ?s)
+    ("/Henn1nk/Trash" . ?t)))
+
+  (add-to-list 'mu4e-bookmarks
+    (make-mu4e-bookmark
+      :name "All Inboxes"
+      :query "maildir:/Henn1nk/INBOX OR maildir:/Personal/INBOX"
+      :key ?i))
+
+  (setq message-kill-buffer-on-exit t)
+
+  (setq hr/mu4e-inbox-query
+    "(maildir:/Henn1nk/INBOX OR maildir:/Personal/INBOX) AND flag:unread")
+
+  (defun hr/go-to-inbox ()
+    (interactive)
+      (mu4e-headers-search hr/mu4e-inbox-query))
+
+  (hr/leader-key-def
+    "m" '(:ignore t :which-key "mail")
+    "mm" 'mu4e
+    "mc" 'mu4e-compose-new
+    "mi" 'hr/go-to-inbox
+    "ms" 'mu4e-update-mail-and-index)
+
+  (mu4e t))
+#+end_src
+
+Mail alerts..
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package mu4e-alert
+  :after mu4e
+  :config
+    (setq mu4e-alert-intersting-mail-query hr/mu4e-inbox-query)
+    (setq mu4e-alert-notify-repeated-mails nil)
+    (mu4e-alert-enable-notifications))
+#+end_src
 *** Development
 **** Git
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -813,24 +921,58 @@ Choose the install method =Install using the shell based process.= on boot.
 **** LSP
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
 (use-package lsp-mode
-    :commands lsp
-    :hook ((typescript-mode js2-mode web-mode) . lsp)
-    :bind (:map lsp-mode-map
+  :commands lsp
+  :hook ((typescript-mode js2-mode web-mode) . lsp)
+  :bind (:map lsp-mode-map
     ("TAB" . completion-at-point)))
 
 (use-package lsp-ui
-    :hook (lsp-mode . lsp-ui-mode)
-    :config
+  :hook (lsp-mode . lsp-ui-mode)
+  :config
     (setq lsp-ui-sideline-enable t)
     (setq lsp-ui-sideline-show-hover t)
     (setq lsp-ui-doc-position 'bottom)
     (ls-ui-doc-show))
+
+(hr/leader-key-def
+  "l" '(:ignore t :which-key "lsp")
+  "ld" 'xref-find-definitions
+  "lr" 'xref-find-references
+  "ln" 'lsp-ui-find-next-reference
+  "lp" 'lsp-ui-find-prev-reference
+  "ls" 'counsel-imenu
+  "le" 'lsp-ui-flycheck-list
+  "lS" 'lsp-ui-sideline-mode
+  "lX" 'lsp-execute-code-action)
 #+end_src
 **** Debug
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
 (use-package dap-mode)
 #+end_src
 **** Languages
+***** Emacs Lisp
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(add-hook 'emacs-lisp-mode-hook #'flycheck-mode)
+
+(use-package helpful
+  :custom
+    (counsel-describe-function-function #'helpful-callable)
+    (counsel-describe-variable-function #'helpful-variable)
+  :bind
+    ([remap describe-function] . helpful-function)
+    ([remap describe-symbol] . helpful-symbol)
+    ([remap describe-variable] . helpful-variable)
+    ([remap describe-command] . helpful-command)
+    ([remap describe-key] . helpful-key))
+
+(hr/leader-key-def
+  "e" '(:ignore t :which-key "eval")
+  "eb" '(eval-buffer :whch-key "eval buffer"))
+
+(hr/leader-key-def
+  :keymaps '(visual)
+  "er" '(eval-region :which-key "eval region"))
+#+end_src
 ***** Typescript
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
   (use-package nvm :defer t)
@@ -964,6 +1106,15 @@ $1
 <style lang="postcss">
 $2
 </style>
+#+end_src
+***** CSS
+****** Background
+#+begin_src html :mkdirp yes :tangle ~/.emacs.d/snippets/css/background-color
+# -*- mode: snippet -*-
+# name: background-color
+# key: /bg
+# --
+background-color: #${0:DDD};
 #+end_src
 *** Org-Mode
 **** Basic settings
@@ -1138,4 +1289,14 @@ $0
 # key: /video
 # --
 [[${1:link of the video}][file:${2:link of the image}]
+#+end_src
+***** Lisp
+#+begin_src yasnippet :mkdirp yes :tangle ~/.emacs.d/snippets/org-mode/emacs-lisp
+# -*- mode: snippet -*-
+# name: emacs-lisp
+# key: /lisp
+# --
+,#+begin_src emacs-lisp :tangle yes
+$0
+,#+end_src
 #+end_src
