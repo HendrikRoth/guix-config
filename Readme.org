@@ -112,6 +112,7 @@
         - [[#uml][UML]]
         - [[#video][Video]]
         - [[#lisp][Lisp]]
+      - [[#templates][Templates]]
 :END:
 
 * Channels
@@ -1164,11 +1165,12 @@ background-color: #${0:DDD};
 *** Org-Mode
 **** Basic settings
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(use-package org
-  :defer t
-  :custom
-    (org-startup-folded 'content)
-    (org-startup-truncated nil))
+  (use-package org
+    :defer t
+    :hook (org-capture-mode-hook . evil-insert-state)
+    :custom
+      (org-startup-folded 'content)
+      (org-startup-truncated nil))
 #+end_src
 **** Vim keybindings
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -1343,4 +1345,13 @@ $0
 ,#+begin_src emacs-lisp :tangle yes
 $0
 ,#+end_src
+#+end_src
+
+**** Templates
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+    (defun get-org-target () (read-file-name "File: " org-directory))
+  (setq org-capture-templates
+      '(("S" "Specification sheet" entry (file get-org-target) "* THIS IS A TEMPLATE")
+        ("s" "Sprint" entry (file get-org-target) "* Sprint")
+        ("o" "Shopping" entry (file "~/Notes/Shopping.org") "* :BUY: %?\n%U" :empty-lines 1)))
 #+end_src
