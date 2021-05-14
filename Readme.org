@@ -1349,9 +1349,12 @@ $0
 
 **** Templates
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-    (defun get-org-target () (read-file-name "File: " org-directory))
+  (defun get-org-target () (read-file-name "File: " org-directory))
+
   (setq org-capture-templates
-      '(("S" "Specification sheet" entry (file get-org-target) "* THIS IS A TEMPLATE")
-        ("s" "Sprint" entry (file get-org-target) "* Sprint")
-        ("o" "Shopping" entry (file "~/Notes/Shopping.org") "* :BUY: %?\n%U" :empty-lines 1)))
+        '(("w" "Work")
+        ("ws" "Sprint" entry (file+headline "~/Notes/Work/Sprint.org" "Next") "* TODO %?\n %i\n %a")
+        ("wS" "Specification sheet" entry (file get-org-target) "* THIS IS A TEMPLATE")
+        ("p" "Personal")
+        ("ps" "Shopping" entry (file+headline "~/Notes/Personal/Shopping.org" "Next") "* TODO %?\n")))
 #+end_src
