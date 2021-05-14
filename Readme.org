@@ -596,21 +596,27 @@ Don't create =.#Name.file= files.
       completion-category-defaults nil
       completion-category-overrides '((file (styles . (partial-completion))))))
 
+  (use-package consult
+    :demand t)
+
   (use-package marginalia
     :after vertico
     :custom
       (marginalia-annotators '(marginalia-annnotators-heavy marginalia-annotators-light nil))
     :init
       (marginalia-mode))
+
+  (hr/leader-key-def
+    "s" '(:ignore t :which-key "search")
+    "sl" '(consult-line :which-key "search line")
+    "si" '(consult-imenu :which-key "search item/topic")
+    "sp" '(consult-git-grep :which-key "search in project")
+  )
 #+end_src
 **** Workspaces
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
     (use-package perspective
       :demand t
-      :bind (("C-M-j" . persp-counsel-switch-buffer)
-      ("C-M-k" . persp-switch)
-      ("C-M-n" . persp-next)
-      ("C-x k" . persp-kill-buffer*))
       :custom
       (persp-initial-frame-name "Main")
       :config
@@ -620,8 +626,8 @@ Don't create =.#Name.file= files.
 
   (hr/leader-key-def
     "b"  '(:ignore t :which-key "buffers")
-    "bs" '(persp-counsel-switch-buffer :which-key "switch")
-    "bk" '(persp-kill-buffer :which-key "kill")
+    "bs" '(consult-buffer :which-key "switch buffer")
+    "bk" '(persp-kill-buffer :which-key "kill buffer")
     "W"  '(:ignore t :which-key "workspace")
     "Ws" '(persp-switch :which-key "switch")
     "Wn" '(persp-next :which-key "next"))
@@ -943,6 +949,7 @@ Mail alerts..
 
 (hr/leader-key-def
   "p" '(:ignore t :which-key "projectile")
+  "pi" 'consult-imenu
   "pf" 'counsel-projectile-find-file
   "ps" 'counsel-projectile-switch-project
   "pF" 'counsel-projectile-rg
