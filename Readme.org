@@ -518,8 +518,8 @@ Don't create =.#Name.file= files.
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
 
-(use-package smartparens
-  :hook (prog-mode . smartparens-mode))
+;;(use-package smartparens
+;;  :hook (prog-mode . smartparens-mode))
 
 (use-package rainbow-mode
   :defer t
@@ -1168,6 +1168,8 @@ background-color: #${0:DDD};
   (use-package org
     :defer t
     :hook (org-capture-mode-hook . evil-insert-state)
+    :config
+      (setq org-ellipsis " ▾")
     :custom
       (org-startup-folded 'content)
       (org-startup-truncated nil))
@@ -1234,7 +1236,9 @@ background-color: #${0:DDD};
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
   (use-package org-bullets
     :after org
-    :hook (org-mode . org-bullets-mode))
+    :hook (org-mode . org-bullets-mode)
+    :custom
+      (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 #+end_src
 **** Roam
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -1353,8 +1357,8 @@ $0
 
   (setq org-capture-templates
         '(("w" "Work")
-        ("ws" "Sprint" entry (file+headline "~/Notes/Work/Sprint.org" "Next") "* TODO %?\n %i\n %a")
+        ("ws" "Sprint" checkitem (file+headline "~/Notes/Work/Sprint.org" "Next") "* TODO %?\n %i\n %a")
         ("wS" "Specification sheet" entry (file get-org-target) "* THIS IS A TEMPLATE")
         ("p" "Personal")
-        ("ps" "Shopping" entry (file+headline "~/Notes/Personal/Shopping.org" "Next") "* TODO %?\n")))
+        ("ps" "Shopping" checkitem (file+headline "~/Notes/Personal/Shopping.org" "Next") "- [ ] %?\n")))
 #+end_src
