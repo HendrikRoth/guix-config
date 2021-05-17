@@ -1320,7 +1320,7 @@ background-color: #${0:DDD};
 # key: /src
 # --
 ,#+begin_src ${1:emacs-lisp} :tangle $2
-$0
+$3
 ,#+end_src
 #+end_src
 ***** Image
@@ -1348,9 +1348,11 @@ $0
 # name: uml
 # key: /uml
 # --
-\#+begin_src plantuml
-$0
-\#+end_src
+,#+begin_src plantuml :file $1.png
+@startuml
+$2
+@enduml
+,#+end_src
 #+end_src
 
 ***** Video
@@ -1368,7 +1370,7 @@ $0
 # key: /lisp
 # --
 ,#+begin_src emacs-lisp :tangle yes
-$0
+$1
 ,#+end_src
 #+end_src
 
