@@ -565,6 +565,7 @@ Don't create =.#Name.file= files.
 **** Completion
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
   (use-package vertico
+    :ensure t
     :straight '(vertico :host github :repo "minad/vertico" :branch "main")
     :bind (:map vertico-map
       ("C-j" . vertico-next)
@@ -577,6 +578,10 @@ Don't create =.#Name.file= files.
       (vertico-cycle t)
     :init
       (vertico-mode))
+
+  (use-package savehist
+    :init
+    (savehist-mode))
 
   ;; Completions in regions
   (use-package corfu
@@ -601,6 +606,7 @@ Don't create =.#Name.file= files.
     :demand t)
 
   (use-package marginalia
+    :ensure t
     :after vertico
     :custom
       (marginalia-annotators '(marginalia-annnotators-heavy marginalia-annotators-light nil))
@@ -740,11 +746,19 @@ Don't create =.#Name.file= files.
 #+end_src
 **** UML
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(use-package plantuml-mode
-    :ensure nil
-    :mode "\\.plantuml\\'"
+  (use-package plantuml-mode
+    :ensure t
+    :mode ("\\.plantuml\\'" "\\.puml")
     :config
+      (setq plantuml-default-exec-mode 'executable)
+      ;;(setq plantuml-executable-path (shell-command-to-string "echo -n which plantuml"))
+      (setq plantuml-executable-path "/usr/bin/plantuml")
+      (setq plantuml-output-type "svg")
       (add-to-list 'org-src-lang-modes '("plantuml" . plantuml)))
+
+  (use-package flycheck-plantuml
+    :after plantuml-mode
+    :config (flycheck-plantuml-setup))
 #+end_src
 *** Applications
 **** Calendar
@@ -1170,9 +1184,15 @@ background-color: #${0:DDD};
     :hook (org-capture-mode-hook . evil-insert-state)
     :config
       (setq org-ellipsis " ▾")
+      (setq org-startup-with-inline-images t)
+      (setq org-plantuml-jar-path (expand-file-name "~/plantuml.jar"))
     :custom
       (org-startup-folded 'content)
       (org-startup-truncated nil))
+
+  (with-eval-after-load 'org (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t))))
+
+  (eval-after-load 'org (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images))
 #+end_src
 **** Vim keybindings
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -1204,6 +1224,7 @@ background-color: #${0:DDD};
   "oa"  '(org-agenda :which-key "status")
   "ot"  '(org-todo-list :which-key "todos")
   "oc"  '(org-capture t :which-key "capture")
+  "oe"  '(org-babel-execute-src-block :which-key "execute src block")
   "ox"  '(org-export-dispatch t :which-key "export"))
 #+end_src
 **** Tangle on save
