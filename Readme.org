@@ -1179,9 +1179,17 @@ background-color: #${0:DDD};
 *** Org-Mode
 **** Basic settings
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+  (defun hr/org-mode-setup ()
+    (org-indent-mode)
+    (auto-fill-mode 0)
+    (visual-line-mode 1)
+    (setq evil-auto-indent nil)
+    (dminish org-indent-mode))
+
   (use-package org
     :defer t
-    :hook (org-capture-mode-hook . evil-insert-state)
+    :hook ((org-capture-mode-hook . evil-insert-state)
+            (org-mode . hr/org-mode-setup))
     :config
       (setq org-ellipsis " ▾")
       (setq org-startup-with-inline-images t)
@@ -1358,6 +1366,7 @@ $3
 skinparam backgroundcolor transparent
 skinparam monochrome true
 skinparam shadowing false
+skinparam actorStyle awesome
 $2
 @enduml
 ,#+end_src
