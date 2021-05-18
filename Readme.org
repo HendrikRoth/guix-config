@@ -1191,7 +1191,7 @@ background-color: #${0:DDD};
     :hook ((org-capture-mode-hook . evil-insert-state)
             (org-mode . hr/org-mode-setup))
     :config
-      (setq org-ellipsis " ▾")
+     ;; (setq org-ellipsis "▾")
       (setq org-startup-with-inline-images t)
       (setq org-plantuml-jar-path (expand-file-name "~/plantuml.jar"))
     :custom
@@ -1268,11 +1268,21 @@ background-color: #${0:DDD};
 #+end_src
 **** Styling
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-  (use-package org-bullets
-    :after org
-    :hook (org-mode . org-bullets-mode)
-    :custom
-      (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+(use-package org-bullets
+  :after org
+  :hook (org-mode . org-bullets-mode)
+  :custom
+    (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+(dolist (face '((org-level-1 . 1.2)
+  (org-level-2 . 1.1)
+  (org-level-3 . 1.05)
+  (org-level-4 . 1.0)
+  (org-level-5 . 1.1)
+  (org-level-6 . 1.1)
+  (org-level-7 . 1.1)
+  (org-level-8 . 1.1)))
+  (set-face-attribute (car face) nil :weight 'medium :height (cdr face)))
 #+end_src
 **** Roam
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
