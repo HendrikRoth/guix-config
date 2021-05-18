@@ -1211,6 +1211,11 @@ background-color: #${0:DDD};
   (interactive)
   (counsel-rg "" "~/Notes" nil "Search notes:"))
 
+(defun hr/org-babel-execute-src-block ()
+  (interactive)
+  (let ((org-confirm-babel-evaluate nil))
+  (org-babel-execute-src-block)))
+
 (hr/leader-key-def
   "o"   '(:ignore t :which-key "org mode")
 
@@ -1224,7 +1229,7 @@ background-color: #${0:DDD};
   "oa"  '(org-agenda :which-key "status")
   "ot"  '(org-todo-list :which-key "todos")
   "oc"  '(org-capture t :which-key "capture")
-  "oe"  '(org-babel-execute-src-block :which-key "execute src block")
+  "oe"  '(hr/org-babel-execute-src-block :which-key "execute block")
   "ox"  '(org-export-dispatch t :which-key "export"))
 #+end_src
 **** Tangle on save
@@ -1350,6 +1355,9 @@ $3
 # --
 ,#+begin_src plantuml :file $1.png
 @startuml
+skinparam backgroundcolor transparent
+skinparam monochrome true
+skinparam shadowing false
 $2
 @enduml
 ,#+end_src
