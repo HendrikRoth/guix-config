@@ -1,4 +1,4 @@
-#+TITLE: My personal guix system configuration [in progress]
+#+TITLE:My personal guix system configuration [in progress]
 #+PROPERTY: header-args :tangle-mode
 #+PROPERTY: header-args:sh :tangle-mode
 
@@ -560,7 +560,7 @@ Don't create =.#Name.file= files.
 (set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 110)
 
 ;; Set the variable pitch face
-(set-face-attribute 'variable-pitch nil :font "Fira Code" :height 110 :weight 'regular)
+(set-face-attribute 'variable-pitch nil :font "ETBookOT" :height 140 :weight 'bold)
 #+end_src
 **** Completion
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -1179,27 +1179,47 @@ background-color: #${0:DDD};
 *** Org-Mode
 **** Basic settings
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-  (defun hr/org-mode-setup ()
-    (org-indent-mode)
-    (auto-fill-mode 0)
-    (visual-line-mode 1)
-    (setq evil-auto-indent nil))
+    (defun hr/org-mode-setup ()
+      (org-indent-mode)
+      (auto-fill-mode 0)
+      (visual-line-mode 1)
+      (setq evil-auto-indent nil))
 
-  (use-package org
-    :defer t
-    :hook ((org-capture-mode-hook . evil-insert-state)
-            (org-mode . hr/org-mode-setup))
-    :config
-     ;; (setq org-ellipsis "▾")
-      (setq org-startup-with-inline-images t)
-      (setq org-plantuml-jar-path (expand-file-name "~/plantuml.jar"))
-    :custom
-      (org-startup-folded 'content)
-      (org-startup-truncated nil))
+    (use-package org
+      :defer t
+      :hook ((org-capture-mode-hook . evil-insert-state)
+              (org-mode . hr/org-mode-setup))
+      :config
+        (setq org-hidden-keywords '(title))
+        (setq org-agenda-start-with-log-mode t)
+        (setq org-log-done 'time)
+        (setq org-log-into-drawer t)
+        (setq org-hide-emphasis-markers t)
+        (setq org-startup-with-inline-images t)
+        (setq org-plantuml-jar-path (expand-file-name "~/plantuml.jar"))
 
-  (with-eval-after-load 'org (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t))))
+        (setq org-agenda-files
+            '("~/Notes/Tasks.org"))
 
-  (eval-after-load 'org (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images))
+        (setq org-tag-alist
+            '((:startgroup)
+              (:endgroup)
+              ("@home" . ?H)
+              ("@work" . ?W)
+              ("agenda" . ?a)
+              ("planning" . ?p)
+              ("idea" . ?i)))
+
+        (setq org-todo-keywords
+            '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
+              (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(@w/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
+      :custom
+        (org-startup-folded 'content)
+        (org-startup-truncated nil))
+
+    (with-eval-after-load 'org (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t))))
+
+    (eval-after-load 'org (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images))
 #+end_src
 **** Vim keybindings
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -1273,15 +1293,29 @@ background-color: #${0:DDD};
   :custom
     (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 
-(dolist (face '((org-level-1 . 1.2)
-  (org-level-2 . 1.1)
-  (org-level-3 . 1.05)
-  (org-level-4 . 1.0)
+(set-face-attribute 'org-document-title nil :font "ETBookOT" :weight 'bold :height 2.2)
+(dolist (face '((org-level-1 . 1.5)
+  (org-level-2 . 1.4)
+  (org-level-3 . 1.25)
+  (org-level-4 . 1.20)
   (org-level-5 . 1.1)
   (org-level-6 . 1.1)
   (org-level-7 . 1.1)
   (org-level-8 . 1.1)))
-  (set-face-attribute (car face) nil :weight 'medium :height (cdr face)))
+  (set-face-attribute (car face) nil :font "ETBookOT" :slant 'italic :height (cdr face)))
+
+(require 'org-indent)
+
+;; Ensure that anything that should be fixed-pitch in Org files appears that way
+(set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-table nil  :inherit 'fixed-pitch)
+(set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
+(set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+(set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+(set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+(set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
 #+end_src
 **** Roam
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
