@@ -100,6 +100,7 @@
       - [[#update-tocs-on-save][Update TOCs on save]]
       - [[#reminder][Reminder]]
       - [[#styling][Styling]]
+      - [[#graphs][Graphs]]
       - [[#roam][Roam]]
       - [[#calendar-sync][Calendar sync]]
       - [[#snippets][Snippets]]
@@ -1179,47 +1180,50 @@ background-color: #${0:DDD};
 *** Org-Mode
 **** Basic settings
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-    (defun hr/org-mode-setup ()
-      (org-indent-mode)
-      (auto-fill-mode 0)
-      (visual-line-mode 1)
-      (setq evil-auto-indent nil))
+        (defun hr/org-mode-setup ()
+          (org-indent-mode)
+          (auto-fill-mode 0)
+          (visual-line-mode 1)
+          (setq evil-auto-indent nil))
 
-    (use-package org
-      :defer t
-      :hook ((org-capture-mode-hook . evil-insert-state)
-              (org-mode . hr/org-mode-setup))
-      :config
-        (setq org-hidden-keywords '(title))
-        (setq org-agenda-start-with-log-mode t)
-        (setq org-log-done 'time)
-        (setq org-log-into-drawer t)
-        (setq org-hide-emphasis-markers t)
-        (setq org-startup-with-inline-images t)
-        (setq org-plantuml-jar-path (expand-file-name "~/plantuml.jar"))
+        (use-package org
+          :defer t
+          :hook ((org-capture-mode-hook . evil-insert-state)
+                  (org-mode . hr/org-mode-setup))
+          :config
+            (setq org-hidden-keywords '(title))
+            (setq org-agenda-start-with-log-mode t)
+            (setq org-log-done 'time)
+            (setq org-log-into-drawer t)
+            (setq org-hide-emphasis-markers t)
+            (setq org-startup-with-inline-images t)
+            (setq org-plantuml-jar-path (expand-file-name "~/plantuml.jar"))
 
-        (setq org-agenda-files
-            '("~/Notes/Tasks.org"))
+            (setq org-agenda-files
+                '("~/Notes/Tasks.org"))
 
-        (setq org-tag-alist
-            '((:startgroup)
-              (:endgroup)
-              ("@home" . ?H)
-              ("@work" . ?W)
-              ("agenda" . ?a)
-              ("planning" . ?p)
-              ("idea" . ?i)))
+            (setq org-tag-alist
+                '((:startgroup)
+                  (:endgroup)
+                  ("@home" . ?H)
+                  ("@work" . ?W)
+                  ("agenda" . ?a)
+                  ("planning" . ?p)
+                  ("idea" . ?i)))
 
-        (setq org-todo-keywords
-            '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
-              (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(@w/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
-      :custom
-        (org-startup-folded 'content)
-        (org-startup-truncated nil))
+            (setq org-todo-keywords
+                '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
+                  (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(@w/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
+          :custom
+            (org-startup-folded 'content)
+            (org-startup-truncated nil))
 
-    (with-eval-after-load 'org (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t))))
+        (with-eval-after-load 'org (org-babel-do-load-languages 'org-babel-load-languages '(
+                                    (gnuplot . t)
+                                    (plantuml . t)
+                                    )))
 
-    (eval-after-load 'org (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images))
+        (eval-after-load 'org (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images))
 #+end_src
 **** Vim keybindings
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -1317,6 +1321,12 @@ background-color: #${0:DDD};
 (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
 (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
 #+end_src
+**** Graphs
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+  (use-package gnuplot
+  :ensure t)
+#+end_src
+
 **** Roam
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
 (use-package org-roam
