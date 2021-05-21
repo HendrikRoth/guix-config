@@ -64,6 +64,7 @@
       - [[#commenting][Commenting]]
       - [[#dictionary][Dictionary]]
       - [[#uml][UML]]
+      - [[#vterm][Vterm]]
     - [[#applications][Applications]]
       - [[#calendar][Calendar]]
       - [[#docker][Docker]]
@@ -121,18 +122,18 @@
 *.config/guix/channels.scm*
 #+BEGIN_SRC scheme :tangle ~/.config/guix/channels.scm
   (list (channel
-	 (name 'nonguix)
-	 (commit "ee35a1f1cd50ba0d4bfee37f2b084bc0797885c")
-	 (url "https://gitlab.com/nonguix/nonguix"))
-	(channel
-	 (name 'guix)
-	 (commit "190187326ad7516dd6728eed7bb6ef2d4f92897a")
-	 (url "https://git.savannah.gnu.org/git/guix.git")
-	 (introduction
-	  (make-channel-introduction
-	   "9edb3f66fd807b096b48283debdcddccfea34bad"
-	   (openpgp-fingerprint
-	    "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA")))))
+         (name 'nonguix)
+         (commit "ee35a1f1cd50ba0d4bfee37f2b084bc0797885c")
+         (url "https://gitlab.com/nonguix/nonguix"))
+        (channel
+         (name 'guix)
+         (commit "190187326ad7516dd6728eed7bb6ef2d4f92897a")
+         (url "https://git.savannah.gnu.org/git/guix.git")
+         (introduction
+          (make-channel-introduction
+           "9edb3f66fd807b096b48283debdcddccfea34bad"
+           (openpgp-fingerprint
+            "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA")))))
 #+END_SRC
 
 * Systems
@@ -182,48 +183,48 @@ Define the =base-operating-system= which will be inherited by all machine config
 
      ;; Dummy filesystem, will be overridden
      (file-systems (cons*
-		    (file-system
-		     (mount-point "/tmp")
-		     (device "none")
-		     (type "tmpfs")
-		     (check? #f))
-		    %base-file-systems))
+                    (file-system
+                     (mount-point "/tmp")
+                     (device "none")
+                     (type "tmpfs")
+                     (check? #f))
+                    %base-file-systems))
 
      ;; User account
      (users (cons (user-account
-		   (name "hendrik")
-		   (comment "Hendrik Roth")
-		   (group "users")
-		   (home-directory "/home/hendrik")
-		   (supplementary-groups '(
-					   "wheel" ;; sudo
-					   "netdev" ;; network devices
-					   "tty"
-					   "input"
-					   "docker"
-					   "lp" ;; control bluetooth devices
-					   "audio" ;; control audio devices
-					   "video" ;; control video devices
-      )))
-		  %base-user-accounts))
+                   (name "hendrik")
+                   (comment "Hendrik Roth")
+                   (group "users")
+                   (home-directory "/home/hendrik")
+                   (supplementary-groups '(
+                                           "wheel" ;; sudo
+                                           "netdev" ;; network devices
+                                           "tty"
+                                           "input"
+                                           "docker"
+                                           "lp" ;; control bluetooth devices
+                                           "audio" ;; control audio devices
+                                           "video" ;; control video devices
+                                           )))
+                  %base-user-accounts))
 
-      ;; Bare minimum system packages
-      (packages (append (list
-        git
-        ntfs-3g
-        exfat-utils
-        fuse-exfat
-        vim
-        emacs
-        xterm
-        bluez
-        bluez-alsa
-        pulseaudio
-        tlp
-        xf86-video-libinput
-        nss-certs ;; for https access
-        gvfs) ;; for user mounts
-        %base-packages))
+     ;; Bare minimum system packages
+     (packages (append (list
+                        git
+                        ntfs-3g
+                        exfat-utils
+                        fuse-exfat
+                        vim
+                        emacs
+                        xterm
+                        bluez
+                        bluez-alsa
+                        pulseaudio
+                        tlp
+                        xf86-video-libinput
+                        nss-certs ;; for https access
+                        gvfs) ;; for user mounts
+                       %base-packages))
 #+END_SRC
 
 ** Machines
@@ -241,17 +242,17 @@ My work machine at the office.
 
    (mapped-devices
     (list (mapped-device
-	   (source (uuid ""))
-	   (target "system-root")
-	   (type luks-device-mapping))))
+           (source (uuid ""))
+           (target "system-root")
+           (type luks-device-mapping))))
 
    (file-systems (cons*
-		  (file-system
-		   (device (file-system-label "root"))
-		   (mount-pount "/")
-		   (type "ext4")
-		   (dependencies mapped-devices))
-		  %base-file-systems)))
+                  (file-system
+                   (device (file-system-label "root"))
+                   (mount-pount "/")
+                   (type "ext4")
+                   (dependencies mapped-devices))
+                  %base-file-systems)))
 #+END_SRC
 
 *** desktop
@@ -262,35 +263,35 @@ My travel notebook.
 
 ** USB Installation image
 #+begin_src scheme :mkdirp yes :tangle ~/.config/guix/systems/install.scm
-(define-module (nongnu system install)
-  #:use-module (gnu system)
-  #:use-module (gnu system install)
-  #:use-module (gnu packages version-control)
-  #:use-module (gnu packages vim)
-  #:use-module (gnu curl)
-  #:use-module (gnu packages emacs)
-  #:use-module (gnu packages linux)
-  #:use-module (gnu packages mtools)
-  #:use-module (gnu packages package-management)
-  #:use-module (nongnu packages linux)
-  #:export (installation-os-nonfree))
+  (define-module (nongnu system install)
+    #:use-module (gnu system)
+    #:use-module (gnu system install)
+    #:use-module (gnu packages version-control)
+    #:use-module (gnu packages vim)
+    #:use-module (gnu curl)
+    #:use-module (gnu packages emacs)
+    #:use-module (gnu packages linux)
+    #:use-module (gnu packages mtools)
+    #:use-module (gnu packages package-management)
+    #:use-module (nongnu packages linux)
+    #:export (installation-os-nonfree))
 
-(define installation-os-nonfree
-  (operating-system
-    (inherit installation-os)
-    (kernel linux)
-    (firmware (list linux-firmware))
-  (kernel-arguments '("net.iframes=0"))
-  (packages (append (list
-    exfat-utils fuse-exfat git curl vim emacs-no-x-toolkit)
-    (operation-system-packages installation-os)))))
+  (define installation-os-nonfree
+    (operating-system
+     (inherit installation-os)
+     (kernel linux)
+     (firmware (list linux-firmware))
+     (kernel-arguments '("net.iframes=0"))
+     (packages (append (list
+                        exfat-utils fuse-exfat git curl vim emacs-no-x-toolkit)
+                       (operation-system-packages installation-os)))))
 
-installation-os-nonfree
+  installation-os-nonfree
 #+end_src
 
 To build the image, run the command:
 #+begin_src sh
-guix system image ./install.scm --image-size=5G
+  guix system image ./install.scm --image-size=5G
 #+end_src
 
 Choose the install method =Install using the shell based process.= on boot.
@@ -299,144 +300,144 @@ Choose the install method =Install using the shell based process.= on boot.
 ** Emacs
 *** Package management
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 5))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
+  (defvar bootstrap-version)
+  (let ((bootstrap-file
+         (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+        (bootstrap-version 5))
+    (unless (file-exists-p bootstrap-file)
+      (with-current-buffer
+          (url-retrieve-synchronously
+           "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+           'silent 'inhibit-cookies)
+        (goto-char (point-max))
+        (eval-print-last-sexp)))
+    (load bootstrap-file nil 'nomessage))
 
-(straight-use-package 'use-package)
-(setq straight-use-package-by-default t)
+  (straight-use-package 'use-package)
+  (setq straight-use-package-by-default t)
 #+end_src
 *** Basic settings
 **** Personal information
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(setq user-full-name "Hendrik Roth")
-(setq user-mail-address "hi@hendrikroth.com")
+  (setq user-full-name "Hendrik Roth")
+  (setq user-mail-address "hi@hendrikroth.com")
 #+end_src
 **** ESC cancels all
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+  (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 #+end_src
 **** UTF-8
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(set-default-coding-systems 'utf-8)
+  (set-default-coding-systems 'utf-8)
 #+end_src
 **** Tabs
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(setq-default tab-width 2)
-(setq-default evil-shift-width tab-width)
-(setq-default indent-tabs-mode nil)
+  (setq-default tab-width 2)
+  (setq-default evil-shift-width tab-width)
+  (setq-default indent-tabs-mode nil)
 #+end_src
 **** Yes or no
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(defalias 'yes-or-no-p 'y-or-n-p)
+  (defalias 'yes-or-no-p 'y-or-n-p)
 #+end_src
 **** Fill column to 80 characters
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(setq-default fill-column 80)
+  (setq-default fill-column 80)
 #+end_src
 **** Keep .emacs.d clean
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(setq user-emacs-directory (expand-file-name "~/.cache/emacs"))
-(use-package no-littering)
+  (setq user-emacs-directory (expand-file-name "~/.cache/emacs"))
+  (use-package no-littering)
 #+end_src
 **** Backup Files
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(make-directory (expand-file-name "tmp/backups/" user-emacs-directory) t)
-(setq backup-directory-alist `(("." . ,(expand-file-name "tmp/backups/" user-emacs-directory))))
+  (make-directory (expand-file-name "tmp/backups/" user-emacs-directory) t)
+  (setq backup-directory-alist `(("." . ,(expand-file-name "tmp/backups/" user-emacs-directory))))
 #+end_src
 **** Auto Save Files
 Don't create =#Name.file#= files
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(make-directory (expand-file-name "tmp/auto-saves/" user-emacs-directory) t)
-(setq auto-save-list-file-prefix (expand-file-name "tmp/auto-saves/sessions/" user-emacs-directory)
-      auto-save-file-name-transforms `((".*" ,(expand-file-name "tmp/auto-saves/" user-emacs-directory) t)))
+  (make-directory (expand-file-name "tmp/auto-saves/" user-emacs-directory) t)
+  (setq auto-save-list-file-prefix (expand-file-name "tmp/auto-saves/sessions/" user-emacs-directory)
+        auto-save-file-name-transforms `((".*" ,(expand-file-name "tmp/auto-saves/" user-emacs-directory) t)))
 #+end_src
 **** Lock Files
 Don't create =.#Name.file= files.
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(setq create-lockfiles nil)
+  (setq create-lockfiles nil)
 #+end_src
 **** Projectile Files
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(setq projectile-known-projects-file (expand-file-name "tmp/projectile-bookmarks.eld" user-emacs-directory)
-      lsp-session-file (expand-file-name "tmp/.lsp-session-v1" user-emacs-directory))
+  (setq projectile-known-projects-file (expand-file-name "tmp/projectile-bookmarks.eld" user-emacs-directory)
+        lsp-session-file (expand-file-name "tmp/.lsp-session-v1" user-emacs-directory))
 #+end_src
 **** Tramp
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(setq tramp-default-method "ssh")
+  (setq tramp-default-method "ssh")
 #+end_src
 **** Moving deleted files to trash
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(setq-default delete-by-moving-to-trash t)
+  (setq-default delete-by-moving-to-trash t)
 #+end_src
 **** Increase undo limit (10mb)
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(setq undo-limit 10000000)
+  (setq undo-limit 10000000)
 #+end_src
 **** Handle CamelCase as seperate words
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(global-subword-mode 1)
+  (global-subword-mode 1)
 #+end_src
 **** Clipboard
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(setq-default select-enable-clipboard t)
+  (setq-default select-enable-clipboard t)
 #+end_src
 *** Keybindings
 **** Vim keybindings
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(use-package undo-tree
-  :init
-  (global-undo-tree-mode 1))
+  (use-package undo-tree
+    :init
+    (global-undo-tree-mode 1))
 
-(use-package evil
-  :after undo-tree
-  :init
-  (setq evil-want-integration t)
-  (setq evil-want-keybinding nil)
-  (setq evil-want-C-u-scroll nil)
-  (setq evil-want-C-i-jump nil)
-  (setq evil-respect-visual-line-mode t)
-  (setq evil-undo-system 'undo-tree)
-  :config
-  (evil-mode 1)
-  (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
-  (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+  (use-package evil
+    :after undo-tree
+    :init
+    (setq evil-want-integration t)
+    (setq evil-want-keybinding nil)
+    (setq evil-want-C-u-scroll nil)
+    (setq evil-want-C-i-jump nil)
+    (setq evil-respect-visual-line-mode t)
+    (setq evil-undo-system 'undo-tree)
+    :config
+    (evil-mode 1)
+    (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+    (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
 
-  ;; Use visual line motions even outside of visual-line-mode-buffers
-  (evil-global-set-key 'motion "j" 'evil-next-visual-line)
-  (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+    ;; Use visual line motions even outside of visual-line-mode-buffers
+    (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+    (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
-  (evil-set-initial-state 'messages-buffer-mode 'normal)
-  (evil-set-initial-state 'dashboard-mode 'normal))
+    (evil-set-initial-state 'messages-buffer-mode 'normal)
+    (evil-set-initial-state 'dashboard-mode 'normal))
 
-(use-package evil-collection
-  :after evil
-  :init
-  :config
-  (evil-collection-init))
+  (use-package evil-collection
+    :after evil
+    :init
+    :config
+    (evil-collection-init))
 #+end_src
 **** Leader bindings
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(use-package general
-  :config
-  (general-evil-setup t)
+  (use-package general
+    :config
+    (general-evil-setup t)
 
-(general-create-definer hr/leader-key-def
-  :keymaps '(normal insert visual emacs)
-  :prefix "SPC"
-  :global-prefix "C-SPC")
+    (general-create-definer hr/leader-key-def
+      :keymaps '(normal insert visual emacs)
+      :prefix "SPC"
+      :global-prefix "C-SPC")
 
-(general-create-definer hr/ctrl-c-keys
-  :prefix "C-c"))
+    (general-create-definer hr/ctrl-c-keys
+      :prefix "C-c"))
 #+end_src
 *** Interface
 **** Remove distractions
@@ -454,32 +455,32 @@ Don't create =.#Name.file= files.
 #+end_src
 **** Line numbers
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(column-number-mode)
+  (column-number-mode)
 
-;; Relative line numbers
-(setq display-line-numbers-type 'relative)
+  ;; Relative line numbers
+  (setq display-line-numbers-type 'relative)
 
-;; Enable line numbers for some modes
-(dolist (mode '(text-mode-hook
-                prog-mode-hook
-    conf-mode-hook))
-  (add-hook mode (lambda () (display-line-numbers-mode 1))))
+  ;; Enable line numbers for some modes
+  (dolist (mode '(text-mode-hook
+                  prog-mode-hook
+                  conf-mode-hook))
+    (add-hook mode (lambda () (display-line-numbers-mode 1))))
 
-;; Override some modes
-(dolist (mode '(org-mode-hook))
-        (add-hook mode (lambda () (display-line-numbers-mode 0))))
+  ;; Override some modes
+  (dolist (mode '(org-mode-hook))
+    (add-hook mode (lambda () (display-line-numbers-mode 0))))
 #+end_src
 **** Which-key
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(use-package which-key
-             :init (which-key-mode)
-	     :diminish which-key-mode
-	     :config
-	     (setq which-key-idle-delay 0.5))
+  (use-package which-key
+    :init (which-key-mode)
+    :diminish which-key-mode
+    :config
+    (setq which-key-idle-delay 0.5))
 #+end_src
 **** Dashboard
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(use-package dashboard
+  (use-package dashboard
     :ensure t
     :config
     (dashboard-setup-startup-hook)
@@ -490,16 +491,16 @@ Don't create =.#Name.file= files.
     (setq dashboard-set-heading-icons t)
     (setq dashboard-set-footer nil)
     (setq dashboard-items '((recents . 5)
-    (bookmarks . 5)
-    (projects . 5)
-    (agenda . 5)
-    (registers . 5)))
+                            (bookmarks . 5)
+                            (projects . 5)
+                            (agenda . 5)
+                            (registers . 5)))
     (setq dashboard-week-agenda t))
 #+end_src
 **** Modeline
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(use-package all-the-icons)
-(use-package doom-modeline
+  (use-package all-the-icons)
+  (use-package doom-modeline
     :ensure t
     :init (doom-modeline-mode 1)
     :custom
@@ -509,60 +510,60 @@ Don't create =.#Name.file= files.
 #+end_src
 **** Braces/Parenthesis/Delimiters
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-;; Highlight matching braces
-(use-package paren
-  :config
+  ;; Highlight matching braces
+  (use-package paren
+    :config
     (setq show-paren-delay 0)
     (set-face-attribute 'show-paren-match nil :weight 'extra-bold)
     (show-paren-mode 1))
 
-;; Colorful delimiters
-(use-package rainbow-delimiters
-  :hook (prog-mode . rainbow-delimiters-mode))
+  ;; Colorful delimiters
+  (use-package rainbow-delimiters
+    :hook (prog-mode . rainbow-delimiters-mode))
 
-;;(use-package smartparens
-;;  :hook (prog-mode . smartparens-mode))
+  ;;(use-package smartparens
+  ;;  :hook (prog-mode . smartparens-mode))
 
-(use-package rainbow-mode
-  :defer t
-  :hook (org-mode
-    emacs-lisp-mode
-    web-mode
-    typescript-mode
-    js2-mode))
+  (use-package rainbow-mode
+    :defer t
+    :hook (org-mode
+           emacs-lisp-mode
+           web-mode
+           typescript-mode
+           js2-mode))
 #+end_src
 **** Theme
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(use-package twilight-bright-theme :ensure :defer)
-(straight-use-package '(twilight-anti-bright-theme
-  :ensure :defer :type git :host github
-  :repo "jimeh/twilight-anti-bright-theme"))
+  (use-package twilight-bright-theme :ensure :defer)
+  (straight-use-package '(twilight-anti-bright-theme
+                          :ensure :defer :type git :host github
+                          :repo "jimeh/twilight-anti-bright-theme"))
 
-(use-package circadian
-  :ensure t
-  :config
+  (use-package circadian
+    :ensure t
+    :config
     (setq calendar-latitude 51.5)
     (setq calendar-longitude 7.5)
     (setq circadian-themes '((:sunrise . twilight-bright)
-    (:sunset . twilight-anti-bright)))
+                             (:sunset . twilight-anti-bright)))
     (circadian-setup)
-  :custom
+    :custom
     (add-hook 'circadian-after-load-theme-hook
-      #'(lambda (twilight-anti-bright)
-      (set-face-foreground 'linum "#F52503")))
+              #'(lambda (twilight-anti-bright)
+                  (set-face-foreground 'linum "#F52503")))
     (add-hook 'circadian-after-load-theme-hook
-      #'(lambda (twilight-bright)
-      (set-face-foreground 'linum "#F52503"))))
+              #'(lambda (twilight-bright)
+                  (set-face-foreground 'linum "#F52503"))))
 #+end_src
 **** Fonts
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(set-face-attribute 'default nil :font "Fira Code" :height 110)
+  (set-face-attribute 'default nil :font "Fira Code" :height 110)
 
-;; Set the fixed pitch face
-(set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 110)
+  ;; Set the fixed pitch face
+  (set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 110)
 
-;; Set the variable pitch face
-(set-face-attribute 'variable-pitch nil :font "ETBookOT" :height 140 :weight 'bold)
+  ;; Set the variable pitch face
+  (set-face-attribute 'variable-pitch nil :font "ETBookOT" :height 140 :weight 'bold)
 #+end_src
 **** Completion
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -570,16 +571,16 @@ Don't create =.#Name.file= files.
     :ensure t
     :straight '(vertico :host github :repo "minad/vertico" :branch "main")
     :bind (:map vertico-map
-      ("C-j" . vertico-next)
-      ("C-j" . vertico-previous)
-      ("C-f" . vertico-exit-input)
-      ("C-l" . vertico-exit-input)
-    :map minibuffer-local-map
-      ("M-h" . backward-kill-word))
+                ("C-j" . vertico-next)
+                ("C-j" . vertico-previous)
+                ("C-f" . vertico-exit-input)
+                ("C-l" . vertico-exit-input)
+                :map minibuffer-local-map
+                ("M-h" . backward-kill-word))
     :custom
-      (vertico-cycle t)
+    (vertico-cycle t)
     :init
-      (vertico-mode))
+    (vertico-mode))
 
   (use-package savehist
     :init
@@ -589,20 +590,20 @@ Don't create =.#Name.file= files.
   (use-package corfu
     :straight '(corfu :host github :repo "minad/corfu")
     :bind(:map corfu-map
-      ("C-j" . corfu-next)
-      ("C-k" . corfu-previous)
-      ("C-f" . corfu-insert))
+               ("C-j" . corfu-next)
+               ("C-k" . corfu-previous)
+               ("C-f" . corfu-insert))
     :custom
-      (corfu-cycle t)
+    (corfu-cycle t)
     :config
-      (corfu-global-mode))
+    (corfu-global-mode))
 
   ;; Improved candidate filtering
   (use-package orderless
     :init
-      (setq completion-styles '(orderless)
-      completion-category-defaults nil
-      completion-category-overrides '((file (styles . (partial-completion))))))
+    (setq completion-styles '(orderless)
+          completion-category-defaults nil
+          completion-category-overrides '((file (styles . (partial-completion))))))
 
   (use-package consult
     :demand t)
@@ -611,27 +612,27 @@ Don't create =.#Name.file= files.
     :ensure t
     :after vertico
     :custom
-      (marginalia-annotators '(marginalia-annnotators-heavy marginalia-annotators-light nil))
+    (marginalia-annotators '(marginalia-annnotators-heavy marginalia-annotators-light nil))
     :init
-      (marginalia-mode))
+    (marginalia-mode))
 
   (hr/leader-key-def
     "s" '(:ignore t :which-key "search")
     "sl" '(consult-line :which-key "search line")
     "si" '(consult-imenu :which-key "search item/topic")
     "sp" '(consult-git-grep :which-key "search in project")
-  )
+    )
 #+end_src
 **** Workspaces
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-    (use-package perspective
-      :demand t
-      :custom
-      (persp-initial-frame-name "Main")
-      :config
-      ;; Running `persp-mode' multiple times resets the perspective list...
-      (unless (equal persp-mode t)
-        (persp-mode)))
+  (use-package perspective
+    :demand t
+    :custom
+    (persp-initial-frame-name "Main")
+    :config
+    ;; Running `persp-mode' multiple times resets the perspective list...
+    (unless (equal persp-mode t)
+      (persp-mode)))
 
   (hr/leader-key-def
     "b"  '(:ignore t :which-key "buffers")
@@ -643,89 +644,89 @@ Don't create =.#Name.file= files.
 #+end_src
 **** Distraction free writing
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(use-package darkroom
-  :hook (org-mode . darkroom-tentative-mode)
-  :config
+  (use-package darkroom
+    :hook (org-mode . darkroom-tentative-mode)
+    :config
     (setq darkroom-text-scale-increase 0))
 #+end_src
 **** Windows
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-    (use-package ace-window
-      :ensure t)
+  (use-package ace-window
+    :ensure t)
 
-    (hr/leader-key-def
-      "w"  '(:ignore t :which-key "windows")
-      "ws" '(ace-window :which-key "select window")
-      "wh" '(windmove-left :which-key "left")
-      "wj" '(windmove-down :which-key "down")
-      "wk" '(windmove-up :which-key "up")
-      "wl" '(windmove-right :which-key "right")
-      "wz" '(split-window-vertically :which-key "split vertically")
-      "wx" '(split-window-horizontally :which-key "split horizontally")
-      "wc" '(delete-window :which-key "close window"))
+  (hr/leader-key-def
+    "w"  '(:ignore t :which-key "windows")
+    "ws" '(ace-window :which-key "select window")
+    "wh" '(windmove-left :which-key "left")
+    "wj" '(windmove-down :which-key "down")
+    "wk" '(windmove-up :which-key "up")
+    "wl" '(windmove-right :which-key "right")
+    "wz" '(split-window-vertically :which-key "split vertically")
+    "wx" '(split-window-horizontally :which-key "split horizontally")
+    "wc" '(delete-window :which-key "close window"))
 #+end_src
 **** Buffers
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(use-package all-the-icons-ibuffer
-:ensure t
-:init (all-the-icons-ibuffer-mode 1))
+  (use-package all-the-icons-ibuffer
+    :ensure t
+    :init (all-the-icons-ibuffer-mode 1))
 #+end_src
 **** Cursor highlighting effect
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(use-package beacon
-:ensure t
-:init (beacon-mode 1))
+  (use-package beacon
+    :ensure t
+    :init (beacon-mode 1))
 #+end_src
 **** Whitespaces
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(require 'whitespace)
+  (require 'whitespace)
 #+end_src
 *** Dired
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(use-package dired
+  (use-package dired
     :straight nil
     :ensure nil
     :commands (dired dired-jump)
     :bind (("C-x C-j" . dired-jump))
     :custom ((dired-listing-switches "-agho --group-directories-first")))
 
-(use-package dired-single
+  (use-package dired-single
     :commands (dired dired-jump))
 
-(use-package all-the-icons-dired
+  (use-package all-the-icons-dired
     :hook (dired-mode . all-the-icons-dired-mode))
 
-(hr/leader-key-def
-  "d" '(:ignore t :which-key "dired")
-  "dd" '(dired :which-key "Here"))
+  (hr/leader-key-def
+    "d" '(:ignore t :which-key "dired")
+    "dd" '(dired :which-key "Here"))
 
 #+end_src
 *** Productivity
 **** Alerts
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(use-package alert
-  :commands alert
-  :config
+  (use-package alert
+    :commands alert
+    :config
     (setq alert-default-style 'notifications))
 #+end_src
 **** Spelling check
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(use-package flycheck
+  (use-package flycheck
     :defer t
     :hook (lsp-mode . flycheck-mode))
 #+end_src
 **** Clean whitespace
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(use-package ws-butler
+  (use-package ws-butler
     :hook ((text-mode . ws-butler-mode)
-      (prog-mode . ws-butler-mode)))
+           (prog-mode . ws-butler-mode)))
 #+end_src
 **** Snippets
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(use-package yasnippet
-  :hook ((prog-mode . yas-minor-mode)
-          (org-mode . yas-minor-mode))
-  :config
+  (use-package yasnippet
+    :hook ((prog-mode . yas-minor-mode)
+           (org-mode . yas-minor-mode))
+    :config
     (setq yas-snippet-dirs '("~/.emacs.d/snippets"))
     (yas-reload-all))
 #+end_src
@@ -734,17 +735,17 @@ Don't create =.#Name.file= files.
 #+end_src
 **** Commenting
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(use-package evil-nerd-commenter
-  :bind ("M-/" . evilnc-comment-or-uncomment-lines))
+  (use-package evil-nerd-commenter
+    :bind ("M-/" . evilnc-comment-or-uncomment-lines))
 
-(hr/leader-key-def
-  "/" '(evilnc-comment-or-uncomment-lines :which-key "comment"))
+  (hr/leader-key-def
+    "/" '(evilnc-comment-or-uncomment-lines :which-key "comment"))
 #+end_src
 **** Dictionary
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(use-package define-word)
-(hr/leader-key-def
-  "." '(define-word-at-point :which-key "word definition"))
+  (use-package define-word)
+  (hr/leader-key-def
+    "." '(define-word-at-point :which-key "word definition"))
 #+end_src
 **** UML
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -752,15 +753,22 @@ Don't create =.#Name.file= files.
     :ensure t
     :mode ("\\.plantuml\\'" "\\.puml")
     :config
-      (setq plantuml-default-exec-mode 'executable)
-      ;;(setq plantuml-executable-path (shell-command-to-string "echo -n which plantuml"))
-      (setq plantuml-executable-path "/usr/bin/plantuml")
-      (setq plantuml-output-type "svg")
-      (add-to-list 'org-src-lang-modes '("plantuml" . plantuml)))
+    (setq plantuml-default-exec-mode 'executable)
+    ;;(setq plantuml-executable-path (shell-command-to-string "echo -n which plantuml"))
+    (setq plantuml-executable-path "/usr/bin/plantuml")
+    (setq plantuml-output-type "svg")
+    (add-to-list 'org-src-lang-modes '("plantuml" . plantuml)))
 
   (use-package flycheck-plantuml
     :after plantuml-mode
     :config (flycheck-plantuml-setup))
+#+end_src
+**** Vterm
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+  (use-package vterm
+    :commands vterm
+    :config
+    (setq vterm-max-scrollback 10000))
 #+end_src
 *** Applications
 **** Calendar
@@ -1181,88 +1189,89 @@ background-color: #${0:DDD};
 *** Org-Mode
 **** Basic settings
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-        (defun hr/org-mode-setup ()
-          (org-indent-mode)
-          (auto-fill-mode 0)
-          (visual-line-mode 1)
-          (setq evil-auto-indent nil))
+  (defun hr/org-mode-setup ()
+    (org-indent-mode)
+    (auto-fill-mode 0)
+    (visual-line-mode 1)
+    (setq evil-auto-indent nil))
 
-        (use-package org
-          :defer t
-          :hook ((org-capture-mode-hook . evil-insert-state)
-                  (org-mode . hr/org-mode-setup))
-          :config
-            (setq org-hidden-keywords '(title))
-            (setq org-agenda-start-with-log-mode t)
-            (setq org-log-done 'time)
-            (setq org-log-into-drawer t)
-            (setq org-hide-emphasis-markers t)
-            (setq org-startup-with-inline-images t)
-            (setq org-plantuml-jar-path (expand-file-name "~/plantuml.jar"))
+  (use-package org
+    :defer t
+    :hook ((org-capture-mode-hook . evil-insert-state)
+            (org-mode . hr/org-mode-setup))
+    :config
+      (setq org-edit-src-content-indention 0)
+      (setq org-hidden-keywords '(title))
+      (setq org-agenda-start-with-log-mode t)
+      (setq org-log-done 'time)
+      (setq org-log-into-drawer t)
+      (setq org-hide-emphasis-markers t)
+      (setq org-startup-with-inline-images t)
+      (setq org-plantuml-jar-path (expand-file-name "~/plantuml.jar"))
 
-            (setq org-agenda-files
-                '("~/Notes/Tasks.org"))
+      (setq org-agenda-files
+          '("~/Notes/Tasks.org"))
 
-            (setq org-tag-alist
-                '((:startgroup)
-                  (:endgroup)
-                  ("@home" . ?H)
-                  ("@work" . ?W)
-                  ("agenda" . ?a)
-                  ("planning" . ?p)
-                  ("idea" . ?i)))
+      (setq org-tag-alist
+          '((:startgroup)
+            (:endgroup)
+            ("@home" . ?H)
+            ("@work" . ?W)
+            ("agenda" . ?a)
+            ("planning" . ?p)
+            ("idea" . ?i)))
 
-            (setq org-todo-keywords
-                '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
-                  (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(@w/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
-          :custom
-            (org-startup-folded 'content)
-            (org-startup-truncated nil))
+      (setq org-todo-keywords
+          '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
+            (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(@w/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
+    :custom
+      (org-startup-folded 'content)
+      (org-startup-truncated nil))
 
-        (with-eval-after-load 'org (org-babel-do-load-languages 'org-babel-load-languages '(
-                                    (gnuplot . t)
-                                    (plantuml . t)
-                                    )))
+    (with-eval-after-load 'org (org-babel-do-load-languages 'org-babel-load-languages '(
+                                (gnuplot . t)
+                                (plantuml . t)
+                                )))
 
-        (eval-after-load 'org (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images))
+    (eval-after-load 'org (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images))
 #+end_src
 **** Vim keybindings
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(use-package evil-org
-  :ensure t
-  :after org
-  :hook (org-mode . (lambda () evil-org-mode))
-  :config
-  (require 'evil-org-agenda)
-  (evil-org-agenda-set-keys))
+  (use-package evil-org
+    :ensure t
+    :after org
+    :hook (org-mode . (lambda () evil-org-mode))
+    :config
+    (require 'evil-org-agenda)
+    (evil-org-agenda-set-keys))
 
-(evil-define-key '(normal insert visual) org-mode-map (kbd "C-j") 'org-next-visible-heading)
-(evil-define-key '(normal insert visual) org-mode-map (kbd "C-k") 'org-previous-visible-heading)
+  (evil-define-key '(normal insert visual) org-mode-map (kbd "C-j") 'org-next-visible-heading)
+  (evil-define-key '(normal insert visual) org-mode-map (kbd "C-k") 'org-previous-visible-heading)
 
-(defun hr/search-org-files ()
-  (interactive)
-  (counsel-rg "" "~/Notes" nil "Search notes:"))
+  (defun hr/search-org-files ()
+    (interactive)
+    (counsel-rg "" "~/Notes" nil "Search notes:"))
 
-(defun hr/org-babel-execute-src-block ()
-  (interactive)
-  (let ((org-confirm-babel-evaluate nil))
-  (org-babel-execute-src-block)))
+  (defun hr/org-babel-execute-src-block ()
+    (interactive)
+    (let ((org-confirm-babel-evaluate nil))
+    (org-babel-execute-src-block)))
 
-(hr/leader-key-def
-  "o"   '(:ignore t :which-key "org mode")
+  (hr/leader-key-def
+    "o"   '(:ignore t :which-key "org mode")
 
-  "oi"  '(:ignore t :which-key "insert")
-  "oil" '(org-insert-link :which-key "insert link")
+    "oi"  '(:ignore t :which-key "insert")
+    "oil" '(org-insert-link :which-key "insert link")
 
-  "on"  '(org-toggle-narrow-to-subtree :which-key "toggle narrow")
+    "on"  '(org-toggle-narrow-to-subtree :which-key "toggle narrow")
 
-  "os"  '(hr/search-org-files :which-key "search notes")
+    "os"  '(hr/search-org-files :which-key "search notes")
 
-  "oa"  '(org-agenda :which-key "status")
-  "ot"  '(org-todo-list :which-key "todos")
-  "oc"  '(org-capture t :which-key "capture")
-  "oe"  '(hr/org-babel-execute-src-block :which-key "execute block")
-  "ox"  '(org-export-dispatch t :which-key "export"))
+    "oa"  '(org-agenda :which-key "status")
+    "ot"  '(org-todo-list :which-key "todos")
+    "oc"  '(org-capture t :which-key "capture")
+    "oe"  '(hr/org-babel-execute-src-block :which-key "execute block")
+    "ox"  '(org-export-dispatch t :which-key "export"))
 #+end_src
 **** Tangle on save
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
