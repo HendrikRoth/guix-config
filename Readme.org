@@ -101,6 +101,7 @@
       - [[#reminder][Reminder]]
       - [[#styling][Styling]]
       - [[#graphs][Graphs]]
+      - [[#drag--drop][Drag & Drop]]
       - [[#roam][Roam]]
       - [[#calendar-sync][Calendar sync]]
       - [[#snippets][Snippets]]
@@ -1326,7 +1327,11 @@ background-color: #${0:DDD};
   (use-package gnuplot
   :ensure t)
 #+end_src
-
+**** Drag & Drop
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+  (use-package org-download
+  :hook (dired-mode-hook . org-download-enable))
+#+end_src
 **** Roam
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
 (use-package org-roam
