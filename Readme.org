@@ -16,6 +16,8 @@
     - [[#notebook][notebook]]
   - [[#usb-installation-image][USB Installation image]]
 - [[#programs][Programs]]
+  - [[#mail][Mail]]
+    - [[#imap][Imap]]
   - [[#emacs][Emacs]]
     - [[#package-management][Package management]]
     - [[#basic-settings][Basic settings]]
@@ -102,6 +104,7 @@
       - [[#reminder][Reminder]]
       - [[#styling][Styling]]
       - [[#graphs][Graphs]]
+      - [[#scrum][Scrum]]
       - [[#drag--drop][Drag & Drop]]
       - [[#roam][Roam]]
       - [[#calendar-sync][Calendar sync]]
@@ -297,6 +300,61 @@ To build the image, run the command:
 Choose the install method =Install using the shell based process.= on boot.
 
 * Programs
+** Mail
+*** Imap
+#+begin_src conf :tangle ~/.mbsyncrc
+  IMAPAccount gmail
+  Host imap.gmail.com
+  User mail@henn1nk.com
+  PassCmd "pass Mail/Gmail/henn1nk"
+  SSLType IMAPS
+  SSLVersions TLSv1.2
+  CertificateFile /etc/ssl/certs/ca-certificates.crt
+
+  IMAPAccount zoho
+  Host imap.zoho.com
+  User hi@hendrikroth.com
+  PassCmd "pass Mail/Zoho/hendrikroth"
+  SSLType IMAPS
+  SSLVersions TLSv1.2
+  CertificateFile /etc/ssl/certs/ca-certificates.crt
+
+  IMAPStore gmail-remote
+  Account gmail
+
+  IMAPStore zoho-remote
+  Account zoho
+
+  MaildirStore gmail-local
+  Path ~/Mail/Gmail/
+  Inbox ~/Mail/Gmail/INBOX
+  Trash ~/Mail/Gmail/Trash
+  Subfolders Verbatim
+
+  MaildirStore zoho-local
+  Path ~/Mail/Zoho/
+  Inbox ~/Mail/Zoho/INBOX
+  Trash ~/Mail/Zoho/Trash
+  Subfolders Verbatim
+
+  Channel gmail
+  Master :gmail-remote:
+  Slave :gmail-local:
+  Patterns *
+  Create Slave
+  Expunge None
+  CopyArrivalDate yes
+  SyncState *
+
+  Channel zoho
+  Master :zoho-remote:
+  Slave :zoho-local:
+  Patterns *
+  Create Slave
+  Expunge None
+  CopyArrivalDate yes
+  SyncState *
+#+end_src
 ** Emacs
 *** Package management
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -1208,6 +1266,7 @@ background-color: #${0:DDD};
       (setq org-hide-emphasis-markers t)
       (setq org-startup-with-inline-images t)
       (setq org-plantuml-jar-path (expand-file-name "~/plantuml.jar"))
+      (setq org-latex-toc-command "\\tableofcontents \\clearpage")
 
       (setq org-agenda-files
           '("~/Notes/Tasks.org"))
@@ -1335,6 +1394,11 @@ background-color: #${0:DDD};
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
   (use-package gnuplot
   :ensure t)
+#+end_src
+**** Scrum
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+  (use-package org-scrum
+  :after org)
 #+end_src
 **** Drag & Drop
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
