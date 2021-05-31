@@ -78,6 +78,7 @@
       - [[#projectile][Projectile]]
       - [[#direnv][Direnv]]
       - [[#lsp][LSP]]
+      - [[#translations][Translations]]
       - [[#debug][Debug]]
       - [[#languages][Languages]]
         - [[#emacs-lisp][Emacs Lisp]]
@@ -1072,6 +1073,22 @@ Mail alerts..
   "le" 'lsp-ui-flycheck-list
   "lS" 'lsp-ui-sideline-mode
   "lX" 'lsp-execute-code-action)
+#+end_src
+**** Translations
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package google-translate
+  :ensure t
+  :config
+  (require 'google-translate-default-ui)
+  (defun google-translate--search-tkk () "Search TKK." (list 430675 2721866130))
+  (setq google-translate-backend-method 'curl)
+  (setq google-translate-default-source-language "de")
+  (setq google-translate-default-target-language "en"))
+
+(hr/leader-key-def
+  "t" '(:ignore t :which-key "translations")
+  "tc" 'google-translate-at-point-reverse
+  "tq" 'google-translate-query-translate)
 #+end_src
 **** Debug
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
