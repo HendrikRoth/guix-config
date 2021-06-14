@@ -1,4 +1,4 @@
-#+TITLE:My personal guix system configuration [in progress]
+:#+TITLE:My personal guix system configuration [in progress]
 #+PROPERTY: header-args :tangle-mode
 #+PROPERTY: header-args:sh :tangle-mode
 
@@ -9,7 +9,7 @@
 :CONTENTS:
 - [[#channels][Channels]]
 - [[#systems][Systems]]
-  - [[#base-configuration][Base Configuration]]
+  - [[#base-configuration][Base Configuration]] 
   - [[#machines][Machines]]
     - [[#work][work]]
     - [[#desktop][desktop]]
@@ -124,7 +124,7 @@
 
 * Channels
 *.config/guix/channels.scm*
-#+BEGIN_SRC scheme :tangle ~/.config/guix/channels.scm
+#+BEGIN_SRC scheme :mkdirp yes :tangle ~/.config/guix/channels.scm
   (list (channel
          (name 'nonguix)
          (commit "ee35a1f1cd50ba0d4bfee37f2b084bc0797885c")
@@ -739,6 +739,10 @@ Don't create =.#Name.file= files.
 **** Whitespaces
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
   (require 'whitespace)
+#+end_src
+**** Sync theme
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package theme-magic)
 #+end_src
 *** Dired
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
