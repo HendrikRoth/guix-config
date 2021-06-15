@@ -25,8 +25,11 @@ sudo dnf -y install \
 	nnn \
 	p7zip \
 	playerctl \
+  pulseaudio-utils \
 	ripgrep \
 	sxhkd \
+  syncthing \
+  syncthing-cli \
 	texlive-scheme-medium \
 	unzip \
 	wget \
@@ -57,6 +60,7 @@ sudo dnf -y install \
   xss-lock \
   xbacklight \
   xset \
+  xrdb \
   zathura
 
 # Docker

@@ -1,4 +1,4 @@
-:#+TITLE:My personal guix system configuration [in progress]
+#+TITLE:My personal guix system configuration [in progress]
 #+PROPERTY: header-args :tangle-mode
 #+PROPERTY: header-args:sh :tangle-mode
 
@@ -1437,6 +1437,11 @@ $1
 
   pkill udiskie
   udiskie &
+
+  playerctld daemon &
+
+  emacs &
+  chromium &
 #+end_src
 ** Bspwm
 #+begin_src bash :mkdirp yes :tangle ~/.config/bspwm/bspwmrc :tangle-mode (identity #o755)
@@ -1490,7 +1495,7 @@ $1
   padding = 0
   modules-left = bspwm
   modules-center = title
-  modules-right = date
+  modules-right = date tray
   tray-position = right
   scroll-up = #bspwm.prev
   scroll-down = #bspwm.next
@@ -1503,8 +1508,9 @@ $1
   pin-workspaces = true
   enable-click = true
   enable-scoll = true
-  fuzzy-mwatch = true
-
+  fuzzy-match = true
+  label-focused-foreground = ${colors.secondary}
+  
   [module/title]
   type = internal/xwindow
   format = <label>
@@ -1642,6 +1648,38 @@ $1
   # move a floating window
   super + {Left,Down,Up,Right}
     bspc node -v {-20 0,0 20,0 -20,20 0}
+
+  # screenshots
+  alt + p
+    maim -s | xclip -selection clipboard -t image/png
+
+  # media
+  super + plus
+    pactl set-sink-volume 0 +5%
+
+  XF86AudioRaiseVolume
+    pactl set-sink-volume 0 +5%
+
+  super + minus
+    pactl set-sink-volume 0 -5%
+
+  XF86AudioLowerVolume
+    pactl set-sink-volume 0 -5%
+
+  super + m
+    pactl set-sink-mute 0 toggle
+
+  XF86AudioMute
+    pactl set-sink-mute 0 toggle
+
+  super + .
+    playerctl play-pause
+
+  super + x
+    playerctl next
+
+  super + y
+    playerctl previous
 #+end_src
 ** Zathura
 #+begin_src bash :tangle ~/.config/wal/templates/zathurarc
