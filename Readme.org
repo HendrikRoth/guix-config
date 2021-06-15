@@ -7,14 +7,6 @@
 :TOC: :include all :ignore this
 :END:
 :CONTENTS:
-- [[#channels][Channels]]
-- [[#systems][Systems]]
-  - [[#base-configuration][Base Configuration]] 
-  - [[#machines][Machines]]
-    - [[#work][work]]
-    - [[#desktop][desktop]]
-    - [[#notebook][notebook]]
-  - [[#usb-installation-image][USB Installation image]]
 - [[#programs][Programs]]
   - [[#mail][Mail]]
     - [[#imap][Imap]]
@@ -121,184 +113,6 @@
         - [[#lisp][Lisp]]
       - [[#templates][Templates]]
 :END:
-
-* Channels
-*.config/guix/channels.scm*
-#+BEGIN_SRC scheme :mkdirp yes :tangle ~/.config/guix/channels.scm
-  (list (channel
-         (name 'nonguix)
-         (commit "ee35a1f1cd50ba0d4bfee37f2b084bc0797885c")
-         (url "https://gitlab.com/nonguix/nonguix"))
-        (channel
-         (name 'guix)
-         (commit "190187326ad7516dd6728eed7bb6ef2d4f92897a")
-         (url "https://git.savannah.gnu.org/git/guix.git")
-         (introduction
-          (make-channel-introduction
-           "9edb3f66fd807b096b48283debdcddccfea34bad"
-           (openpgp-fingerprint
-            "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA")))))
-#+END_SRC
-
-* Systems
-** Base Configuration
-*.config/guix/systems/base-system.scm:*
-#+BEGIN_SRC scheme :mkdirp yes :tangle ~/.config/guix/systems/base-system.scm
-  (define-module (base-system)
-    #:use-module (gnu)
-    #:use-module (gnu system nss)
-    #:use-module (gnu services cups)
-    #:use-module (gnu services desktop)
-    #:use-module (gnu services docker)
-    #:use-module (gnu services networking)
-    #:use-module (gnu packages wm)
-    #:use-module (gnu packages cups)
-    #:use-module (gnu packages gtk)
-    #:use-module (gnu packages xorg)
-    #:use-module (gnu packages emacs)
-    #:use-module (gnu packages linux)
-    #:use-module (gnu packages web-browsers)
-    #:use-module (gnu packages version-control)
-    #:use-module (gnu packages package-management)
-    #:use-module (nongnu packages linux)
-    #:use-module (nongnu system linux-initrd))
-
-  (use-service-modules desktop org)
-  (use-package-modules certs)
-  (use-package-modules shells)
-#+END_SRC
-
-Define the =base-operating-system= which will be inherited by all machine configurations.
-
-#+BEGIN_SRC scheme :mkdirp yes :tangle ~/.config/guix/systems/base-system.scm
-  (define-public base-operating-system
-    (operating-system
-     (host-name "hendrik")
-     (timezone "Europe/Berlin")
-     (locale "en_US.utf-8")
-
-     ;; Use non-free Linux and firmware
-     (kernel linux)
-     (firmware (list linux-firmware))
-     (initrd microcode-initrd)
-
-     ;; Keyboard layout
-     (keyboard-layout (keyboard-layout "us" "altgr-intl"))
-
-     ;; Dummy filesystem, will be overridden
-     (file-systems (cons*
-                    (file-system
-                     (mount-point "/tmp")
-                     (device "none")
-                     (type "tmpfs")
-                     (check? #f))
-                    %base-file-systems))
-
-     ;; User account
-     (users (cons (user-account
-                   (name "hendrik")
-                   (comment "Hendrik Roth")
-                   (group "users")
-                   (home-directory "/home/hendrik")
-                   (supplementary-groups '(
-                                           "wheel" ;; sudo
-                                           "netdev" ;; network devices
-                                           "tty"
-                                           "input"
-                                           "docker"
-                                           "lp" ;; control bluetooth devices
-                                           "audio" ;; control audio devices
-                                           "video" ;; control video devices
-                                           )))
-                  %base-user-accounts))
-
-     ;; Bare minimum system packages
-     (packages (append (list
-                        git
-                        ntfs-3g
-                        exfat-utils
-                        fuse-exfat
-                        vim
-                        emacs
-                        xterm
-                        bluez
-                        bluez-alsa
-                        pulseaudio
-                        tlp
-                        xf86-video-libinput
-                        nss-certs ;; for https access
-                        gvfs) ;; for user mounts
-                       %base-packages))
-#+END_SRC
-
-** Machines
-*** work
-My work machine at the office.
-
-#+BEGIN_SRC scheme :mkdirp yes :tangle ~/.config/guix/systems/work.scm
-  (define-module (work)
-    #:use-module (base-system)
-    #:use-module (gnu))
-
-  (operating-system
-   (inherit base-operating-system)
-   (host-name "work")
-
-   (mapped-devices
-    (list (mapped-device
-           (source (uuid ""))
-           (target "system-root")
-           (type luks-device-mapping))))
-
-   (file-systems (cons*
-                  (file-system
-                   (device (file-system-label "root"))
-                   (mount-pount "/")
-                   (type "ext4")
-                   (dependencies mapped-devices))
-                  %base-file-systems)))
-#+END_SRC
-
-*** desktop
-My home workstation.
-
-*** notebook
-My travel notebook.
-
-** USB Installation image
-#+begin_src scheme :mkdirp yes :tangle ~/.config/guix/systems/install.scm
-  (define-module (nongnu system install)
-    #:use-module (gnu system)
-    #:use-module (gnu system install)
-    #:use-module (gnu packages version-control)
-    #:use-module (gnu packages vim)
-    #:use-module (gnu curl)
-    #:use-module (gnu packages emacs)
-    #:use-module (gnu packages linux)
-    #:use-module (gnu packages mtools)
-    #:use-module (gnu packages package-management)
-    #:use-module (nongnu packages linux)
-    #:export (installation-os-nonfree))
-
-  (define installation-os-nonfree
-    (operating-system
-     (inherit installation-os)
-     (kernel linux)
-     (firmware (list linux-firmware))
-     (kernel-arguments '("net.iframes=0"))
-     (packages (append (list
-                        exfat-utils fuse-exfat git curl vim emacs-no-x-toolkit)
-                       (operation-system-packages installation-os)))))
-
-  installation-os-nonfree
-#+end_src
-
-To build the image, run the command:
-#+begin_src sh
-  guix system image ./install.scm --image-size=5G
-#+end_src
-
-Choose the install method =Install using the shell based process.= on boot.
 
 * Programs
 ** Mail
@@ -904,7 +718,7 @@ Don't create =.#Name.file= files.
     (require 'org-mu4e)
     (setq mu4e-update-interval (* 10 60))
     (setq mu4e-get-mail-command "mbsync -a")
-    (setq mu4e-maildir "~/Mail")
+    (setq mu4e-maildir "~/mail")
     (setq mu4e-change-filenames-when-moving t)
     (setq mu4e-contexts
     `(,(make-mu4e-context
@@ -1553,4 +1367,238 @@ $1
         ("wS" "Specification sheet" entry (file get-org-target) "* THIS IS A TEMPLATE")
         ("p" "Personal")
         ("ps" "Shopping" checkitem (file+headline "~/Notes/Personal/Shopping.org" "Next") "- [ ] %?\n")))
+#+end_src
+** Bspwm
+#+begin_src bash :mkdirp yes :tangle ~/.config/bspwm/bspwmrc :tangle-mode (identity #o755)
+  #!/usr/bin/sh
+  . "${HOME}/.cache/wal/colors.sh"
+
+  bspc config normal_border_color "$color1"
+  bspc config active_border_color "$color2"
+  bspc config focused_border_color "$color3"
+  bspc config presel_feedback_color "$color1"
+
+  polybar main &
+  udiskie &
+  sxhkd &
+  emacs --daemon &
+  emacsclient -mm &
+
+  bspc monitor -d 1 2 3 4 5 6 7 8 9 0
+
+  bspc config border_width         2
+  bspc config window_gap           0
+
+  bspc config split_ratio          0.52
+  bspc config borderless_monocle   true
+  bspc config gapless_monocle      true
+
+  bspc desktop 1 --layout monocle
+  bspc desktop 0 --layout monocle
+
+  bspc rule -a Emacs desktop=1
+  bspc rule -a Chromium desktop=0
+  bspc rule -a Firefox desktop=9
+#+end_src
+** Polybar
+#+begin_src bash :mkdirp yes :tangle ~/.config/polybar/config
+  [global/wm]
+  margin-bottom = 0
+
+  [colors]
+  background = ${xrdb:color0:#222}
+  foreground = ${xrdb:color7:#222}
+  foreground-alt = ${xrdb:color7:#222}
+  primary = ${xrdb:color1:#222}
+  secondary = ${xrdb:color2:#222}
+  alert = ${xrdb:color3:#222}
+
+  [bar/main]
+  background = ${colors.background}
+  foreground = ${colors.foreground}
+  monitor =
+  monitor-strict = false
+  monitor-exact = true
+  bottom = false
+  fixed-center = true
+  offset-x = 0
+  offset-y = 0
+  padding = 0
+  modules-left = bspwm
+  modules-center = title
+  modules-right = date
+  tray-position = right
+  scroll-up = #bspwm.prev
+  scroll-down = #bspwm.next
+  font-0 = "Fira Code:size=8;0"
+  font-1 = "Roboto:size=11:weight=bold;2"
+  font-2 = "Noto Sans:size=11;1"
+
+  [module/bspwm]
+  type = internal/bspwm
+  pin-workspaces = true
+  enable-click = true
+  enable-scoll = true
+  fuzzy-mwatch = true
+
+  [module/title]
+  type = internal/xwindow
+  format = <label>
+  label = %title%
+  label-maxlen = 30
+
+  [module/date]
+  type = internal/date
+  interval = 1.0
+  date = %Y/%m/%d
+  time = %H:%M
+  label = %time% %date%
+#+end_src
+** Sxhkd
+#+begin_src bash :mkdirp yes :tangle ~/.config/sxhkd/sxhkdrc :tangle-mode (identity #o644)
+  #!/usr/bin/sh
+  #
+  # wm independent hotkeys
+  #
+
+  # terminal emulator
+  super + Return
+    alacritty
+
+  # program launcher
+  super + @space
+    dmenu_run
+
+  # make sxhkd reload its configuration files:
+  super + Escape
+    pkill -USR1 -x sxhkd
+
+  #
+  # bspwm hotkeys
+  #
+
+  # quit/restart bspwm
+  super + alt + {q,r}
+    bspc {quit,wm -r}
+
+  # close and kill
+  super + {_,shift + }w
+    bspc node -{c,k}
+
+  # alternate between the tiled and monocle layout
+  super + m
+    bspc desktop -l next
+
+  # send the newest marked node to the newest preselected node
+  super + y
+    bspc node newest.marked.local -n newest.!automatic.local
+
+  # swap the current node and the biggest node
+  super + g
+    bspc node -s biggest
+
+  #
+  # state/flags
+  #
+
+  # set the window state
+  super + {t,shift + t,s,f}
+    bspc node -t {tiled,pseudo_tiled,floating,fullscreen}
+
+  # set the node flags
+  super + ctrl + {m,x,y,z}
+    bspc node -g {marked,locked,sticky,private}
+
+  #
+  # focus/swap
+  #
+
+  # focus the node in the given direction
+  super + {_,shift + }{h,j,k,l}
+    bspc node -{f,s} {west,south,north,east}
+
+  # focus the node for the given path jump
+  super + {p,b,comma,period}
+    bspc node -f @{parent,brother,first,second}
+
+  # focus the next/previous node in the current desktop
+  super + {_,shift + }c
+    bspc node -f {next,prev}.local
+
+  # focus the next/previous desktop in the current monitor
+  super + bracket{left,right}
+    bspc desktop -f {prev,next}.local
+
+  # focus the last node/desktop
+  super + {grave,Tab}
+    bspc {node,desktop} -f last
+
+  # focus the older or newer node in the focus history
+  super + {o,i}
+    bspc wm -h off; \
+    bspc node {older,newer} -f; \
+    bspc wm -h on
+
+  # focus or send to the given desktop
+  super + {_,shift + }{1-9,0}
+    bspc {desktop -f,node -d} '^{1-9,10}'
+
+  #
+  # preselect
+  #
+
+  # preselect the direction
+  super + ctrl + {h,j,k,l}
+    bspc node -p {west,south,north,east}
+
+  # preselect the ratio
+  super + ctrl + {1-9}
+    bspc node -o 0.{1-9}
+
+  # cancel the preselection for the focused node
+  super + ctrl + space
+    bspc node -p cancel
+
+  # cancel the preselection for the focused desktop
+  super + ctrl + shift + space
+    bspc query -N -d | xargs -I id -n 1 bspc node id -p cancel
+
+  #
+  # move/resize
+  #
+
+  # expand a window by moving one of its side outward
+  super + alt + {h,j,k,l}
+    bspc node -z {left -20 0,bottom 0 20,top 0 -20,right 20 0}
+
+  # contract a window by moving one of its side inward
+  super + alt + shift + {h,j,k,l}
+    bspc node -z {right -20 0,top 0 20,bottom 0 -20,left 20 0}
+
+  # move a floating window
+  super + {Left,Down,Up,Right}
+    bspc node -v {-20 0,0 20,0 -20,20 0}
+#+end_src
+** Alacritty
+** zsh
+#+begin_src bash :mkdirp yes :tangle ~/.profile
+  alias n="nnn"
+  alias v="nvim"
+  alias e="emacs"
+  alias c="clear"
+  alias ls="exa --color=always"
+  alias l="exa -abgHhl@ --git --color=always --group-directories-first"
+  alias cat="bat --paging=never"
+  alias less="bat --paging=always --style=changes --color=always"
+  alias tree="exa --tree --color=always"
+#+end_src
+#+begin_src bash :mkdirp yes :tangle ~/.zshrc
+  source ~/.cache/wal/colors.sh
+  source ~/.profile
+  alias dmen='dmenu_run -nb "$color0" -nf "$color15" -sb "$color1" -sf "$color15"'
+  wal -Rq
+#+end_src
+** xinitrc
+#+begin_src bash :mkdirp yes :tangle ~/.xinitrc
+  exec bspwm
 #+end_src
