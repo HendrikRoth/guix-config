@@ -1113,7 +1113,7 @@ background-color: #${0:DDD};
       (setq org-latex-toc-command "\\tableofcontents \\clearpage")
 
       (setq org-agenda-files
-          '("~/Notes/Tasks.org"))
+          '("~/notes/Tasks.org"))
 
       (setq org-tag-alist
           '((:startgroup)
@@ -1153,7 +1153,7 @@ background-color: #${0:DDD};
 
   (defun hr/search-org-files ()
     (interactive)
-    (counsel-rg "" "~/Notes" nil "Search notes:"))
+    (counsel-rg "" "~/notes" nil "Search notes:"))
 
   (defun hr/org-babel-execute-src-block ()
     (interactive)
@@ -1256,7 +1256,7 @@ background-color: #${0:DDD};
   :hook
     (after-init . org-roam-mode)
   :custom
-    (org-roam-directory "~/Notes/Roam")
+    (org-roam-directory "~/notes/Roam")
     (org-roam-completion-everywhere t)
     (org-roam-system 'ivy))
 #+end_src
@@ -1271,9 +1271,9 @@ background-color: #${0:DDD};
     org-caldav-delete-calendar-entries 'never
     org-caldav-calendars
     '((:calendar-id ""
-       :inbox "~/Notes/Calendar/Personal.org")
+       :inbox "~/notes/Calendar/Personal.org")
       (:calendar-id ""
-       :inbox "~/Notes/Calendar/Work.org"))))
+       :inbox "~/notes/Calendar/Work.org"))))
 #+end_src
 **** Snippets
 ***** Author
@@ -1372,10 +1372,10 @@ $1
 
   (setq org-capture-templates
         '(("w" "Work")
-        ("ws" "Sprint" checkitem (file+headline "~/Notes/Work/Sprint.org" "Next") "* TODO %?\n %i\n %a")
+        ("ws" "Sprint" checkitem (file+headline "~/notes/Work/Sprint.org" "Next") "* TODO %?\n %i\n %a")
         ("wS" "Specification sheet" entry (file get-org-target) "* THIS IS A TEMPLATE")
         ("p" "Personal")
-        ("ps" "Shopping" checkitem (file+headline "~/Notes/Personal/Shopping.org" "Next") "- [ ] %?\n")))
+        ("ps" "Shopping" checkitem (file+headline "~/notes/Personal/Shopping.org" "Next") "- [ ] %?\n")))
 #+end_src
 ** Dunst
 #+begin_src bash :mkdirp yes :tangle ~/.config/wal/templates/dunstrc
@@ -1410,15 +1410,19 @@ $1
 ** Autostart
 #+begin_src bash :tangle ~/.autostart
   #!/usr/bin/sh
-  . "${HOME}/.cache/wal/colors.sh"
+  if [ -f "${HOME}/.cache/wal/colors.sh" ]; then
+    . "${HOME}/.cache/wal/colors.sh"
 
-  mkdir -p "${HOME}/.config/{zathura,dunst}"
-  ln -sf "${HOME}/.cache/wal/dunstrc" "${HOME}/.config/dunst/dunstrc"
-  ln -sf "${HOME}/.cache/wal/zathurarc" "${HOME}/.config/zathura/zathurarc"
+    mkdir -p "${HOME}/.config/dunst"
+    mkdir -p "${HOME}/.config/zathura"
 
-  xset s 300 5
-  xss-lock -l -- xsecurelock
-  
+    ln -sf "${HOME}/.cache/wal/dunstrc" "${HOME}/.config/dunst/dunstrc"
+    ln -sf "${HOME}/.cache/wal/zathurarc" "${HOME}/.config/zathura/zathurarc"
+  fi
+
+  #xset s 300 5
+  #xss-lock -l -- xsecurelock
+
   pkill autorandr
   autorandr --change &
 
@@ -1433,9 +1437,6 @@ $1
 
   pkill udiskie
   udiskie &
-
-  emacs --daemon &
-  emacsclient -mm &
 #+end_src
 ** Bspwm
 #+begin_src bash :mkdirp yes :tangle ~/.config/bspwm/bspwmrc :tangle-mode (identity #o755)
@@ -1675,6 +1676,7 @@ $1
 ** zsh
 #+begin_src bash :mkdirp yes :tangle ~/.profile
   alias n="nnn"
+  alias vim="nvim"
   alias v="nvim"
   alias e="emacs"
   alias c="clear"
@@ -1685,10 +1687,15 @@ $1
   alias tree="exa --tree --color=always"
 #+end_src
 #+begin_src bash :mkdirp yes :tangle ~/.zshrc
-  source ~/.cache/wal/colors.sh
-  source ~/.profile
-  alias dmen='dmenu_run -nb "$color0" -nf "$color15" -sb "$color1" -sf "$color15"'
   wal -Rq
+
+  if [ -z ~/.cache/wal/colors.sh ]; then
+    source ~/.cache/wal/colors.sh
+  fi
+
+  source ~/.profile
+
+  alias dmen='dmenu_run -nb "$color0" -nf "$color15" -sb "$color1" -sf "$color15"'
 
   # Zinit
   if [[ ! -f $HOME/.zinit/bin/zinit.zsh ]]; then
@@ -1711,7 +1718,7 @@ $1
 
   eval "$(direnv hook zsh)"
 
-  if [ -z "${DISPLAY}" ] && [ "${XDG_VTNR}" - eq 1 ]; then
+  if [ -z "${DISPLAY}" ] && [ "${XDG_VTNR}" -eq 1 ]; then
       exec startx
   fi
 #+end_src

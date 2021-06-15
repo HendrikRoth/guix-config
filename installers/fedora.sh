@@ -48,7 +48,7 @@ sudo dnf -y install \
   isync \
   pass \
   polybar \
-  scrot \
+  maim \
   udiskie \
   xapian-bindings \
   xapian-core \
