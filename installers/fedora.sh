@@ -52,7 +52,8 @@ sudo dnf -y install \
   udiskie \
   xapian-bindings \
   xapian-core \
-  xapian-core-devel
+  xapian-core-devel \
+  zathura
 
 # Docker
 sudo dnf config-manager \

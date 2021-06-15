@@ -118,6 +118,7 @@
   - [[#bspwm][Bspwm]]
   - [[#polybar][Polybar]]
   - [[#sxhkd][Sxhkd]]
+  - [[#zathura][Zathura]]
   - [[#zsh][zsh]]
   - [[#xinitrc][xinitrc]]
 :END:
@@ -1379,18 +1380,20 @@ $1
 ** Dunst
 #+begin_src bash :mkdirp yes :tangle ~/.config/wal/templates/dunstrc
   [global]
-  geometry = "50x5050+95"
+  geometry = "200x50-20-20"
   seperator_height = 0
-  padding = 20
-  horizontal_padding = 20
+  padding = 10
+  horizontal_padding = 10
   frame_color = "{color4}"
   frame_width = 2
-  idle_threshold = 120
+  idle_threshold = 0
   font = Fira Mono 10
   alignment = left
   word_wrap = yes
   format = "<b>%s</b>: %b"
   markup = full
+  transparency = 60
+  browser = "/usr/bin/chromium-browser"
 
   [urgency_low]
   background = "{background}"
@@ -1407,17 +1410,33 @@ $1
 ** Autostart
 #+begin_src bash :tangle ~/.autostart
   #!/usr/bin/sh
+  . "${HOME}/.cache/wal/colors.sh"
+
+  mkdir -p "${HOME}/.config/{zathura,dunst}"
+  ln -sf "${HOME}/.cache/wal/dunstrc" "${HOME}/.config/dunst/dunstrc"
+  ln -sf "${HOME}/.cache/wal/zathurarc" "${HOME}/.config/zathura/zathurarc"
+
+  pkill autorandr
   autorandr --change &
-  polybar main &
-  udiskie &
+
+  pkill sxhkd
   sxhkd &
+
+  pkill polybar
+  polybar main &
+
+  pkill dunst
+  dunst &
+
+  pkill udiskie
+  udiskie &
+
   emacs --daemon &
   emacsclient -mm &
 #+end_src
 ** Bspwm
 #+begin_src bash :mkdirp yes :tangle ~/.config/bspwm/bspwmrc :tangle-mode (identity #o755)
   #!/usr/bin/sh
-  . "${HOME}/.cache/wal/colors.sh"
   . "${HOME}/.autostart"
 
   bspc monitor -d 1 2 3 4 5 6 7 8 9 0
@@ -1619,6 +1638,36 @@ $1
   # move a floating window
   super + {Left,Down,Up,Right}
     bspc node -v {-20 0,0 20,0 -20,20 0}
+#+end_src
+** Zathura
+#+begin_src bash :tangle ~/.config/wal/templates/zathurarc
+  set font "Roboto 12"
+  set guioptions "v"
+  set adjust-open "width"
+  set statusbar-basename "true"
+  set render-loading "false"
+  set scroll-stop "120"
+  set recolor "true"
+
+  # [colors]
+  set default-bg "{background}"
+  set default-fg "{foreground}"
+  set statusbar-bg "{background}"
+  set statusbar-fg "{foreground}"
+  set inputbar-bg "{background}"
+  set inputbar-fg "{foreground}"
+  set notification-bg "{background}"
+  set notification-fg "{foreground}"
+  set notification-error-bg "{background}"
+  set notification-error-fg "{foreground}"
+  set notification-warning-bg "{background}"
+  set notification-warning-fg "{foreground}"
+  set highlight-color "{color3}"
+  set highlight-active-color "{color4}"
+  set completion-bg "{color3}"
+  set completion-fg "{color4}"
+  set recolor-lightcolor "{background}"
+  set recolor-darkcolor "{foreground}"
 #+end_src
 ** zsh
 #+begin_src bash :mkdirp yes :tangle ~/.profile
