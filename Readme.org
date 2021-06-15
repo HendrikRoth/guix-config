@@ -1420,8 +1420,8 @@ $1
     ln -sf "${HOME}/.cache/wal/zathurarc" "${HOME}/.config/zathura/zathurarc"
   fi
 
-  #xset s 300 5
-  #xss-lock -l -- xsecurelock
+  xset s 300 5
+  xss-lock -- xsecurelock &
 
   pkill autorandr
   autorandr --change &
