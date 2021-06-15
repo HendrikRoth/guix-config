@@ -53,6 +53,10 @@ sudo dnf -y install \
   xapian-bindings \
   xapian-core \
   xapian-core-devel \
+  xsecurelock \
+  xss-lock \
+  xbacklight \
+  xset \
   zathura
 
 # Docker

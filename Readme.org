@@ -1416,6 +1416,9 @@ $1
   ln -sf "${HOME}/.cache/wal/dunstrc" "${HOME}/.config/dunst/dunstrc"
   ln -sf "${HOME}/.cache/wal/zathurarc" "${HOME}/.config/zathura/zathurarc"
 
+  xset s 300 5
+  xss-lock -l -- xsecurelock
+  
   pkill autorandr
   autorandr --change &
 
@@ -1707,6 +1710,10 @@ $1
   zinit light zimfw/archive
 
   eval "$(direnv hook zsh)"
+
+  if [ -z "${DISPLAY}" ] && [ "${XDG_VTNR}" - eq 1 ]; then
+      exec startx
+  fi
 #+end_src
 ** xinitrc
 #+begin_src bash :mkdirp yes :tangle ~/.xinitrc
