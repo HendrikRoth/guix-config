@@ -19,7 +19,6 @@ sudo dnf -y install \
 	gimp \
 	git \
 	inkscape \
-  isync \
 	maildir-utils \
 	mesa-dri-drivers \
 	neovim \
@@ -38,14 +37,22 @@ sudo dnf -y install \
 	xrandr \
 	xz \
 	zsh \
+  cmake \
   direnv \
   dunst \
+  gcc-c++ \
+  gmime30 \
+  gmime30-devel \
   google-noto-sans-fonts \
   google-roboto-fonts \
+  isync \
   pass \
   polybar \
   scrot \
-  udiskie
+  udiskie \
+  xapian-bindings \
+  xapian-core \
+  xapian-core-devel
 
 # Docker
 sudo dnf config-manager \
@@ -86,4 +93,9 @@ cp -r tmp/et-book-ligatures-enabled/**/*.{otf,woff,woff2} ~/.fonts
 rm -rf tmp
 fc-cache -f
 
+# Color theme tool
 sudo pip install pywal
+sudo pip install "git+http://github.com/phillipberndt/autorandr#egg=autorandr"
+
+# Zsh
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/zdharma/zinit/master/doc/install.sh)"

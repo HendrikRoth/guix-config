@@ -48,6 +48,7 @@
       - [[#buffers][Buffers]]
       - [[#cursor-highlighting-effect][Cursor highlighting effect]]
       - [[#whitespaces][Whitespaces]]
+      - [[#sync-theme][Sync theme]]
     - [[#dired][Dired]]
     - [[#productivity][Productivity]]
       - [[#alerts][Alerts]]
@@ -112,6 +113,13 @@
         - [[#video][Video]]
         - [[#lisp][Lisp]]
       - [[#templates][Templates]]
+  - [[#dunst][Dunst]]
+  - [[#autostart][Autostart]]
+  - [[#bspwm][Bspwm]]
+  - [[#polybar][Polybar]]
+  - [[#sxhkd][Sxhkd]]
+  - [[#zsh][zsh]]
+  - [[#xinitrc][xinitrc]]
 :END:
 
 * Programs
@@ -1368,21 +1376,49 @@ $1
         ("p" "Personal")
         ("ps" "Shopping" checkitem (file+headline "~/Notes/Personal/Shopping.org" "Next") "- [ ] %?\n")))
 #+end_src
-** Bspwm
-#+begin_src bash :mkdirp yes :tangle ~/.config/bspwm/bspwmrc :tangle-mode (identity #o755)
+** Dunst
+#+begin_src bash :mkdirp yes :tangle ~/.config/wal/templates/dunstrc
+  [global]
+  geometry = "50x5050+95"
+  seperator_height = 0
+  padding = 20
+  horizontal_padding = 20
+  frame_color = "{color4}"
+  frame_width = 2
+  idle_threshold = 120
+  font = Fira Mono 10
+  alignment = left
+  word_wrap = yes
+  format = "<b>%s</b>: %b"
+  markup = full
+
+  [urgency_low]
+  background = "{background}"
+  foreground = "{foreground}"
+
+  [urgency_normal]
+  background = "{background}"
+  foreground = "{foreground}"
+
+  [urgency_critical]
+  background = "{background}"
+  foreground = "{foreground}"
+#+end_src
+** Autostart
+#+begin_src bash :tangle ~/.autostart
   #!/usr/bin/sh
-  . "${HOME}/.cache/wal/colors.sh"
-
-  bspc config normal_border_color "$color1"
-  bspc config active_border_color "$color2"
-  bspc config focused_border_color "$color3"
-  bspc config presel_feedback_color "$color1"
-
+  autorandr --change &
   polybar main &
   udiskie &
   sxhkd &
   emacs --daemon &
   emacsclient -mm &
+#+end_src
+** Bspwm
+#+begin_src bash :mkdirp yes :tangle ~/.config/bspwm/bspwmrc :tangle-mode (identity #o755)
+  #!/usr/bin/sh
+  . "${HOME}/.cache/wal/colors.sh"
+  . "${HOME}/.autostart"
 
   bspc monitor -d 1 2 3 4 5 6 7 8 9 0
 
@@ -1393,10 +1429,15 @@ $1
   bspc config borderless_monocle   true
   bspc config gapless_monocle      true
 
+  bspc config normal_border_color "$color1"
+  bspc config active_border_color "$color2"
+  bspc config focused_border_color "$color3"
+  bspc config presel_feedback_color "$color1"
+
   bspc desktop 1 --layout monocle
   bspc desktop 0 --layout monocle
 
-  bspc rule -a Emacs desktop=1
+  bspc rule -a Emacs desktop=1 state=tiled
   bspc rule -a Chromium desktop=0
   bspc rule -a Firefox desktop=9
 #+end_src
@@ -1579,7 +1620,6 @@ $1
   super + {Left,Down,Up,Right}
     bspc node -v {-20 0,0 20,0 -20,20 0}
 #+end_src
-** Alacritty
 ** zsh
 #+begin_src bash :mkdirp yes :tangle ~/.profile
   alias n="nnn"
@@ -1597,6 +1637,27 @@ $1
   source ~/.profile
   alias dmen='dmenu_run -nb "$color0" -nf "$color15" -sb "$color1" -sf "$color15"'
   wal -Rq
+
+  # Zinit
+  if [[ ! -f $HOME/.zinit/bin/zinit.zsh ]]; then
+      print -P "%F{33}▓▒░ %F{220}Installing %F{33}DHARMA%F{220} Initiative Plugin Manager (%F{33}zdharma/zinit%F{220})…%f"
+      command mkdir -p "$HOME/.zinit" && command chmod g-rwX "$HOME/.zinit"
+      command git clone https://github.com/zdharma/zinit "$HOME/.zinit/bin" && \
+          print -P "%F{33}▓▒░ %F{34}Installation successful.%f%b" || \
+          print -P "%F{160}▓▒░ The clone has failed.%f%b"
+  fi
+
+  source "$HOME/.zinit/bin/zinit.zsh"
+  autoload -Uz _zinit
+  (( ${+_comps} )) && _comps[zinit]=_zinit
+
+  zinit ice depth"1"
+
+  zinit ice pick"async.zsh" src"pure.zsh"
+  zinit light sindresorhus/pure
+  zinit light zimfw/archive
+
+  eval "$(direnv hook zsh)"
 #+end_src
 ** xinitrc
 #+begin_src bash :mkdirp yes :tangle ~/.xinitrc
