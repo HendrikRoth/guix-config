@@ -63,6 +63,7 @@ sudo dnf -y install \
   xss-lock \
   xbacklight \
   xset \
+  xsetroot \
   xrdb \
   zathura
 

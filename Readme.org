@@ -1422,6 +1422,8 @@ Usage in projects =.envrc=:
 ** Autostart
 #+begin_src bash :tangle ~/.autostart
   #!/usr/bin/sh
+  wal -Rq
+
   if [ -f "${HOME}/.cache/wal/colors.sh" ]; then
     . "${HOME}/.cache/wal/colors.sh"
 
@@ -1459,6 +1461,8 @@ Usage in projects =.envrc=:
 #+begin_src bash :mkdirp yes :tangle ~/.config/bspwm/bspwmrc :tangle-mode (identity #o755)
   #!/usr/bin/sh
   . "${HOME}/.autostart"
+
+  xsetroot -solid "$color0"
 
   bspc monitor -d 1 2 3 4 5 6 7 8 9 0
 
@@ -1538,10 +1542,11 @@ Usage in projects =.envrc=:
 #+end_src
 ** Sxhkd
 #+begin_src bash :mkdirp yes :tangle ~/.config/sxhkd/sxhkdrc :tangle-mode (identity #o644)
-  #!/usr/bin/sh
+  #!/usr/bin/zsh
   #
   # wm independent hotkeys
   #
+  source ~/.zshrc
 
   # terminal emulator
   super + Return
@@ -1549,7 +1554,7 @@ Usage in projects =.envrc=:
 
   # program launcher
   super + @space
-    dmenu_run
+    dmen
 
   # make sxhkd reload its configuration files:
   super + Escape
@@ -1746,7 +1751,7 @@ Usage in projects =.envrc=:
 #+begin_src bash :mkdirp yes :tangle ~/.zshrc
   wal -Rq
 
-  if [ -z ~/.cache/wal/colors.sh ]; then
+  if [ -f ~/.cache/wal/colors.sh ]; then
     source ~/.cache/wal/colors.sh
   fi
 
@@ -1773,6 +1778,9 @@ Usage in projects =.envrc=:
   zinit ice pick"async.zsh" src"pure.zsh"
   zinit light sindresorhus/pure
   zinit light zimfw/archive
+
+  zinit ice from"gh-r" as"program"
+  zinit light junegunn/fzf
 
   eval "$(direnv hook zsh)"
 
