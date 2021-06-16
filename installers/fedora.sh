@@ -11,6 +11,8 @@ sudo dnf -y install \
 	bspwm \
 	chromium \
 	curl \
+  feh \
+  ImageMagick \
 	dmenu \
 	dnf-plugins-core \
 	emacs \
@@ -122,4 +124,5 @@ fi
 
 # wallpaper
 mkdir -p ~/.config/scripts
-ln -s ./wallpaper/japanes-wallpaper.svg ~/.config/scripts/wallpaper_file
+rm ~/.config/scripts/wallpaper_file
+ln -s "$(pwd)/wallpapers/japanes-waves.svg" ~/.config/scripts/wallpaper_file
