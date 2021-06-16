@@ -16,6 +16,7 @@ sudo dnf -y install \
 	dmenu \
 	dnf-plugins-core \
 	emacs \
+  pavucontrol \
 	exa \
 	fira-code-fonts \
 	firefox \
