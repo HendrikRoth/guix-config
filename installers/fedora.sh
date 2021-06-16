@@ -1,5 +1,8 @@
 #!/bin/sh
 
+XDG_CONFIG_HOME="${HOME}/.config"
+mkdir -p "${XDG_CONFIG_HOME}"
+
 sudo dnf -y install \
 	@development-tools \
 	alacritty \
@@ -96,11 +99,11 @@ sudo gpasswd -a `whoami` guixbuild
 sudo usermod -s /bin/zsh `whoami`
 
 # Fonts
-git clone https://github.com/edwardtufte/et-book tmp
-mkdir -p ~/.fonts
-cp -r tmp/et-book-ligatures-enabled/**/*.{otf,woff,woff2} ~/.fonts
-rm -rf tmp
-fc-cache -f
+git clone --depth=1 https://github.com/edwardtufte/et-book tmp \
+    && mkdir -p ~/.fonts \
+    && cp -r tmp/et-book-ligatures-enabled/**/*.{otf,woff,woff2} ~/.fonts \
+    && rm -rf tmp \
+    && fc-cache -f
 
 # Color theme tool
 sudo pip install pywal
@@ -108,3 +111,10 @@ sudo pip install "git+http://github.com/phillipberndt/autorandr#egg=autorandr"
 
 # Zsh
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/zdharma/zinit/master/doc/install.sh)"
+
+# nvm
+NVM_DIR="${XDG_CONFIG_HOME}/nvm"
+if [ ! -d $NVM_DIR ]; then
+    git clone --depth=1 https://github.com/nvm-sh/nvm $NVM_DIR
+    bash "${NVM_DIR}/nvm.sh"
+fi

@@ -114,6 +114,7 @@
         - [[#lisp][Lisp]]
       - [[#templates][Templates]]
   - [[#dunst][Dunst]]
+  - [[#direnv][Direnv]]
   - [[#autostart][Autostart]]
   - [[#bspwm][Bspwm]]
   - [[#polybar][Polybar]]
@@ -1407,6 +1408,17 @@ $1
   background = "{background}"
   foreground = "{foreground}"
 #+end_src
+** Direnv
+Usage in projects =.envrc=:
+=use nodejs 14=
+
+#+begin_src bash :tangle ~/.direnvrc
+  use_nodejs() {
+      NODE_VERSION="$1"
+      type nvm > /dev/null 2>&1 || . "${NVM_DIR}/nvm.sh"
+      nvm use "$NODE_VERSION"
+  }
+#+end_src
 ** Autostart
 #+begin_src bash :tangle ~/.autostart
   #!/usr/bin/sh
@@ -1723,6 +1735,13 @@ $1
   alias cat="bat --paging=never"
   alias less="bat --paging=always --style=changes --color=always"
   alias tree="exa --tree --color=always"
+
+  export XDG_CONFIG_HOME="${HOME}/.config"
+  export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+  export FZF_DEFAULT_COMMAND="rg --files"
+  export FZF_DEFAULT_OPTS="--height 50% -1 --layout=reverse-list --multi --preview='[[ \$(file --mime {}) =~ binary ]] && echo {} is a binary file || (bat --style=numbers --color=always {} || cat {}) 2> /dev/null | head -300'"
 #+end_src
 #+begin_src bash :mkdirp yes :tangle ~/.zshrc
   wal -Rq
@@ -1732,6 +1751,7 @@ $1
   fi
 
   source ~/.profile
+  source /usr/share/fzf/shell/key-bindings.zsh
 
   alias dmen='dmenu_run -nb "$color0" -nf "$color15" -sb "$color1" -sf "$color15"'
 
