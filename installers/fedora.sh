@@ -119,3 +119,7 @@ if [ ! -d $NVM_DIR ]; then
     git clone --depth=1 https://github.com/nvm-sh/nvm $NVM_DIR
     bash "${NVM_DIR}/nvm.sh"
 fi
+
+# wallpaper
+mkdir -p ~/.config/scripts
+ln -s ./wallpaper/japanes-wallpaper.svg ~/.config/scripts/wallpaper_file

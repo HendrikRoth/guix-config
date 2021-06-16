@@ -125,6 +125,7 @@
 - [[#scripts][Scripts]]
   - [[#dmenu][Dmenu]]
   - [[#listen-to-monitor-changes][Listen to monitor changes]]
+  - [[#generate-wallpaper][Generate wallpaper]]
 :END:
 
 * Programs
@@ -1435,6 +1436,10 @@ Usage in projects =.envrc=:
 
     ln -sf "${HOME}/.cache/wal/dunstrc" "${HOME}/.config/dunst/dunstrc"
     ln -sf "${HOME}/.cache/wal/zathurarc" "${HOME}/.config/zathura/zathurarc"
+
+    if [ -f "${HOME}/.config/scripts/generate_wallpaper" ]; then
+        \. "${HOME}/.config/scripts/generate_wallpaper"
+    fi
   fi
 
   xsetroot -solid "$color0" -cursor_name left_ptr
@@ -1815,4 +1820,8 @@ Usage in projects =.envrc=:
       ;;
     esac
   done &
+#+end_src
+** Generate wallpaper
+#+begin_src bash :tangle ~/.config/scripts/generate_wallpaper :tangle-mode (identity #o755)
+sed 's/black/${color1}/g; s/white/${color2}/g' ~/.config/scripts/wallpaper_file > ~/.wallpaper
 #+end_src
