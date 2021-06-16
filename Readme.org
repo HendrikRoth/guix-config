@@ -124,6 +124,7 @@
   - [[#xinitrc][xinitrc]]
 - [[#scripts][Scripts]]
   - [[#dmenu][Dmenu]]
+  - [[#listen-to-monitor-changes][Listen to monitor changes]]
 :END:
 
 * Programs
@@ -1436,7 +1437,7 @@ Usage in projects =.envrc=:
     ln -sf "${HOME}/.cache/wal/zathurarc" "${HOME}/.config/zathura/zathurarc"
   fi
 
-  xsetroot -solid "$color0"
+  xsetroot -solid "$color0" -cursor_name left_ptr
   xset s 300 5
   xss-lock -- xsecurelock &
 
@@ -1465,7 +1466,7 @@ Usage in projects =.envrc=:
   #!/usr/bin/sh
   . "${HOME}/.config/autostart"
 
-  bspc monitor -d 1 2 3 4 5 6 7 8 9 #10
+  bspc monitor -d 1 2 3 4 5 6 7 8 9 0
 
   bspc config border_width         2
   bspc config window_gap           0
@@ -1482,9 +1483,11 @@ Usage in projects =.envrc=:
   bspc desktop 0 --layout monocle
   bspc desktop 1 --layout monocle
 
-  bspc rule -a Emacs desktop='^1' state=tiled
-  bspc rule -a Chromium desktop='^8'
-  bspc rule -a Firefox desktop='^9'
+  bspc rule -a Emacs desktop=^1 state=tiled focus=true follow=true manage=true
+  bspc rule -a Chromium-browser desktop=^10 follow=false manage=true
+  bspc rule -a Firefox desktop=^10 follow=false manage=true
+
+  . "${HOME}/.config/scripts/bspwm_workspaces"
 #+end_src
 ** Polybar
 #+begin_src bash :mkdirp yes :tangle ~/.config/polybar/config
@@ -1789,11 +1792,27 @@ Usage in projects =.envrc=:
 #+begin_src bash :mkdirp yes :tangle ~/.xinitrc
   exec bspwm
 #+end_src
-
 * Scripts
 ** Dmenu
 #+begin_src bash :mkdirp yes :tangle ~/.config/scripts/dmenu :tangle-mode (identity #o755)
   #!/usr/bin/zsh
   source ~/.cache/wal/colors.sh
   dmenu_run -nb "$color0" -nf "$color15" -sb "$color1" -sf "$color15" -fn "Fira Code:size=8"
+#+end_src
+** Listen to monitor changes
+#+begin_src bash :tangle ~/.config/scripts/bspwm_workspaces :tangle-mode (identity #o755)
+  bspc subscribe monitor | while read -r line; do
+      case $line in
+          monitor_add*|monitor_geometry*)
+              if [ "$(bspc query -M | wc -l)" -eq "2"]; then
+                  bspc monitor $(bspc query -M | sed -n 1p) -d 1 2 3 4 5
+                  bspc monitor $(bspc query -M | sed -n 2p) -d 6 7 8 9 0
+              else
+                  bspc monitor -d 0 1 2 3 4 5 6 7 9 0
+              fi
+          ;;
+      *)
+      ;;
+    esac
+  done &
 #+end_src
