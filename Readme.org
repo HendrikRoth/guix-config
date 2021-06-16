@@ -1443,7 +1443,7 @@ Usage in projects =.envrc=:
   fi
 
   xsetroot -solid "$color0" -cursor_name left_ptr
-  feh --bg-fill --conversion-timeout 1 ~/.wallpaper &
+  feh --bg-fill --conversion-timeout 10 ~/.wallpaper &
   xset s 300 5
   xss-lock -- xsecurelock &
 
@@ -1826,5 +1826,5 @@ Usage in projects =.envrc=:
 #+begin_src bash :tangle ~/.config/scripts/generate_wallpaper :tangle-mode (identity #o755)
   #!/usr/bin/zsh
   source ~/.cache/wal/colors.sh
-  sed "s/black/${color0}/g; s/white/${color1}/g" ~/.config/scripts/wallpaper_file > ~/.wallpaper
+  sed "s/black/${color0}/g; s/white/${color7}/g" ~/.config/scripts/wallpaper_file > ~/.wallpaper
 #+end_src
