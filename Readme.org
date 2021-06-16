@@ -1812,9 +1812,6 @@ Usage in projects =.envrc=:
   zinit light sindresorhus/pure
   zinit light zimfw/archive
 
-  zinit ice from"gh-r" as"program"
-  zinit light junegunn/fzf-bin
-
   zinit wait lucid light-mode for \
         atinit"zicompinit; zicdreplay" \
           zdharma/fast-syntax-highlighting \
@@ -1822,6 +1819,12 @@ Usage in projects =.envrc=:
           zsh-users/zsh-autosuggestions \
         blockf atpull"zinit creinstall -q ." \
           zsh-users/zsh-completions
+
+  zinit ice from"gh-r" as"program"
+  zinit light junegunn/fzf-bin
+
+  zinit ice wait"1" lucid
+  zinit light Aloxaf/fzf-tab
 
   eval "$(direnv hook zsh)"
 
