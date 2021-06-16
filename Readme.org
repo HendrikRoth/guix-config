@@ -1813,7 +1813,15 @@ Usage in projects =.envrc=:
   zinit light zimfw/archive
 
   zinit ice from"gh-r" as"program"
-  zinit light junegunn/fzf
+  zinit light junegunn/fzf-bin
+
+  zinit wait lucid light-mode for \
+        atinit"zicompinit; zicdreplay" \
+          zdharma/fast-syntax-highlighting \
+        atload"_zsh_autosuggest_start" \
+          zsh-users/zsh-autosuggestions \
+        blockf atpull"zinit creinstall -q ." \
+          zsh-users/zsh-completions
 
   eval "$(direnv hook zsh)"
 
