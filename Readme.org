@@ -1489,11 +1489,11 @@ Usage in projects =.envrc=:
   bspc desktop 0 --layout monocle
   bspc desktop 1 --layout monocle
 
-  bspc rule -a Emacs desktop=^1 state=tiled focus=true follow=true manage=true
-  bspc rule -a Chromium-browser desktop=^10 follow=false manage=true
-  bspc rule -a Firefox desktop=^10 follow=false manage=true
-  bspc rule -a Pavucontrol floating=true sticky=true rectangle=200x100-100-100
-  
+  bspc rule -a Emacs desktop=^1 state=tiled focus=on follow=on manage=on
+  bspc rule -a Chromium-browser desktop=^10 manage=on focus=off follow=off
+  bspc rule -a Firefox desktop=^10 manage=on focus=off follow=off
+  bspc rule -a Pavucontrol state=floating sticky=on rectangle=400x300+100+100
+
   . "${HOME}/.config/scripts/bspwm_workspaces"
 #+end_src
 ** Polybar
