@@ -118,6 +118,9 @@
   - [[#autostart][Autostart]]
   - [[#bspwm][Bspwm]]
   - [[#polybar][Polybar]]
+    - [[#settings][Settings]]
+    - [[#widgetsscripts][Widgets/Scripts]]
+      - [[#unread-mails-widget][Unread mails widget]]
   - [[#sxhkd][Sxhkd]]
   - [[#zathura][Zathura]]
   - [[#zsh][zsh]]
@@ -1472,7 +1475,7 @@ Usage in projects =.envrc=:
   #!/usr/bin/sh
   . "${HOME}/.config/autostart"
 
-  bspc monitor -d 1 2 3 4 5 6 7 8 9 0
+  bspc monitor -d "1" "2" "3" "4" "5" "6" "7" "8" "9" "0"
 
   bspc config border_width         2
   bspc config window_gap           0
@@ -1497,7 +1500,9 @@ Usage in projects =.envrc=:
   . "${HOME}/.config/scripts/bspwm_workspaces"
 #+end_src
 ** Polybar
-For finding & pasting icon codes: http://mathew-kurian.github.io/CharacterMap/
+*** Settings
+For finding & pasting icon codes: https://mathew-kurian.github.io/CharacterMap
+Some modules don't support click events, workaround: https://github.com/polybar/polybar/wiki/Formatting#action-a
 #+begin_src bash :mkdirp yes :tangle ~/.config/polybar/config
   [global/wm]
   margin-bottom = 0
@@ -1558,8 +1563,7 @@ For finding & pasting icon codes: http://mathew-kurian.github.io/CharacterMap/
   time-alt = %H:%M:%S
   format-prefix = %{T4}%{T-}
   label = %time% %date%
-  click-left = "alacritty -e cal &"
-  click-right = toggle
+  click-left = toggle
 
   [module/pulseaudio]
   type = internal/pulseaudio
@@ -1583,6 +1587,22 @@ For finding & pasting icon codes: http://mathew-kurian.github.io/CharacterMap/
   menu-0-1-exec = systemctl reboot
   menu-0-2 = %{T4}%{T-}Shutdown
   menu-0-2-exec = systemctl poweroff
+#+end_src
+*** Widgets/Scripts
+**** Unread mails widget
+#+begin_src bash :mkdirp yes :tangle ~/.config/polybar/mails
+  #!/bin/sh
+  maildir = ~/mails/new
+  prog = isync
+  count = 0
+
+  if [ -x $prog ]; then
+      $prog 2>/dev/null&
+      wait
+  fi
+
+  count = $(ls -1 "${maildir}" | wc -l)
+  echo "${count}"
 #+end_src
 ** Sxhkd
 #+begin_src bash :mkdirp yes :tangle ~/.config/sxhkd/sxhkdrc :tangle-mode (identity #o644)
@@ -1779,8 +1799,8 @@ For finding & pasting icon codes: http://mathew-kurian.github.io/CharacterMap/
   alias c="clear"
   alias ls="exa --color=always"
   alias l="exa -abgHhl@ --git --color=always --group-directories-first"
-  alias cat="bat --paging=never"
-  alias less="bat --paging=always --style=changes --color=always"
+  alias cat="bat --theme=base16-256 --paging=never --color=always"
+  alias less="bat --theme=base16-256 --paging=always --style=changes --color=always"
   alias tree="exa --tree --color=always"
 
   export XDG_CONFIG_HOME="${HOME}/.config"
@@ -1856,10 +1876,10 @@ For finding & pasting icon codes: http://mathew-kurian.github.io/CharacterMap/
       case $line in
           monitor_add*|monitor_geometry*)
               if [ "$(bspc query -M | wc -l)" -eq "2"]; then
-                  bspc monitor $(bspc query -M | sed -n 1p) -d 1 2 3 4 5
-                  bspc monitor $(bspc query -M | sed -n 2p) -d 6 7 8 9 0
+                  bspc monitor $(bspc query -M | sed -n 1p) -d "1" "2" "3" "4" "5"
+                  bspc monitor $(bspc query -M | sed -n 2p) -d "6" "7" "8" "9" "0"
               else
-                  bspc monitor -d 0 1 2 3 4 5 6 7 9 0
+                  bspc monitor -d "1" "2" "3" "4" "5" "6" "7" "9" "0"
               fi
           ;;
       *)
