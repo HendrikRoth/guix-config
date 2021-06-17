@@ -26,6 +26,7 @@ sudo dnf -y install \
 	git \
 	inkscape \
 	maildir-utils \
+  material-icons-fonts \
 	mesa-dri-drivers \
 	neovim \
 	nnn \

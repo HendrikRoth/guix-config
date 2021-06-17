@@ -1497,6 +1497,7 @@ Usage in projects =.envrc=:
   . "${HOME}/.config/scripts/bspwm_workspaces"
 #+end_src
 ** Polybar
+For finding & pasting icon codes: http://mathew-kurian.github.io/CharacterMap/
 #+begin_src bash :mkdirp yes :tangle ~/.config/polybar/config
   [global/wm]
   margin-bottom = 0
@@ -1531,7 +1532,9 @@ Usage in projects =.envrc=:
   font-0 = "Fira Code:size=8;0"
   font-1 = "Roboto:size=11:weight=bold;2"
   font-2 = "Noto Sans:size=11;1"
-
+  font-3 = "Material Icons Outlined:8;2"
+  font-4 = "Material Icons Round:8;2"
+  
   [module/bspwm]
   type = internal/bspwm
   pin-workspaces = true
@@ -1553,6 +1556,7 @@ Usage in projects =.envrc=:
   time = %H:%M
   date-alt = %A, %d %B %Y
   time-alt = %H:%M:%S
+  format-prefix = %{T4}%{T-}
   label = %time% %date%
   click-left = "alacritty -e cal &"
   click-right = toggle
@@ -1561,7 +1565,8 @@ Usage in projects =.envrc=:
   type = internal/pulseaudio
   interval = 5
   use-ui-max = false
-  label-muted = MM
+  format-volume-prefix = %{T4}%{T-}
+  format-muted-prefix = %{T4}%{T-}
   click-left = toggle
   click-right = pavucontrol
   scroll-up = inc
@@ -1569,13 +1574,15 @@ Usage in projects =.envrc=:
 
   [module/menu-apps]
   type = custom/menu
-  label-open = !
-  label-close = X
+  label-open = %{T4}%{T-}
+  label-close = %{T4}%{T-}Cancel
   label-separator = "  "
-  menu-0-0 = Shutdown
-  menu-0-0-exec = shutdown now
-  menu-0-1 = Reboot
-  menu-0-1-exec = reboot now
+  menu-0-0 = %{T4}%{T-}Lock
+  menu-0-0-exec = xsecurelock
+  menu-0-1 = %{T4}%{T-}Reboot
+  menu-0-1-exec = systemctl reboot
+  menu-0-2 = %{T4}%{T-}Shutdown
+  menu-0-2-exec = systemctl poweroff
 #+end_src
 ** Sxhkd
 #+begin_src bash :mkdirp yes :tangle ~/.config/sxhkd/sxhkdrc :tangle-mode (identity #o644)
