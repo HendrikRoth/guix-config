@@ -1890,7 +1890,7 @@ Some modules don't support click events, workaround: https://github.com/polybar/
 #+begin_src emacs-lisp :mkdirp yes :tangle ~/.config/nyxt/init.lisp
   (in-package #:nyxt-user)
 
-  ;; (load-after-system :nx-search-engines (nyxt-init-file "search-engines.lisp"))
+  (load-after-system :nx-search-engines (nyxt-init-file "search-engines.lisp"))
 
   (define-configuration buffer
     ((default-modes (append '(vi-normal-mode) %slot-default%))))
@@ -1920,17 +1920,17 @@ Some modules don't support click events, workaround: https://github.com/polybar/
           :infinite-scroll nil
           :safe-search :off
           :font-size :medium
-          :header-behaviour :on-fixed
+          :header-behavior :on-fixed
           :font :helvetica
           :background-color "CCCCCC"
           :center-alignment t))
 
       (define-configuration buffer
         ((search-engines (list
-                          ;; (engines:google :shortcut "g"
-                          ;;                 :safe-search nil)
-                          ;; (engines:google :shortcut "maps"
-                          ;;                 :object :maps)
+                          (engines:google :shortcut "g"
+                                          :safe-search nil)
+                          (engines:google :shortcut "maps"
+                                          :object :maps)
                           (make-instance 'search-engine
                                          :shortcut "osm"
                                          :search-url "https://www.openstreetmap.org/search?query=~a"
@@ -1943,8 +1943,8 @@ Some modules don't support click events, workaround: https://github.com/polybar/
                                          :shortcut "yt"
                                          :search-url "https://www.youtube.com/results?search_query=~a"
                                          :fallback-url "https://www.youtube.com/")
-                          ;; (apply #'engines:duckduckgo-images
-                          ;;       :shortcut "i" *duckduckgo-keywords*)
+                          (apply #'engines:duckduckgo-images
+                                :shortcut "i" *duckduckgo-keywords*)
                           (apply #'engines:duckduckgo
                                 :shortcut "d" *duckduckgo-keywords*)
         )))
