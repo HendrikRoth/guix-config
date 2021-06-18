@@ -128,6 +128,8 @@
   - [[#zsh][zsh]]
   - [[#xinitrc][xinitrc]]
   - [[#nyxt][Nyxt]]
+    - [[#init][Init]]
+    - [[#search-engines][Search Engines]]
 - [[#scripts][Scripts]]
   - [[#dmenu][Dmenu]]
   - [[#listen-to-monitor-changes][Listen to monitor changes]]
@@ -1884,17 +1886,69 @@ Some modules don't support click events, workaround: https://github.com/polybar/
   exec bspwm
 #+end_src
 ** Nyxt
+*** Init
 #+begin_src emacs-lisp :mkdirp yes :tangle ~/.config/nyxt/init.lisp
-  ;; vi keybindings
+  (in-package #:nyxt-user)
+
+  ;; (load-after-system :nx-search-engines (nyxt-init-file "search-engines.lisp"))
+
   (define-configuration buffer
     ((default-modes (append '(vi-normal-mode) %slot-default%))))
 
-  ;; search engines
-  (make-search-engine "google" "https://www.google.com/search?q=~a" "https://www.google.com/")
-  (make-search-engine "wikipedia" "https://de.wikipedia.org/search?q=~a" "https://de.wikipedia.org/")
-  (make-search-engine "duckduckgo" "https://duckduckgo.com?q=~a" "https://duckduckgo.com/")
-  (make-search-engine "leo" "https://dict.leo.org/englisch-deutsch/~a" "https://dict.leo.org/")
-  (make-search-engine "leo-reverse" "https://dict.leo.org/englisch-deutsch/~a?side=left" "https://dict.leo.org/")
+  (define-configuration browser
+    ((session-restore-prompt :never-restore)))
+
+  (define-configuration nyxt/web-mode:web-mode
+    ((nyxt/web-mode:hints-alphabet "asdfghqwert")))
+#+end_src
+*** Search Engines
+#+begin_src emacs-lisp :mkdirp yes :tangle ~/.config/nyxt/search-engines.lisp
+      (in-package #:nyxt-user)
+
+      ;; duckduckgo settings
+      (defvar *duckduckgo-keywords*
+        '(:theme :light
+          :help-improve-duckduckgo nil
+          :homepage-privacy-tips nil
+          :newsletter-reminders nil
+          :install-reminders nil
+          :install-duckduckgo nil
+          :units-of-measure :metric
+          :keyboard-shortcuts t
+          :advertisements nil
+          :open-in-new-tab nil
+          :infinite-scroll nil
+          :safe-search :off
+          :font-size :medium
+          :header-behaviour :on-fixed
+          :font :helvetica
+          :background-color "CCCCCC"
+          :center-alignment t))
+
+      (define-configuration buffer
+        ((search-engines (list
+                          ;; (engines:google :shortcut "g"
+                          ;;                 :safe-search nil)
+                          ;; (engines:google :shortcut "maps"
+                          ;;                 :object :maps)
+                          (make-instance 'search-engine
+                                         :shortcut "osm"
+                                         :search-url "https://www.openstreetmap.org/search?query=~a"
+                                         :fallback-url "https://www.openstreetmap.org/")
+                          (make-instance 'search-engine
+                                         :shortcut "wiki"
+                                         :search-url "https://de.wikipedia.org/w/index.php?search=~a"
+                                         :fallback-url "https://de.wikipedia.org/")
+                          (make-instance 'search-engine
+                                         :shortcut "yt"
+                                         :search-url "https://www.youtube.com/results?search_query=~a"
+                                         :fallback-url "https://www.youtube.com/")
+                          ;; (apply #'engines:duckduckgo-images
+                          ;;       :shortcut "i" *duckduckgo-keywords*)
+                          (apply #'engines:duckduckgo
+                                :shortcut "d" *duckduckgo-keywords*)
+        )))
+      )
 #+end_src
 * Scripts
 ** Dmenu

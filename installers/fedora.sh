@@ -133,3 +133,4 @@ ln -s "$(pwd)/wallpapers/japanes-waves.svg" ~/.config/scripts/wallpaper_file
 curl -o nyxt.tar.xz https://nyxt.atlas.engineer/static/release/nyxt-linux-2.0.0.tar.xz
 sudo tar xf nyxt.tar.xz -C /
 rm nyxt.tar.xz
+git clone https://github.com/aartaka/nx-search-engines ~/.local/share/nyxt/extensions/nx-search-engines
