@@ -128,3 +128,8 @@ fi
 mkdir -p ~/.config/scripts
 rm ~/.config/scripts/wallpaper_file
 ln -s "$(pwd)/wallpapers/japanes-waves.svg" ~/.config/scripts/wallpaper_file
+
+# nyxt web browser
+curl -o nyxt.tar.xz https://nyxt.atlas.engineer/static/release/nyxt-linux-2.0.0.tar.xz
+sudo tar xf nyxt.tar.xz -C /
+rm nyxt.tar.xz

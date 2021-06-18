@@ -127,6 +127,7 @@
   - [[#zathura][Zathura]]
   - [[#zsh][zsh]]
   - [[#xinitrc][xinitrc]]
+  - [[#nyxt][Nyxt]]
 - [[#scripts][Scripts]]
   - [[#dmenu][Dmenu]]
   - [[#listen-to-monitor-changes][Listen to monitor changes]]
@@ -1487,7 +1488,7 @@ Usage in projects =.envrc=:
   playerctld daemon &
 
   emacs --daemon &
-  chromium-browser &
+  nyxt &
 #+end_src
 ** Bspwm
 #+begin_src bash :mkdirp yes :tangle ~/.config/bspwm/bspwmrc :tangle-mode (identity #o755)
@@ -1512,8 +1513,9 @@ Usage in projects =.envrc=:
   bspc desktop 1 --layout monocle
 
   bspc rule -a Emacs desktop=^1 state=tiled focus=on follow=on manage=on
-  bspc rule -a Chromium-browser desktop=^10 manage=on focus=off follow=off
-  bspc rule -a Firefox desktop=^10 manage=on focus=off follow=off
+  bspc rule -a Nyxt desktop=^10 manage=on focus=off follow=off
+  bspc rule -a Chromium-browser desktop=^9 manage=on focus=off follow=off
+  bspc rule -a Firefox desktop=^9 manage=on focus=off follow=off
   bspc rule -a Pavucontrol state=floating sticky=on rectangle=400x300+100+100
 
   . "${HOME}/.config/scripts/bspwm_workspaces"
@@ -1880,6 +1882,19 @@ Some modules don't support click events, workaround: https://github.com/polybar/
 ** xinitrc
 #+begin_src bash :mkdirp yes :tangle ~/.xinitrc
   exec bspwm
+#+end_src
+** Nyxt
+#+begin_src emacs-lisp :mkdirp yes :tangle ~/.config/nyxt/init.lisp
+  ;; vi keybindings
+  (define-configuration buffer
+    ((default-modes (append '(vi-normal-mode) %slot-default%))))
+
+  ;; search engines
+  (make-search-engine "google" "https://www.google.com/search?q=~a" "https://www.google.com/")
+  (make-search-engine "wikipedia" "https://de.wikipedia.org/search?q=~a" "https://de.wikipedia.org/")
+  (make-search-engine "duckduckgo" "https://duckduckgo.com?q=~a" "https://duckduckgo.com/")
+  (make-search-engine "leo" "https://dict.leo.org/englisch-deutsch/~a" "https://dict.leo.org/")
+  (make-search-engine "leo-reverse" "https://dict.leo.org/englisch-deutsch/~a?side=left" "https://dict.leo.org/")
 #+end_src
 * Scripts
 ** Dmenu
