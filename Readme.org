@@ -29,6 +29,7 @@
       - [[#increase-undo-limit-10mb][Increase undo limit (10mb)]]
       - [[#handle-camelcase-as-seperate-words][Handle CamelCase as seperate words]]
       - [[#clipboard][Clipboard]]
+      - [[#server][Server]]
     - [[#keybindings][Keybindings]]
       - [[#vim-keybindings][Vim keybindings]]
       - [[#leader-bindings][Leader bindings]]
@@ -66,6 +67,7 @@
       - [[#rss-feeds][RSS Feeds]]
       - [[#openscad][OpenSCAD]]
       - [[#mail][Mail]]
+      - [[#media][Media]]
     - [[#development][Development]]
       - [[#git][Git]]
       - [[#projectile][Projectile]]
@@ -281,6 +283,10 @@ Don't create =.#Name.file= files.
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
   (setq-default select-enable-clipboard t)
 #+end_src
+**** Server
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+(server-start)
+#+end_src
 *** Keybindings
 **** Vim keybindings
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -362,11 +368,12 @@ Don't create =.#Name.file= files.
 #+end_src
 **** Which-key
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-  (use-package which-key
-    :init (which-key-mode)
-    :diminish which-key-mode
-    :config
-    (setq which-key-idle-delay 0.5))
+    (use-package which-key
+      :init (which-key-mode)
+      :diminish which-key-mode
+      :config
+      (setq which-key-idle-delay 0)
+      (setq which-key-idle-secondary-delay 0))
 #+end_src
 **** Dashboard
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -798,11 +805,11 @@ Don't create =.#Name.file= files.
       (mu4e-headers-search hr/mu4e-inbox-query))
 
   (hr/leader-key-def
-    "m" '(:ignore t :which-key "mail")
-    "mm" 'mu4e
-    "mc" 'mu4e-compose-new
-    "mi" 'hr/go-to-inbox
-    "ms" 'mu4e-update-mail-and-index)
+    "M" '(:ignore t :which-key "mail")
+    "Mm" 'mu4e
+    "Mc" 'mu4e-compose-new
+    "Mi" 'hr/go-to-inbox
+    "Ms" 'mu4e-update-mail-and-index)
 
   (mu4e t))
 #+end_src
@@ -815,6 +822,18 @@ Mail alerts..
     (setq mu4e-alert-intersting-mail-query hr/mu4e-inbox-query)
     (setq mu4e-alert-notify-repeated-mails nil)
     (mu4e-alert-enable-notifications))
+#+end_src
+**** Media
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+  (use-package playerctl)
+
+  (hr/leader-key-def
+    "m" '(:ignore t :which-key "media control")
+    "mt" '(playerctl-play-pause-song :which-key "play/pause")
+    "mn" '(playerctl-next-song :which-key "next song")
+    "mp" '(playerctl-previous-song :which-key "previous song")
+    "mf" '(playerctl-seek-forward :which-key "seek forward")
+    "mb" '(playerctl-seek-backward :which-key "seek backward"))
 #+end_src
 *** Development
 **** Git
@@ -1467,7 +1486,7 @@ Usage in projects =.envrc=:
 
   playerctld daemon &
 
-  emacs &
+  emacs --daemon &
   chromium-browser &
 #+end_src
 ** Bspwm
@@ -1792,23 +1811,22 @@ Some modules don't support click events, workaround: https://github.com/polybar/
 #+end_src
 ** zsh
 #+begin_src bash :mkdirp yes :tangle ~/.profile
-  alias n="nnn"
-  alias vim="nvim"
-  alias v="nvim"
-  alias e="emacs"
-  alias c="clear"
-  alias ls="exa --color=always"
-  alias l="exa -abgHhl@ --git --color=always --group-directories-first"
-  alias cat="bat --theme=base16-256 --paging=never --color=always"
-  alias less="bat --theme=base16-256 --paging=always --style=changes --color=always"
-  alias tree="exa --tree --color=always"
+   alias n="nnn"
+   alias vim="nvim"
+   alias v="nvim"
+   alias e="emacs"
+   alias c="clear"
+   alias ls="exa --color=always"
+   alias l="exa -abgHhl@ --git --color=always --group-directories-first"
+   alias cat="bat --theme=base16-256 --paging=never --color=always"
+   alias less="bat --theme=base16-256 --paging=always --style=changes --color=always"
+   alias tree="exa --tree --color=always"
 
-  export XDG_CONFIG_HOME="${HOME}/.config"
-  export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+   export XDG_CONFIG_HOME="${HOME}/.config"
+   export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
-  export FZF_DEFAULT_COMMAND="rg --files"
-  export FZF_DEFAULT_OPTS="--height 50% -1 --layout=reverse-list --multi --preview='[[ \$(file --mime {}) =~ binary ]] && echo {} is a binary file || (bat --style=numbers --color=always {} || cat {}) 2> /dev/null | head -300'"
+   export FZF_DEFAULT_COMMAND="rg --files"
 #+end_src
 #+begin_src bash :mkdirp yes :tangle ~/.zshrc
   wal -Rq
@@ -1868,7 +1886,7 @@ Some modules don't support click events, workaround: https://github.com/polybar/
 #+begin_src bash :mkdirp yes :tangle ~/.config/scripts/dmenu :tangle-mode (identity #o755)
   #!/usr/bin/zsh
   source ~/.cache/wal/colors.sh
-  dmenu_run -nb "$color0" -nf "$color15" -sb "$color1" -sf "$color15" -fn "Fira Code:size=4"
+  dmenu_run -nb "$color0" -nf "$color7" -sb "$color7" -sf "$color0" -fn "Fira Code:size=9"
 #+end_src
 ** Listen to monitor changes
 #+begin_src bash :tangle ~/.config/scripts/bspwm_workspaces :tangle-mode (identity #o755)
