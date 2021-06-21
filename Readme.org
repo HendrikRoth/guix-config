@@ -130,6 +130,8 @@
   - [[#nyxt][Nyxt]]
     - [[#init][Init]]
     - [[#search-engines][Search Engines]]
+    - [[#desktop-file][Desktop file]]
+- [[#default-applications][Default applications]]
 - [[#scripts][Scripts]]
   - [[#dmenu][Dmenu]]
   - [[#listen-to-monitor-changes][Listen to monitor changes]]
@@ -1951,6 +1953,24 @@ Some modules don't support click events, workaround: https://github.com/polybar/
                                 :shortcut "d" *duckduckgo-keywords*)
         )))
       )
+#+end_src
+*** Desktop file
+#+begin_src emacs-lisp :tangle ~/.local/share/applications/Nyxt.desktop
+  [Desktop Entry]
+  Name=Nyxt
+  Type=Application
+  Path=/usr/local/bin/nyxt
+  Terminal=false
+  Exec=nyxt
+#+end_src
+* Default applications
+#+begin_src emacs-lisp :tangle ~/.config/mimeapps.list
+  [Default Applications]
+  text/html=Nyxt.desktop
+  x-scheme-handler/http=Nyxt.desktop
+  x-scheme-handler/https=Nyxt.desktop
+  x-scheme-handler/about=Nyxt.desktop
+  x-scheme-handler/unknown=Nyxt.desktop
 #+end_src
 * Scripts
 ** Dmenu
