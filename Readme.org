@@ -1815,22 +1815,24 @@ Some modules don't support click events, workaround: https://github.com/polybar/
 #+end_src
 ** zsh
 #+begin_src bash :mkdirp yes :tangle ~/.profile
-   alias n="nnn"
-   alias vim="nvim"
-   alias v="nvim"
-   alias e="emacs"
-   alias c="clear"
-   alias ls="exa --color=always"
-   alias l="exa -abgHhl@ --git --color=always --group-directories-first"
-   alias cat="bat --theme=base16-256 --paging=never --color=always"
-   alias less="bat --theme=base16-256 --paging=always --style=changes --color=always"
-   alias tree="exa --tree --color=always"
+  alias n="nnn"
+  alias vim="nvim"
+  alias v="nvim"
+  alias e="emacs"
+  alias c="clear"
+  alias ls="exa --color=always"
+  alias l="exa -abgHhl@ --git --color=always --group-directories-first"
+  alias cat="bat --theme=base16-256 --paging=never --color=always"
+  alias less="bat --theme=base16-256 --paging=always --style=changes --color=always"
+  alias tree="exa --tree --color=always"
 
-   export XDG_CONFIG_HOME="${HOME}/.config"
-   export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
-   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  export XDG_CONFIG_HOME="${HOME}/.config"
+  export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
-   export FZF_DEFAULT_COMMAND="rg --files"
+  export FZF_DEFAULT_COMMAND="rg --files"
+  export BROWSER="$(command -v nyxt)"
+  export EDITOR="$(command -v emacs)"
 #+end_src
 #+begin_src bash :mkdirp yes :tangle ~/.zshrc
   wal -Rq

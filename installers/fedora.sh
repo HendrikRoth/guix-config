@@ -137,6 +137,7 @@ if [ ! command -v nyxt &> /dev/null ]; then
 fi
 rm -rf ~/.local/share/nyxt/extensions/nx-search-engines
 git clone https://github.com/aartaka/nx-search-engines ~/.local/share/nyxt/extensions/nx-search-engines
+xdg-settings set default-web-browser nyxt.desktop
 
 # Portainer (Docker management)
 sudo docker top portainer || sudo docker run \
