@@ -129,6 +129,7 @@
   - [[#xinitrc][xinitrc]]
   - [[#nyxt][Nyxt]]
     - [[#init][Init]]
+    - [[#style][Style]]
     - [[#search-engines][Search Engines]]
     - [[#desktop-file][Desktop file]]
 - [[#default-applications][Default applications]]
@@ -1894,6 +1895,7 @@ Some modules don't support click events, workaround: https://github.com/polybar/
 #+begin_src emacs-lisp :mkdirp yes :tangle ~/.config/nyxt/init.lisp
   (in-package #:nyxt-user)
 
+  (load (nyxt-init-file "nyxt-style.lisp"))
   (load-after-system :nx-search-engines (nyxt-init-file "search-engines.lisp"))
 
   (define-configuration buffer
@@ -1904,6 +1906,112 @@ Some modules don't support click events, workaround: https://github.com/polybar/
 
   (define-configuration nyxt/web-mode:web-mode
     ((nyxt/web-mode:hints-alphabet "asdfghqwert")))
+#+end_src
+*** Style
+#+begin_src emacs-lisp :tangle ~/.config/wal/templates/nyxt-style.lisp
+      (in-package #:nyxt-user)
+
+      (define-configuration window
+        ((message-buffer-style
+          (str:concat
+           %slot-default%
+           (cl-css:css
+            '((body
+               :background-color "{background}"
+               :color "{color7}")))))))
+
+      (define-configuration prompt-buffer
+        ((style
+          (str:concat
+           %slot-default%
+           (cl-css:css
+            '((*
+               :font-family "Fira Code"
+               :font-size "12px"
+               :line-height "14px")
+              (body
+               :background-color "{background}"
+               :border-top "1px solid {color7}"
+               :color "{color7}")
+              ("#prompt-area"
+               :background-color "{background}"
+               :color "{color7}")
+              ("#input"
+               :background-color "{background}"
+               :color "{color7}")
+              (".source-name"
+               :background-color "{background}"
+               :color "{foreground}")
+              (".source-content"
+               :background-color "{background}")
+              (".source-content th"
+               :background-color "{color7}"
+               :color "{background}")
+              ("#selection"
+               :background-color "{background}"
+               :color "{color2}")
+              (.selected
+               :background-color "{color3}")
+              (".marked"
+               :background-color "{background}"
+               :color "{foreground}"
+               :font-weight "bold")))))))
+
+      (define-configuration internal-buffer
+        ((style
+          (str:concat
+           %slot-default%
+           (cl-css:css
+            '((title
+               :color "{foreground}")
+              (body
+              :background-color "{background}"
+              :color "{foreground}")
+              (hr
+              :color "{foreground}")
+              (a
+              :color "{color3}")
+              (.button
+              :color "{color4}"
+              :background-color "{color7}")))))))
+
+      (define-configuration status-buffer
+        ((style
+          (str:concat
+           %slot-default%
+           (cl-css:css
+            '((*
+               :font-family "Fira Code"
+               :font-size "12px"
+               :line-height "14px")
+              (body
+               :background-color "{background}")
+              (.button
+               :color "{color7}")
+              (".button:hover"
+               :color "{foreground}")
+              (.tab
+               :color "{color7}")
+              (".tab:hover"
+               :color "{foreground}")
+              ("#container"
+               :grid-template-columns "2fr 3fr 240px")
+              ("#controls"
+               :display "none")
+              (.arrow-right
+               :display "none")
+              (.arrow-left
+               :display "none")
+              ("#url"
+               :background-color "{background}"
+               :border-top "1px solid {color7}")
+              ("#modes"
+               :background-color "{background}"
+               :border-top "1px solid {color7}"
+               :color "{color7}")
+              ("#tabs"
+               :background-color "{background}"
+               :border-top "1px solid {color7}")))))))
 #+end_src
 *** Search Engines
 #+begin_src emacs-lisp :mkdirp yes :tangle ~/.config/nyxt/search-engines.lisp
