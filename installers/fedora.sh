@@ -149,3 +149,19 @@ sudo docker top portainer || sudo docker run \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v portainer_data:/data \
     portainer/portainer-ce
+
+# create mu index
+if [ ! -d ~/mail ]; then
+    mu index --maildir=~/mail
+fi
+
+# create org folders
+if [ ! -d ~/notes ]; then
+    mkdir -p ~/notes/roam
+    mkdir -p ~/notes/personal
+    mkdir -p ~/notes/work
+
+    if [ ! -f ~/notes/tasks.org ]; then
+        touch ~/notes/tasks.org
+    fi
+fi

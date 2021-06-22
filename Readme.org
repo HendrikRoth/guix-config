@@ -9,7 +9,8 @@
 :CONTENTS:
 - [[#programs][Programs]]
   - [[#mail][Mail]]
-    - [[#imap][Imap]]
+    - [[#imap-home][Imap (Home)]]
+    - [[#imap-work][Imap (Work)]]
   - [[#emacs][Emacs]]
     - [[#package-management][Package management]]
     - [[#basic-settings][Basic settings]]
@@ -141,12 +142,11 @@
 
 * Programs
 ** Mail
-*** Imap
-#+begin_src conf :tangle ~/.mbsyncrc
+*** Imap (Home)
   IMAPAccount gmail
   Host imap.gmail.com
   User mail@henn1nk.com
-  PassCmd "pass Mail/Gmail/henn1nk"
+  PassCmd "pass mail/mail@henn1nk.com"
   SSLType IMAPS
   SSLVersions TLSv1.2
   CertificateFile /etc/ssl/certs/ca-certificates.crt
@@ -154,7 +154,7 @@
   IMAPAccount zoho
   Host imap.zoho.com
   User hi@hendrikroth.com
-  PassCmd "pass Mail/Zoho/hendrikroth"
+  PassCmd "pass mail/hi@hendrikroth.com"
   SSLType IMAPS
   SSLVersions TLSv1.2
   CertificateFile /etc/ssl/certs/ca-certificates.crt
@@ -166,15 +166,15 @@
   Account zoho
 
   MaildirStore gmail-local
-  Path ~/Mail/Gmail/
-  Inbox ~/Mail/Gmail/INBOX
-  Trash ~/Mail/Gmail/Trash
+  Path ~/mail/gmail/
+  Inbox ~/mail/gmail/INBOX
+  Trash ~/mail/gmail/Trash
   Subfolders Verbatim
 
   MaildirStore zoho-local
-  Path ~/Mail/Zoho/
-  Inbox ~/Mail/Zoho/INBOX
-  Trash ~/Mail/Zoho/Trash
+  Path ~/mail/zoho/
+  Inbox ~/mail/zoho/INBOX
+  Trash ~/mail/zoho/Trash
   Subfolders Verbatim
 
   Channel gmail
@@ -194,7 +194,33 @@
   Expunge None
   CopyArrivalDate yes
   SyncState *
-#+end_src
+*** Imap (Work)
+  IMAPAccount work
+  Host imap.todo.com
+  User todo
+  PassCmd "pass mail/todo"
+  SSLType IMAPS
+  SSLVersions TLSv1.2
+  CertificateFile /etc/ssl/certs/ca-certificates.crt
+  PipelineDepth 1
+
+  IMAPStore work-remote
+  Account work
+
+  MaildirStore work-local
+  Path ~/mail/work/
+  Inbox ~/mail/work/INBOX
+  Trash ~/mail/work/Trash
+  Subfolders Verbatim
+
+  Channel work
+  Master :work-remote:
+  Slave :work-local:
+  Patterns *
+  Create Slave
+  Expunge None
+  CopyArrivalDate yes
+  SyncState *
 ** Emacs
 *** Package management
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -1146,7 +1172,7 @@ background-color: #${0:DDD};
       (setq org-latex-toc-command "\\tableofcontents \\clearpage")
 
       (setq org-agenda-files
-          '("~/notes/Tasks.org"))
+          '("~/notes/tasks.org"))
 
       (setq org-tag-alist
           '((:startgroup)
@@ -1289,7 +1315,7 @@ background-color: #${0:DDD};
   :hook
     (after-init . org-roam-mode)
   :custom
-    (org-roam-directory "~/notes/Roam")
+    (org-roam-directory "~/notes/roam")
     (org-roam-completion-everywhere t)
     (org-roam-system 'ivy))
 #+end_src
@@ -1304,9 +1330,9 @@ background-color: #${0:DDD};
     org-caldav-delete-calendar-entries 'never
     org-caldav-calendars
     '((:calendar-id ""
-       :inbox "~/notes/Calendar/Personal.org")
+       :inbox "~/notes/calendar/personal.org")
       (:calendar-id ""
-       :inbox "~/notes/Calendar/Work.org"))))
+       :inbox "~/notes/calendar/work.org"))))
 #+end_src
 **** Snippets
 ***** Author
@@ -1405,10 +1431,10 @@ $1
 
   (setq org-capture-templates
         '(("w" "Work")
-        ("ws" "Sprint" checkitem (file+headline "~/notes/Work/Sprint.org" "Next") "* TODO %?\n %i\n %a")
+        ("ws" "Sprint" checkitem (file+headline "~/notes/work/Sprint.org" "Next") "* TODO %?\n %i\n %a")
         ("wS" "Specification sheet" entry (file get-org-target) "* THIS IS A TEMPLATE")
         ("p" "Personal")
-        ("ps" "Shopping" checkitem (file+headline "~/notes/Personal/Shopping.org" "Next") "- [ ] %?\n")))
+        ("ps" "Shopping" checkitem (file+headline "~/notes/personal/Shopping.org" "Next") "- [ ] %?\n")))
 #+end_src
 ** Dunst
 #+begin_src bash :mkdirp yes :tangle ~/.config/wal/templates/dunstrc
@@ -1895,7 +1921,7 @@ Some modules don't support click events, workaround: https://github.com/polybar/
 #+begin_src emacs-lisp :mkdirp yes :tangle ~/.config/nyxt/init.lisp
   (in-package #:nyxt-user)
 
-  (load (nyxt-init-file "nyxt-style.lisp"))
+  (load "~/.cache/wal/nyxt-style.lisp")
   (load-after-system :nx-search-engines (nyxt-init-file "search-engines.lisp"))
 
   (define-configuration buffer
