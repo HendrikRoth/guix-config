@@ -152,7 +152,11 @@ sudo docker top portainer || sudo docker run \
 
 # create mu index
 if [ ! -d ~/mail ]; then
-    mu index --maildir=~/mail
+    mkdir -p ~/mail/work
+    mkdir -p ~/mail/hi@hendrikroth.com
+    mkdir -p ~/mail/mail@henn1nk.com
+
+    mu init --maildir=~/mail
 fi
 
 # create org folders

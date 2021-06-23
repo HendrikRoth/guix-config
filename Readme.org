@@ -772,82 +772,117 @@ Don't create =.#Name.file= files.
 #+end_src
 **** Mail
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(use-package mu4e
-  :defer 20
-  :config
-    (require 'org-mu4e)
-    (setq mu4e-update-interval (* 10 60))
-    (setq mu4e-get-mail-command "mbsync -a")
-    (setq mu4e-maildir "~/mail")
-    (setq mu4e-change-filenames-when-moving t)
-    (setq mu4e-contexts
-    `(,(make-mu4e-context
-        :name "Henn1nk"
-        :match-func (lambda (msg)
-                    (when msg (string-prefix-p "/Henn1nk" (mu4e-message-field msg :maildir))))
-        :vars '(
-          (user-full-name . "Hendrik Roth")
-          (user-mail-address . "mail@henn1nk.com")
-          (mu4e-sent-folder . "/Henn1nk/Sent Items")
-          (mu4e-trash-folder . "/Henn1nk/Trash")
-          (mu4e-drafts-folder . "/Henn1nk/Drafts")
-          (mu4e-refile-folder . "/Henn1nk/Archive")
-          (mu4e-sent-messages-behavior . sent)
-    ))
-    ,(make-mu4e-context
-        :name "Personal"
-        :match-func (lambda (msg)
-                    (when msg (string-prefix-p "/Personal" (mu4e-message-field msg :maildir))))
-        :vars '(
-          (mu4e-sent-folder . "/Personal/Sent")
-          (mu4e-trash-folder . "/Personal/Trash")
-          (mu4e-refile-folder . "/Personal/Archive")
-          (mu4e-sent-messages-behavior . sent)
+  (use-package mu4e
+    :defer 20
+    :config
+      (require 'org-mu4e)
+      (setq mu4e-update-interval (* 10 60))
+      (setq mu4e-get-mail-command "mbsync -a")
+      (setq mu4e-maildir "~/mail")
+      (setq mu4e-change-filenames-when-moving t)
+
+      (if (string= (system-name) "work")
+        (setq mu4e-contexts
+        `(,(make-mu4e-context
+            :name "hendrik.roth@booomtown.de"
+            :match-func (lambda (msg)
+                        (when msg (string-prefix-p "/hendrik.roth@booomtown.de" (mu4e-message-field msg :maildir))))
+            :vars '(
+              (user-full-name . "Hendrik Roth")
+              (user-mail-address . "hendrik.roth@booomtown.de")
+              (mu4e-sent-folder . "/hendrik.roth@booomtown.de/Sent Items")
+              (mu4e-trash-folder . "/hendrik.roth@booomtown.de/Trash")
+              (mu4e-drafts-folder . "/hendrik.roth@booomtown.de/Drafts")
+              (mu4e-refile-folder . "/hendrik.roth@booomtown.de/Archive")
+              (mu4e-sent-messages-behavior . sent)
+        ))))
+        (setq mu4e-contexts
+        `(,(make-mu4e-context
+            :name "mail@henn1nk.com"
+            :match-func (lambda (msg)
+                        (when msg (string-prefix-p "/mail@henn1nk.com" (mu4e-message-field msg :maildir))))
+            :vars '(
+              (user-full-name . "Hendrik Roth")
+              (user-mail-address . "mail@henn1nk.com")
+              (mu4e-sent-folder . "/mail@henn1nk.com/Sent Items")
+              (mu4e-trash-folder . "/mail@henn1nk.com/Trash")
+              (mu4e-drafts-folder . "/mail@henn1nk.com/Drafts")
+              (mu4e-refile-folder . "/mail@henn1nk.com/Archive")
+              (mu4e-sent-messages-behavior . sent)
         ))
-    ))
+        ,(make-mu4e-context
+            :name "hi@hendrikroth.com"
+            :match-func (lambda (msg)
+                        (when msg (string-prefix-p "/hi@hendrikroth.com" (mu4e-message-field msg :maildir))))
+            :vars '(
+              (user-full-name . "Hendrik Roth")
+              (user-mail-address . "hi@hendrikroth.com")
+              (mu4e-sent-folder . "/hi@hendrikroth.com/Sent")
+              (mu4e-trash-folder . "/hi@hendrikroth.com/Trash")
+              (mu4e-refile-folder . "/hi@hendrikroth.com/Archive")
+              (mu4e-sent-messages-behavior . sent)
+            ))
+        ))
+    )
 
-  (setq mu4e-context-policy 'pick-first)
+    (setq mu4e-context-policy 'pick-first)
 
-  (setq mu4e-view-show-images t)
-  (setq mu4e-view-show-addresses 't)
+    (setq mu4e-view-show-images t)
+    (setq mu4e-view-show-addresses 't)
 
-  (setq mu4e-compose-dont-reply-to-self t)
+    (setq mu4e-compose-dont-reply-to-self t)
 
-  (setq mail-user-agent 'mu4e-user-agent
-    message-send-mail-function 'smtpmail-send-it
-    smtpmail-smtp-server "smtp.zoho.eu"
-    smtpmail-smtp-service 465
-    smtpmail-stream-type 'ssl)
+    (setq mail-user-agent 'mu4e-user-agent
+      message-send-mail-function 'smtpmail-send-it
+      smtpmail-smtp-server "smtp.zoho.eu"
+      smtpmail-smtp-service 465
+      smtpmail-stream-type 'ssl)
 
-  (setq mu4e-maildir-shortcuts
-    '(("/Henn1nk/INBOX" . ?i)
-    ("/Henn1nk/Lists/*" . ?l)
-    ("/Henn1nk/Sent Mail" . ?s)
-    ("/Henn1nk/Trash" . ?t)))
+    (if (string= (system-name) "work")
+      (setq mu4e-maildir-shortcuts
+        '(("/hendrik.roth@booomtown.de/INBOX" . ?i)
+        ("/hendrik.roth@booomtown.de/Lists/*" . ?l)
+        ("/hendrik.roth@booomtown.de/Sent Mail" . ?s)
+        ("/hendrik.roth@booomtown.de/Trash" . ?t)))
 
-  (add-to-list 'mu4e-bookmarks
-    (make-mu4e-bookmark
-      :name "All Inboxes"
-      :query "maildir:/Henn1nk/INBOX OR maildir:/Personal/INBOX"
-      :key ?i))
+      (setq mu4e-maildir-shortcuts
+        '(("/hi@hendrikroth.com/INBOX" . ?i)
+        ("/hi@hendrikroth.com/Lists/*" . ?l)
+        ("/hi@hendrikroth.com/Sent Mail" . ?s)
+        ("/hi@hendrikroth.com/Trash" . ?t)))
+    )
 
-  (setq message-kill-buffer-on-exit t)
+    (if (string= (system-name) "work")
+      (add-to-list 'mu4e-bookmarks
+        (make-mu4e-bookmark
+          :name "All Inboxes"
+          :query "maildir:/hendrik.roth@booomtown.de/INBOX"
+          :key ?i))
 
-  (setq hr/mu4e-inbox-query
-    "(maildir:/Henn1nk/INBOX OR maildir:/Personal/INBOX) AND flag:unread")
+      (add-to-list 'mu4e-bookmarks
+        (make-mu4e-bookmark
+          :name "All Inboxes"
+          :query "maildir:/mail@henn1nk.com/INBOX OR maildir:/hi@hendrikroth.com/INBOX"
+          :key ?i))
+    )
 
-  (defun hr/go-to-inbox ()
-    (interactive)
-      (mu4e-headers-search hr/mu4e-inbox-query))
+    (setq message-kill-buffer-on-exit t)
 
-  (hr/leader-key-def
-    "M" '(:ignore t :which-key "mail")
-    "Mm" 'mu4e
-    "Mc" 'mu4e-compose-new
-    "Mi" 'hr/go-to-inbox
-    "Ms" 'mu4e-update-mail-and-index)
+    (setq hr/mu4e-inbox-query
+      "(maildir:/Henn1nk/INBOX OR maildir:/Personal/INBOX) AND flag:unread")
 
-  (mu4e t))
+    (defun hr/go-to-inbox ()
+      (interactive)
+        (mu4e-headers-search hr/mu4e-inbox-query))
+
+    (hr/leader-key-def
+      "M" '(:ignore t :which-key "mail")
+      "Mm" 'mu4e
+      "Mc" 'mu4e-compose-new
+      "Mi" 'hr/go-to-inbox
+      "Ms" 'mu4e-update-mail-and-index)
+
+    (mu4e t))
 #+end_src
 
 Mail alerts..
