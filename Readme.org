@@ -143,6 +143,7 @@
 * Programs
 ** Mail
 *** Imap (Home)
+#+begin_src conf :tangle (when (string= (system-name) "fedora") "yes" "~/.mbsyncrc")
   IMAPAccount gmail
   Host imap.gmail.com
   User mail@henn1nk.com
@@ -194,7 +195,9 @@
   Expunge None
   CopyArrivalDate yes
   SyncState *
+#+end_src
 *** Imap (Work)
+#+begin_src conf :tangle (when (string= (system-name) "work") "yes" "~/.mbsyncrc")
   IMAPAccount work
   Host imap.todo.com
   User todo
@@ -221,6 +224,7 @@
   Expunge None
   CopyArrivalDate yes
   SyncState *
+#+end_src
 ** Emacs
 *** Package management
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -1526,7 +1530,7 @@ Usage in projects =.envrc=:
   #!/usr/bin/sh
   . "${HOME}/.config/autostart"
 
-  bspc monitor -d "1" "2" "3" "4" "5" "6" "7" "8" "9" "0"
+  bspc monitor -d "1:" "2" "3" "4" "5" "6" "7" "8" "9" "0"
 
   bspc config border_width         2
   bspc config window_gap           0
@@ -2122,7 +2126,7 @@ Some modules don't support click events, workaround: https://github.com/polybar/
                   bspc monitor $(bspc query -M | sed -n 1p) -d "1" "2" "3" "4" "5"
                   bspc monitor $(bspc query -M | sed -n 2p) -d "6" "7" "8" "9" "0"
               else
-                  bspc monitor -d "1" "2" "3" "4" "5" "6" "7" "9" "0"
+                  bspc monitor -d "1:" "2" "3" "4" "5" "6" "7" "8" "9" "0:"
               fi
           ;;
       *)
