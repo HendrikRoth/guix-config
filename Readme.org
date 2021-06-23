@@ -143,14 +143,14 @@
 * Programs
 ** Mail
 *** Imap (Home)
-#+begin_src conf :tangle (when (string= (system-name) "fedora") "yes" "~/.mbsyncrc")
+#+begin_src conf :tangle (if (string= (system-name) "fedora") "~/.mbsyncrc" "no")
   IMAPAccount gmail
   Host imap.gmail.com
   User mail@henn1nk.com
   PassCmd "pass mail/mail@henn1nk.com"
   SSLType IMAPS
   SSLVersions TLSv1.2
-  CertificateFile /etc/ssl/certs/ca-certificates.crt
+  CertificateFile /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
 
   IMAPAccount zoho
   Host imap.zoho.com
@@ -158,7 +158,7 @@
   PassCmd "pass mail/hi@hendrikroth.com"
   SSLType IMAPS
   SSLVersions TLSv1.2
-  CertificateFile /etc/ssl/certs/ca-certificates.crt
+  CertificateFile /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
 
   IMAPStore gmail-remote
   Account gmail
@@ -167,44 +167,44 @@
   Account zoho
 
   MaildirStore gmail-local
-  Path ~/mail/gmail/
-  Inbox ~/mail/gmail/INBOX
-  Trash ~/mail/gmail/Trash
+  Path ~/mail/mail@henn1nk.com/
+  Inbox ~/mail/mail@henn1nk.com/INBOX
+  Trash ~/mail/mail@henn1nk.com/Trash
   Subfolders Verbatim
 
   MaildirStore zoho-local
-  Path ~/mail/zoho/
-  Inbox ~/mail/zoho/INBOX
-  Trash ~/mail/zoho/Trash
+  Path ~/mail/hi@hendrikroth.com/
+  Inbox ~/mail/hi@hendrikroth.com/INBOX
+  Trash ~/mail/hi@hendrikroth.com/Trash
   Subfolders Verbatim
 
   Channel gmail
-  Master :gmail-remote:
-  Slave :gmail-local:
+  Far :gmail-remote:
+  Near :gmail-local:
   Patterns *
-  Create Slave
+  Create Near
   Expunge None
   CopyArrivalDate yes
   SyncState *
 
   Channel zoho
-  Master :zoho-remote:
-  Slave :zoho-local:
+  Far :zoho-remote:
+  Near :zoho-local:
   Patterns *
-  Create Slave
+  Create Near
   Expunge None
   CopyArrivalDate yes
   SyncState *
 #+end_src
 *** Imap (Work)
-#+begin_src conf :tangle (when (string= (system-name) "work") "yes" "~/.mbsyncrc")
+#+begin_src conf :tangle (if (string= (system-name) "work") "~/.mbsyncrc" "no")
   IMAPAccount work
   Host imap.todo.com
   User todo
   PassCmd "pass mail/todo"
   SSLType IMAPS
   SSLVersions TLSv1.2
-  CertificateFile /etc/ssl/certs/ca-certificates.crt
+  CertificateFile /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
   PipelineDepth 1
 
   IMAPStore work-remote
@@ -217,10 +217,10 @@
   Subfolders Verbatim
 
   Channel work
-  Master :work-remote:
-  Slave :work-local:
+  Far :work-remote:
+  Near :work-local:
   Patterns *
-  Create Slave
+  Create Near
   Expunge None
   CopyArrivalDate yes
   SyncState *
