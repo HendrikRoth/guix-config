@@ -1,0 +1,61 @@
+* Mailboxes               *[[mu:flag:unread|%2d][ 0]]*
+[i] [[mu:m:/gmail/inbox or m:/work/inbox][Inbox]] ......... [[mu:m:/gmail/inbox or m:/work/inbox|%2d][ 0]]
+[f] [[mu:flag:flagged][Important]] .....[[mu:flag:flagged|%3d][  0]]
+[d] [[mu:m:/gmail/drafts or m:/work/drafts][Drafts]] ........  [[mu:m:/gmail/drafts or m:/work/drafts|%1d][0]]
+[s] [[mu:m:/gmail/sent or m:/work/sent][Sent]] ....... [[mu:m:/gmail/sent or m:/work/sent|%4d][    0]]
+[a] [[mu:m:/gmail/archive or m:/work/archive][Archive]] ... [[mu:m:/gmail/archive or m:/work/archive|%5d][     0]]
+* Smart
+[t] [[mu:date:today..now][Today]] ........ [[mu:date:today..now|%3d][  0]]
+[y] [[mu:date:2d..today and not date:today..now][Yesterday]] .... [[mu:date:2d..today and not date:today..now|%3d][  0]]
+[w] [[mu:date:1w..now][Last week]] ... [[mu:date:1w..now|%4d][   0]]
+[m] [[mu:date:4w..now][Last month]] .. [[mu:date:4w..now|%4d][   0]]
+
+[[mu:flag:attach][Attachments]] .... [[mu:flag:attach|%5d][    0]]
+
+** Tags
+
+** People
+[[mu:from:klotzbach@booomtown.de][Patrick Klotzbach]] [[mu:from:klotzbach@booomtown.de|%3d][---]]
+[[mu:from:koemmerling@booomtown.de][Marc Koemmerling]]  [[mu:from:koemmerling@booomtown.de|%3d][---]]
+[[mu:from:pardung@booomtown.de][Thomas Pardun]] ... [[mu:from:pardun@booomtown.de|%3d][---]]
+[[mu:from:gregor@rothsmail.de][Gregor Roth]] ..... [[mu:from:gregor@rothsmail.de|%3d][---]]
+[[mu:from:birgit@rothsmail.de][Birgit Roth]] ..... [[mu:from:birgit@rothsmail.de|%3d][---]]
+[[mu:from:sabrina@ymail.de][Sabrina Roth]] .... [[mu:from:sabrina@ymail.de|%3d][---]]
+
+** Date
+[[mu:date:20200101..20201231][Year 2020]] .... [[mu:date:20200101..20201231|%5d][     0]]
+[[mu:date:20190101..20191231][Year 2019]] .... [[mu:date:20190101..20191231|%5d][     0]]
+[[mu:date:20180101..20181231][Year 2018]] .... [[mu:date:20180101..20181231|%5d][     0]]
+[[mu:date:20170101..20171231][Year 2017]] .... [[mu:date:20170101..20171231|%5d][     0]]
+* Configuration
+:PROPERTIES:
+:VISIBILITY: hideall
+:END:
+
+#+STARTUP: showall showstars indent
+
+#+NAME: query
+#+BEGIN_SRC shell :results list raw :var query="flag:unread count=5"
+export LANG="en_US.UTF-8"; export LC_ALL="en_US.UTF-8";
+mu find --sortfield=date --reverse --fields "f s" $query | head -$count
+#+END_SRC
+
+#+KEYMAP: u | mu4e-headers-search "flag:unread"
+#+KEYMAP: i | mu4e-headers-search "m:/gmail/inbox or m:/work/inbox"
+#+KEYMAP: d | mu4e-headers-search "m:/gmail/drafts or m:/work/drafts"
+#+KEYMAP: s | mu4e-headers-search "m:/gmail/sent or m:/work/sent"
+#+KEYMAP: f | mu4e-headers-search "flag:flagged"
+
+#+KEYMAP: t | mu4e-headers-search "date:today..now"
+#+KEYMAP: y | mu4e-headers-search "date:2d..today and not date:today..now"
+#+KEYMAP: w | mu4e-headers-search "date:7d..now"
+#+KEYMAP: m | mu4e-headers-search "date:4w..now"
+
+#+KEYMAP: C | mu4e-compose-new
+#+KEYMAP: U | mu4e-dashboard-update
+#+KEYMAP: ; | mu4e-context-switch
+#+KEYMAP: q | mu4e-dashboard-quit
+#+KEYMAP: W | mu4e-headers-toggle-include-related
+#+KEYMAP: O | mu4e-headers-change-sorting
+#+KEYMAP: x | mu4e-mark-execute-all t
+#+KEYMAP: <return> | org-open-at-point

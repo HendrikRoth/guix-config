@@ -923,6 +923,13 @@ Icons..
     :ensure t
     :init (mu4e-marker-icons-mode t))
 #+end_src
+
+Dashboard..
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+  (straight-use-package '(mu4e-dashboard
+                          :type git :host github
+                          :repo "rougier/mu4e-dashboard"))
+#+end_src
 **** Media
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
   (use-package playerctl)

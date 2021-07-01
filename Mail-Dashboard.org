@@ -1,0 +1,52 @@
+:PROPERTIES:
+:VISIBILITY: hideall
+:END:
+
+* Mails
+[[mu:flag:unread][Unread]] [[mu:flag:unread|(%3d)][(  0)]] ....... [u]    [[mu:date:today..now][Today]] [[mu:date:today..now|(%3d)][       (  0)]] ..... [t]     *Compose* ...... [c]
+[[mu:m:/gmail/inbox or m:/work/inbox][Inbox]] [[mu:m:/gmail/inbox or m:/work/inbox|(%3d)][ (  0)]] ....... [i]    [[mu:date:2d..today and not date:today..now][Yesterday   ]] [[mu:date:2d..today and not date:today..now|(%3d)][(  0)]] ..... [y]     *Update* ....... [u]
+[[mu:m:/gmail/drafts or m:/work/drafts][Drafts]] [[mu:m:/gmail/drafts or m:/work/drafts|(%3d)][(  0)]] ....... [d]    [[mu:date:7d..now][Last week]] [[mu:date:7d..now|(%4d)][  (   0)]] ..... [w]     *Switch context* [;]
+[[mu:m:/gmail/sent or m:/work/sent][Sent]] [[mu:m/gmail/sent or m:/work/sent|(%5d)][(    0)]] ....... [s]    [[mu:date:4w..now][Last month]] [[mu:date:4w..now|(%4d)][(    0)]] ..... [m]     *Quit* ......... [q]
+* Queries
+Type *C-c C-c* on the =CALL= line below to evaluate your query.
+*NOTE*: mu4e-dashboard needs to be deactivated first.
+#+CALL: query("flag:unread", 5)
+#+RESULTS:
+
+* Saved searches
+[[mu:m:/gmail/archive or m:/work/archive][Archive]] /[[mu:m:/gmail/archive or m:/work/archive|(%6d)][(0)]]/ ............... [[mu:m:/gmail/archive or m:/work/archive||100][100]] - [[mu:m:/gmail/archive or m:/work/archive||500][500]]            [[mu:flag:attach][Attachments]] [[mu:flag:attach|(%5d)][(0)]] ... [[mu:flag:attach||99999][all]] - [[mu:size:10M..][big]]
+[[mu:flag:flagged][Important]] [[mu:flag:flagged|(%4d)][(0)]] ............. [[mu:flag:flagged||100][100]] - [[mu:flag:flagged||500][500]]
+
+** People
+*** Work
+[[mu:from:klotzbach@booomtown.org][Patrick Klotzbach]] /[[mu:from:klotzbach@booomtown.de|(%3d)][(0)]]/ .................................... [[mu:from:klotzbach@booomtown.de||100][100]] - [[mu:from:klotzbach@booomtown.de||500][500]] - [[mu:from:klotzbach@booomtown.de||9999][all]]
+[[mu:from:koemmerling@booomtown.org][Marc Koemmerling]] /[[mu:from:koemmerling@booomtown.de|(%3d)][(0)]]/ ..................................... [[mu:from:koemmerling@booomtown.de||100][100]] - [[mu:from:koemmerling@booomtown.de||500][500]] - [[mu:from:koemmerling@booomtown.de||9999][all]]
+[[mu:from:pardun@booomtown.org][Thomas Pardun]] /[[mu:from:pardun@booomtown.de|(%3d)][(0)]]/ ........................................ [[mu:from:pardun@booomtown.de||100][100]] - [[mu:from:pardun@booomtown.de||500][500]] - [[mu:from:pardun@booomtown.de||9999][all]]
+*** Family
+[[mu:from:gregor@rothsmail.de][Gregor Roth]] /[[mu:from:gregor@rothsmail.de|(%3d)][(0)]]/ .......................................... [[mu:from:gregor@rothsmail.de||100][100]] - [[mu:from:gregor@rothsmail.de||500][500]] - [[mu:from:gregor@rothsmail.de||9999][all]]
+[[mu:from:birgit@rothsmail.de][Birgit Roth]] /[[mu:from:birgit@rothsmail.de|(%3d)][(0)]]/ .......................................... [[mu:from:birgit@rothsmail.de||100][100]] - [[mu:from:birgit@rothsmail.de||500][500]] - [[mu:from:birgit@rothsmail.de||9999][all]]
+[[mu:from:sabrina_r@ymail.de][Sabrina Roth]] /[[mu:from:sabrina_r@ymail.de|(%3d)][(0)]]/ ......................................... [[mu:from:sabrina_r@ymail.de||100][100]] - [[mu:from:sabrina_r@ymail.de||500][500]] - [[mu:from:sabrina_r@ymail.de||9999][all]]
+
+** Date
+[[mu:date:20200101..20201231][2020]] /[[mu:date:20200101..20201231|(%5d)][(0)              2019]] /[[mu:date:20190101..20191231|(%5d)][(0) ]]/[[mu:date:20180101..20181231][              2018]] [[mu:date:20180101..20181231|(%5d)][(0)      ]][[mu:date:20170101..20171231][         2017]] [[mu:date:20170101..20171231|(%5d)][(0)]]
+* Configuration
+#+NAME: query
+#+BEGIN_SRC sh :results list raw :var query="flag:unread" count=5
+export LANG="en_US.UTF-8"; export LC_ALL="en_US.UFT-8";
+mu find -n $count --sortfield=date --reverse --fields "f s" $query
+#+END_SRC
+
+#+KEYMAP: u | mu4e-headers-search "flag:unread"
+#+KEYMAP: i | mu4e-headers-search "m:/gmail/inbox or m:/work/drafts"
+#+KEYMAP: d | mu4e-headers-search "m:/gmail/drafts or m:/work/drafts"
+#+KEYMAP: s | mu4e-headers-search "m:/gmail/sent or m:/work/sent"
+
+#+KEYMAP: t | mu4e-headers-search "date:today..now"
+#+KEYMAP: y | mu4e-headers-search "date:2d..today and not date:today..now"
+#+KEYMAP: w | mu4e-headers-search "date:7d..now"
+#+KEYMAP: m | mu4e-headers-search "date:4w..now"
+
+#+KEYMAP: C | mu4e-compose-new
+#+KEYMAP: U | mu4e-dashboard-update
+#+KEYMAP: ; | mu4e-context-switch
+#+KEYMAP: q | mu4e-dashboard-quit
