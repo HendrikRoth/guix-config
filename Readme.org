@@ -354,6 +354,7 @@ Does not work for me yet..
     (evil-set-initial-state 'dashboard-mode 'normal))
 
   (use-package evil-collection
+    :ensure t
     :after evil
     :init
     :config
@@ -421,7 +422,7 @@ Does not work for me yet..
     (dashboard-setup-startup-hook)
     (setq dashboard-center-content t)
     (setq dashboard-show-shortcuts t)
-    (setq dashboard-startup-banner 2)
+    (setq dashboard-startup-banner nil)
     (setq dashboard-set-file-icons t)
     (setq dashboard-set-heading-icons t)
     (setq dashboard-set-footer nil)
@@ -899,6 +900,7 @@ Does not work for me yet..
 
     (hr/leader-key-def
       "M" '(:ignore t :which-key "mail")
+      "MM" '(edit "~/git/guix-config/Mail-Dashboard.org")
       "Mm" 'mu4e
       "Mc" 'mu4e-compose-new
       "Mi" 'hr/go-to-inbox
@@ -1010,30 +1012,30 @@ Dashboard..
 #+end_src
 **** LSP
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(use-package lsp-mode
-  :commands lsp
-  :hook ((typescript-mode js2-mode web-mode) . lsp)
-  :bind (:map lsp-mode-map
-    ("TAB" . completion-at-point)))
+  (use-package lsp-mode
+    :commands lsp
+    :hook ((typescript-mode js2-mode web-mode) . lsp)
+    :bind (:map lsp-mode-map
+      ("TAB" . completion-at-point)))
 
-(use-package lsp-ui
-  :hook (lsp-mode . lsp-ui-mode)
-  :config
-    (setq lsp-ui-sideline-enable t)
-    (setq lsp-ui-sideline-show-hover t)
-    (setq lsp-ui-doc-position 'bottom)
-    (ls-ui-doc-show))
+  (use-package lsp-ui
+    :hook (lsp-mode . lsp-ui-mode)
+    :config
+      (setq lsp-ui-sideline-enable t)
+      (setq lsp-ui-sideline-show-hover t)
+      (setq lsp-ui-doc-position 'bottom)
+      (ls-ui-doc-show))
 
-(hr/leader-key-def
-  "l" '(:ignore t :which-key "lsp")
-  "ld" 'xref-find-definitions
-  "lr" 'xref-find-references
-  "ln" 'lsp-ui-find-next-reference
-  "lp" 'lsp-ui-find-prev-reference
-  "ls" 'counsel-imenu
-  "le" 'lsp-ui-flycheck-list
-  "lS" 'lsp-ui-sideline-mode
-  "lX" 'lsp-execute-code-action)
+  (hr/leader-key-def
+    "l" '(:ignore t :which-key "lsp")
+    "ld" 'xref-find-definitions
+    "lr" 'xref-find-references
+    "ln" 'lsp-ui-find-next-reference
+    "lp" 'lsp-ui-find-prev-reference
+    "ls" 'counsel-imenu
+    "le" 'lsp-ui-flycheck-list
+    "lS" 'lsp-ui-sideline-mode
+    "lX" 'lsp-execute-code-action)
 #+end_src
 **** Translations
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -1090,12 +1092,12 @@ Dashboard..
 #+end_src
 ***** Svelte
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-  (use-package svelte-mode
-      :ensure nil
-      :mode "\\.svelte\\'"
-      :config
-      (setq svelte-basic-offset 2)
-      (setq svelte-tag-relative-indent t))
+    (use-package svelte-mode
+        :ensure nil
+        :mode "\\.svelte\\'"
+        :config
+        (setq svelte-basic-offset 2)
+        (setq svelte-tag-relative-indent t))
 #+end_src
 ***** Vue
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -1657,7 +1659,7 @@ Some modules don't support click events, workaround: https://github.com/polybar/
   module-margin = 1
   modules-left = bspwm
   modules-center = title
-  modules-right = pulseaudio date menu-apps
+  modules-right = unread-mails pulseaudio date menu-apps
   tray-position = right
   scroll-up = #bspwm.prev
   scroll-down = #bspwm.next
@@ -1666,7 +1668,7 @@ Some modules don't support click events, workaround: https://github.com/polybar/
   font-2 = "Noto Sans:size=11;1"
   font-3 = "Material Icons Outlined:8;2"
   font-4 = "Material Icons Round:8;2"
-  
+
   [module/bspwm]
   type = internal/bspwm
   pin-workspaces = true
@@ -1714,22 +1716,26 @@ Some modules don't support click events, workaround: https://github.com/polybar/
   menu-0-1-exec = systemctl reboot
   menu-0-2 = %{T4}%{T-}Shutdown
   menu-0-2-exec = systemctl poweroff
+
+  [module/unread-mails]
+  label-foreground = ${colors.alert}
+  type = custom/script
+  tail = true
+  exec = ~/.config/polybar/unread-mails
+  interval = 600
+  label = %output%
 #+end_src
 *** Widgets/Scripts
 **** Unread mails widget
-#+begin_src bash :mkdirp yes :tangle ~/.config/polybar/mails
+#+begin_src bash :mkdirp yes :tangle ~/.config/polybar/unread-mails :tangle-mode (identity #o755)
   #!/bin/sh
-  maildir = ~/mails/new
-  prog = isync
-  count = 0
+  count=$(mu find flag:unread | wc -l)
 
-  if [ -x $prog ]; then
-      $prog 2>/dev/null&
-      wait
+  if [[ "$count" -eq "0" ]]; then
+    echo ""
+  else
+    echo "%{T4}%{T-}${count}"
   fi
-
-  count = $(ls -1 "${maildir}" | wc -l)
-  echo "${count}"
 #+end_src
 ** Sxhkd
 #+begin_src bash :mkdirp yes :tangle ~/.config/sxhkd/sxhkdrc :tangle-mode (identity #o644)
