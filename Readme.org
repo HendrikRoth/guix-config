@@ -900,11 +900,13 @@ Does not work for me yet..
 
     (hr/leader-key-def
       "M" '(:ignore t :which-key "mail")
-      "MM" '(edit "~/git/guix-config/Mail-Dashboard.org")
-      "Mm" 'mu4e
-      "Mc" 'mu4e-compose-new
-      "Mi" 'hr/go-to-inbox
-      "Ms" 'mu4e-update-mail-and-index)
+      "Mm" '(hr/mu4e-dashboard-open :which-key "dashboard")
+      "Ms" '(hr/mu4e-sideboard-open :which-key "sideboard view")
+      "Me" '(hr/mu4e-dashboard-edit :which-key "edit dashboard")
+      "MM" '(mu4e :which-key "legacy dashboard")
+      "Mc" '(mu4e-compose-new :which-key "compose new")
+      "Mi" '(hr/go-to-inbox :which-key "inbox")
+      "Mu" '(mu4e-update-mail-and-index :which-key "update/index"))
 
     (mu4e t))
 #+end_src
@@ -931,6 +933,48 @@ Dashboard..
   (straight-use-package '(mu4e-dashboard
                           :type git :host github
                           :repo "rougier/mu4e-dashboard"))
+
+  (defvar hr/mu4e-dashboard-org-file "~/git/guix-config/Mail-Dashboard.org"
+    "The path to the mu4e-dashboard file, see: https://github.com/rougier/mu4e-dashboard/blob/main/dashboard.org")
+
+  (defvar hr/mu4e-sideboard-org-file "~/git/guix-config/Mail-Side-Dashboard.org"
+    "The path to the mu4e-dashboard file, see: https://github.com/rougier/mu4e-dashboard/blob/main/side-dashboard.org")
+
+  (defun hr/mu4e-dashboard-open (&optional arg)
+    "Open the mu4e dashboard. With a prefix argument ARG revert the buffer if it already exists. See `hr/mu4e-dashboard-org-file'"
+    (interactive "P")
+    (find-file-read-only hr/mu4e-dashboard-org-file)
+    (mu4e-dashboard-mode 1)
+    (when arg
+      (revert-buffer t t t)))
+
+  (defun hr/mu4e-sidebar-create ()
+    "Make the current mu4e-dashboard file a sidebar."
+    (let ((side-w (get-buffer-window (current-buffer))))
+      (if (not mu4e-dashboard-mode)
+          (set-window-dedicated-p side-w nil)
+        (delete-other-windows)
+        (let ((headers-w (split-window-right 30)))
+          (set-window-dedicated-p side-w t)
+          (goto-char (point-min))
+          (with-selected-window headers-w
+            (mu4e-heasers-search ""))))))
+  (add-hook 'mu4e-dashboard-mode-hook 'hr/mu4e-sidebar-create 0 t)
+  
+  (defun hr/mu4e-sideboard-open (&optional arg)
+    "Open mu4e with sidebar"
+    (interactive "P")
+    (find-file-read-only hr/mu4e-sideboard-org-file)
+    (mu4e-dashboard-mode 1)
+    (when arg
+      (revert-buffer t t t)))
+
+  (defun hr/mu4e-dashboard-edit ()
+    "Open the mu4e-dashboard for editing, see: `hr/mu4e-dashboard-file'"
+    (interactive)
+    (find-file hr/mu4e-dashboard-org-file)
+    (read-only-mode -1)
+    (mu4e-dashboard-mode -1))
 #+end_src
 **** Media
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -1243,7 +1287,7 @@ background-color: #${0:DDD};
       (setq org-agenda-start-with-log-mode t)
       (setq org-log-done 'time)
       (setq org-log-into-drawer t)
-      (setq org-hide-emphasis-markers t)
+      ;;(setq org-hide-emphasis-markers t)
       (setq org-startup-with-inline-images t)
       (setq org-plantuml-jar-path (expand-file-name "~/plantuml.jar"))
       (setq org-latex-toc-command "\\tableofcontents \\clearpage")
@@ -1276,41 +1320,42 @@ background-color: #${0:DDD};
 #+end_src
 **** Vim keybindings
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-  (use-package evil-org
-    :ensure t
-    :after org
-    :hook (org-mode . (lambda () evil-org-mode))
-    :config
-    (require 'evil-org-agenda)
-    (evil-org-agenda-set-keys))
+    (use-package evil-org
+      :ensure t
+      :after org
+      :hook (org-mode . (lambda () evil-org-mode))
+      :config
+      (require 'evil-org-agenda)
+      (evil-org-agenda-set-keys))
 
-  (evil-define-key '(normal insert visual) org-mode-map (kbd "C-j") 'org-next-visible-heading)
-  (evil-define-key '(normal insert visual) org-mode-map (kbd "C-k") 'org-previous-visible-heading)
+    (evil-define-key '(normal insert visual) org-mode-map (kbd "C-j") 'org-next-visible-heading)
+    (evil-define-key '(normal insert visual) org-mode-map (kbd "C-k") 'org-previous-visible-heading)
 
-  (defun hr/search-org-files ()
-    (interactive)
-    (counsel-rg "" "~/notes" nil "Search notes:"))
+    (defun hr/search-org-files ()
+      (interactive)
+      (counsel-rg "" "~/notes" nil "Search notes:"))
 
-  (defun hr/org-babel-execute-src-block ()
-    (interactive)
-    (let ((org-confirm-babel-evaluate nil))
-    (org-babel-execute-src-block)))
+    (defun hr/org-babel-execute-src-block ()
+      (interactive)
+      (let ((org-confirm-babel-evaluate nil))
+      (org-babel-execute-src-block)))
 
-  (hr/leader-key-def
-    "o"   '(:ignore t :which-key "org mode")
+    (hr/leader-key-def
+      "o"   '(:ignore t :which-key "org mode")
 
-    "oi"  '(:ignore t :which-key "insert")
-    "oil" '(org-insert-link :which-key "insert link")
+      "oi"  '(:ignore t :which-key "insert")
+      "oil" '(org-insert-link :which-key "insert link")
 
-    "on"  '(org-toggle-narrow-to-subtree :which-key "toggle narrow")
+      "on"  '(org-toggle-narrow-to-subtree :which-key "toggle narrow")
 
-    "os"  '(hr/search-org-files :which-key "search notes")
+      "os"  '(hr/search-org-files :which-key "search notes")
+      "oh"  '(visible-mode :whick-key "show/hide markers")
 
-    "oa"  '(org-agenda :which-key "status")
-    "ot"  '(org-todo-list :which-key "todos")
-    "oc"  '(org-capture t :which-key "capture")
-    "oe"  '(hr/org-babel-execute-src-block :which-key "execute block")
-    "ox"  '(org-export-dispatch t :which-key "export"))
+      "oa"  '(org-agenda :which-key "status")
+      "ot"  '(org-todo-list :which-key "todos")
+      "oc"  '(org-capture t :which-key "capture")
+      "oe"  '(hr/org-babel-execute-src-block :which-key "execute block")
+      "ox"  '(org-export-dispatch t :which-key "export"))
 #+end_src
 **** Tangle on save
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
