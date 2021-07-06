@@ -1794,11 +1794,12 @@ Some modules don't support click events, workaround: https://github.com/polybar/
 #+begin_src bash :mkdirp yes :tangle ~/.config/polybar/available-updates :tangle-mode (identity #o755)
   #!/bin/sh
   count=$(dnf updateinfo list | wc -l)
+  result=$((count-1))
 
- if [[ "$count" -le "1" ]]; then
+  if [[ "$result" -eq "0" ]]; then
     echo ""
   else
-    echo "%{T4}%{T-}${count - 1}"
+    echo "%{T4}%{T-}${result}"
   fi
 #+end_src
 ** Sxhkd
