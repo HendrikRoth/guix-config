@@ -124,6 +124,7 @@
     - [[#settings][Settings]]
     - [[#widgetsscripts][Widgets/Scripts]]
       - [[#unread-mails-widget][Unread mails widget]]
+      - [[#available-updates-widget][Available updates widget]]
   - [[#sxhkd][Sxhkd]]
   - [[#zathura][Zathura]]
   - [[#zsh][zsh]]
@@ -1704,7 +1705,7 @@ Some modules don't support click events, workaround: https://github.com/polybar/
   module-margin = 1
   modules-left = bspwm
   modules-center = title
-  modules-right = unread-mails pulseaudio date menu-apps
+  modules-right = unread-mails available-updates pulseaudio date menu-apps
   tray-position = right
   scroll-up = #bspwm.prev
   scroll-down = #bspwm.next
@@ -1769,6 +1770,13 @@ Some modules don't support click events, workaround: https://github.com/polybar/
   exec = ~/.config/polybar/unread-mails
   interval = 600
   label = %output%
+
+  [module/available-updates]
+  type = custom/script
+  tail = true
+  exec = ~/.config/polybar/available-updates
+  interval = 2400
+  label = %output%
 #+end_src
 *** Widgets/Scripts
 **** Unread mails widget
@@ -1780,6 +1788,17 @@ Some modules don't support click events, workaround: https://github.com/polybar/
     echo ""
   else
     echo "%{T4}%{T-}${count}"
+  fi
+#+end_src
+**** Available updates widget
+#+begin_src bash :mkdirp yes :tangle ~/.config/polybar/available-updates :tangle-mode (identity #o755)
+  #!/bin/sh
+  count=$(dnf updateinfo list | wc -l)
+
+ if [[ "$count" -le "1" ]]; then
+    echo ""
+  else
+    echo "%{T4}%{T-}${count - 1}"
   fi
 #+end_src
 ** Sxhkd
