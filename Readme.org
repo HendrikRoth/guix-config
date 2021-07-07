@@ -62,6 +62,7 @@
       - [[#dictionary][Dictionary]]
       - [[#uml][UML]]
       - [[#vterm][Vterm]]
+      - [[#gitlab][Gitlab]]
     - [[#applications][Applications]]
       - [[#calendar][Calendar]]
       - [[#docker][Docker]]
@@ -711,6 +712,16 @@ Does not work for me yet..
     :config
     (setq vterm-max-scrollback 10000))
 #+end_src
+**** Gitlab
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
+    (use-package gitlab
+      :config
+      (setq gitlab-host "https://gitlab.com"
+        gitlab-token-id "4oLCEpz_D5ooW9sFvPjC"))
+
+    (hr/leader-key-def
+      "G"  '(:ignore t :which-key "gitlab"))
+#+end_src
 *** Applications
 **** Calendar
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -949,18 +960,26 @@ Dashboard..
     (when arg
       (revert-buffer t t t)))
 
+  (require 'cl-lib)
+  (defvar hr/mu4e-sidebar--buffer nil)
+
+  (defun hr/mu4e-sidebar--window ()
+    "Check wether the mu4e-sideboard is currenty shown/alive."
+    (cl-some (lambda (x)
+               (when (eq hr/mu4e-sidebar--buffer (window-buffer x))
+                 x))
+             (window-list (selected-frame))))
+
   (defun hr/mu4e-sidebar-create ()
-    "Make the current mu4e-dashboard file a sidebar."
-    (let ((side-w (get-buffer-window (current-buffer))))
-      (if (not mu4e-dashboard-mode)
-          (set-window-dedicated-p side-w nil)
-        (delete-other-windows)
-        (let ((headers-w (split-window-right 30)))
-          (set-window-dedicated-p side-w t)
-          (goto-char (point-min))
-          (with-selected-window headers-w
-            (mu4e-heasers-search ""))))))
-  (add-hook 'mu4e-dashboard-mode-hook 'hr/mu4e-sidebar-create 0 t)
+    "Toggles the display of the mu4e sideboard."
+    (interactive)
+    (if (hr/mu4e-sidebar--window)
+        (progn
+          (delete-window (hr/mu4e-sidebar--window))
+          (kill-buffer hr/mu4e-sidebar--buffer)
+          (setq hr/mu4e-sidebar-buffer nil))
+      (setq hr/mu4e-sidebar--buffer (find-file-noselect hr/mu4e-sidebar-org-file))
+      (display-buffer-in-side-window hr/mu4e-sidebar--buffer '((side . left)))))
   
   (defun hr/mu4e-sideboard-open (&optional arg)
     "Open mu4e with sidebar"
@@ -1777,6 +1796,7 @@ Some modules don't support click events, workaround: https://github.com/polybar/
   exec = ~/.config/polybar/available-updates
   interval = 2400
   label = %output%
+  click-left = alacritty -e sudo dnf update
 #+end_src
 *** Widgets/Scripts
 **** Unread mails widget

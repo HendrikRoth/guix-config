@@ -1,6 +1,6 @@
 * Mailboxes               *[[mu:flag:unread|%2d][ 0]]*
 [i] [[mu:m:/gmail/inbox or m:/work/inbox][Inbox]] ......... [[mu:m:/gmail/inbox or m:/work/inbox|%2d][ 0]]
-[f] [[mu:flag:flagged][Important]] .....[[mu:flag:flagged|%3d][  0]]
+[f] [[mu:flag:flagged][Important]] .... [[mu:flag:flagged|%3d][  0]]
 [d] [[mu:m:/gmail/drafts or m:/work/drafts][Drafts]] ........  [[mu:m:/gmail/drafts or m:/work/drafts|%1d][0]]
 [s] [[mu:m:/gmail/sent or m:/work/sent][Sent]] ....... [[mu:m:/gmail/sent or m:/work/sent|%4d][    0]]
 [a] [[mu:m:/gmail/archive or m:/work/archive][Archive]] ... [[mu:m:/gmail/archive or m:/work/archive|%5d][     0]]
@@ -13,6 +13,7 @@
 [[mu:flag:attach][Attachments]] .... [[mu:flag:attach|%5d][    0]]
 
 ** Tags
+[[mu:tag:Rechnungen][Rechnungen]]
 
 ** People
 [[mu:from:klotzbach@booomtown.de][Patrick Klotzbach]] [[mu:from:klotzbach@booomtown.de|%3d][---]]
