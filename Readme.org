@@ -1813,7 +1813,7 @@ Some modules don't support click events, workaround: https://github.com/polybar/
 **** Available updates widget
 #+begin_src bash :mkdirp yes :tangle ~/.config/polybar/available-updates :tangle-mode (identity #o755)
   #!/bin/sh
-  count=$(dnf updateinfo list | wc -l)
+  count=$(dnf check-update | wc -l)
   result=$((count-1))
 
   if [[ "$result" -eq "0" ]]; then
