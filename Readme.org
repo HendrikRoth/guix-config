@@ -822,17 +822,21 @@ Does not work for me yet..
       (if (string= (system-name) "work")
         (setq mu4e-contexts
         `(,(make-mu4e-context
-            :name "hendrik.roth@booomtown.de"
+            :name "roth@booomtown.de"
             :match-func (lambda (msg)
-                        (when msg (string-prefix-p "/hendrik.roth@booomtown.de" (mu4e-message-field msg :maildir))))
+                        (when msg (string-prefix-p "/roth@booomtown.de" (mu4e-message-field msg :maildir))))
             :vars '(
               (user-full-name . "Hendrik Roth")
-              (user-mail-address . "hendrik.roth@booomtown.de")
-              (mu4e-sent-folder . "/hendrik.roth@booomtown.de/Sent Items")
-              (mu4e-trash-folder . "/hendrik.roth@booomtown.de/Trash")
-              (mu4e-drafts-folder . "/hendrik.roth@booomtown.de/Drafts")
-              (mu4e-refile-folder . "/hendrik.roth@booomtown.de/Archive")
+              (user-mail-address . "roth@booomtown.de")
+              (mu4e-sent-folder . "/roth@booomtown.de/Sent Items")
+              (mu4e-trash-folder . "/roth@booomtown.de/Trash")
+              (mu4e-drafts-folder . "/roth@booomtown.de/Drafts")
+              (mu4e-refile-folder . "/roth@booomtown.de/Archive")
               (mu4e-sent-messages-behavior . sent)
+              (mu4e-compose-signature .
+                                    (concat
+                                      "Hendrik Roth\n"
+                                      "Booomtown.de\n"))
         ))))
         (setq mu4e-contexts
         `(,(make-mu4e-context
@@ -871,10 +875,10 @@ Does not work for me yet..
 
     (if (string= (system-name) "work")
       (setq mu4e-maildir-shortcuts
-        '(("/hendrik.roth@booomtown.de/INBOX" . ?i)
-        ("/hendrik.roth@booomtown.de/Lists/*" . ?l)
-        ("/hendrik.roth@booomtown.de/Sent Mail" . ?s)
-        ("/hendrik.roth@booomtown.de/Trash" . ?t)))
+        '(("/roth@booomtown.de/INBOX" . ?i)
+        ("/roth@booomtown.de/Lists/*" . ?l)
+        ("/roth@booomtown.de/Sent Mail" . ?s)
+        ("/roth@booomtown.de/Trash" . ?t)))
 
       (setq mu4e-maildir-shortcuts
         '(("/hi@hendrikroth.com/INBOX" . ?i)
@@ -887,7 +891,7 @@ Does not work for me yet..
       (add-to-list 'mu4e-bookmarks
         (make-mu4e-bookmark
           :name "All Inboxes"
-          :query "maildir:/hendrik.roth@booomtown.de/INBOX"
+          :query "maildir:/roth@booomtown.de/INBOX"
           :key ?i))
 
       (add-to-list 'mu4e-bookmarks
@@ -901,7 +905,7 @@ Does not work for me yet..
 
     (if (string= (system-name) "work")
       (setq hr/mu4e-inbox-query
-        "maildir:/hendrik.roth@booomtown.de/INBOX AND flag:unread")
+        "maildir:/roth@booomtown.de/INBOX AND flag:unread")
       (setq hr/mu4e-inbox-query
         "(maildir:/mail@henn1nk.com/INBOX OR maildir:/hi@hendrikroth.com/INBOX) AND flag:unread")
     )
