@@ -175,3 +175,7 @@ fi
 
 # change shell
 chsh -s $(which zsh)
+
+# git settings
+git config --global user.email "hi@hendrikroth.com"
+git config --global user.name "Hendrik Roth"
