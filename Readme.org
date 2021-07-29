@@ -1452,14 +1452,16 @@ background-color: #${0:DDD};
 #+end_src
 **** Roam
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-(use-package org-roam
-  :ensure t
-  :hook
-    (after-init . org-roam-mode)
-  :custom
-    (org-roam-directory "~/notes/roam")
-    (org-roam-completion-everywhere t)
-    (org-roam-system 'ivy))
+  (use-package org-roam
+    :ensure t
+    :hook
+      (after-init . org-roam-mode)
+    :init
+      (setq org-roam-v2-ack t)
+    :custom
+      (org-roam-directory "~/notes/roam")
+      (org-roam-completion-everywhere t)
+      (org-roam-system 'ivy))
 #+end_src
 **** Calendar sync
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
@@ -2100,7 +2102,7 @@ Some modules don't support click events, workaround: https://github.com/polybar/
     ((nyxt/web-mode:hints-alphabet "asdfghqwert")))
 #+end_src
 *** Style
-#+begin_src emacs-lisp :tangle ~/.config/wal/templates/nyxt-style.lisp
+#+begin_src emacs-lisp :mkdirp yes :tangle ~/.config/wal/templates/nyxt-style.lisp
       (in-package #:nyxt-user)
 
       (define-configuration window
@@ -2255,7 +2257,7 @@ Some modules don't support click events, workaround: https://github.com/polybar/
       )
 #+end_src
 *** Desktop file
-#+begin_src emacs-lisp :tangle ~/.local/share/applications/Nyxt.desktop
+#+begin_src emacs-lisp :mkdirp yes :tangle ~/.local/share/applications/Nyxt.desktop
   [Desktop Entry]
   Name=Nyxt
   Type=Application

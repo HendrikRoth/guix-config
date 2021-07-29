@@ -11,6 +11,7 @@ sudo dnf -y install \
 	bspwm \
 	chromium \
 	curl \
+  util-linux-user \
   feh \
   ImageMagick \
 	dmenu \
@@ -44,6 +45,7 @@ sudo dnf -y install \
 	xorg-x11-font-utils \
 	xorg-x11-server-Xorg \
 	xorg-x11-xinit \
+  xterm \
 	xrandr \
 	xz \
 	zsh \
@@ -130,11 +132,12 @@ rm ~/.config/scripts/wallpaper_file
 ln -s "$(pwd)/wallpapers/japanes-waves.svg" ~/.config/scripts/wallpaper_file
 
 # nyxt web browser
-if [ ! command -v nyxt &> /dev/null ]; then
+# TODO: Command testing does not work yet
+#if [ ! command -v nyxt &> /dev/null ]; then
     curl -o nyxt.tar.xz https://nyxt.atlas.engineer/static/release/nyxt-linux-2.0.0.tar.xz
     sudo tar xf nyxt.tar.xz -C /
     rm nyxt.tar.xz
-fi
+#fi
 rm -rf ~/.local/share/nyxt/extensions/nx-search-engines
 git clone https://github.com/aartaka/nx-search-engines ~/.local/share/nyxt/extensions/nx-search-engines
 xdg-settings set default-web-browser nyxt.desktop
@@ -169,3 +172,6 @@ if [ ! -d ~/notes ]; then
         touch ~/notes/tasks.org
     fi
 fi
+
+# change shell
+chsh -s $(which zsh)
