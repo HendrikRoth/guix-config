@@ -202,9 +202,9 @@
 *** Imap (Work)
 #+begin_src conf :tangle (if (string= (system-name) "work") "~/.mbsyncrc" "no")
   IMAPAccount work
-  Host imap.todo.com
-  User todo
-  PassCmd "pass mail/todo"
+  Host imap.ionis.de
+  User roth@booomtown.de
+  PassCmd "pass mail/roth@booomtown.de"
   SSLType IMAPS
   SSLVersions TLSv1.2
   CertificateFile /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
@@ -867,11 +867,19 @@ Does not work for me yet..
         ))
     )
 
-    (setq mail-user-agent 'mu4e-user-agent
-      message-send-mail-function 'smtpmail-send-it
-      smtpmail-smtp-server "smtp.zoho.eu"
-      smtpmail-smtp-service 465
-      smtpmail-stream-type 'ssl)
+    (if (string= (system-name) "work")
+      (setq mail-user-agent 'mu4e-user-agent
+        message-send-mail-function 'smtpmail-send-it
+        smtpmail-smtp-server "smtp.ionis.de"
+        smtpmail-smtp-service 465
+        smtpmail-stream-type 'ssl)
+
+      (setq mail-user-agent 'mu4e-user-agent
+        message-send-mail-function 'smtpmail-send-it
+        smtpmail-smtp-server "smtp.zoho.eu"
+        smtpmail-smtp-service 465
+        smtpmail-stream-type 'ssl)
+    )
 
     (if (string= (system-name) "work")
       (setq mu4e-maildir-shortcuts
