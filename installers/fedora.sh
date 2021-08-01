@@ -38,7 +38,7 @@ sudo dnf -y install \
 	sxhkd \
   syncthing \
   syncthing-cli \
-	texlive-scheme-medium \
+	texlive-scheme-full \
 	unzip \
 	wget \
 	xorg-x11-drv-* \
