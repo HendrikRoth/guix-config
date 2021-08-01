@@ -71,7 +71,9 @@ sudo dnf -y install \
   xset \
   xsetroot \
   xrdb \
-  zathura
+  zathura \
+  zathura-plugins-all \
+  zathura-pdf-mupdf
 
 # Docker
 sudo dnf config-manager \
