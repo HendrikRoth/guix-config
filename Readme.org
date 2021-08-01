@@ -895,19 +895,19 @@ Does not work for me yet..
         ("/hi@hendrikroth.com/Trash" . ?t)))
     )
 
-    (if (string= (system-name) "work")
-      (add-to-list 'mu4e-bookmarks
-        (make-mu4e-bookmark
-          :name "All Inboxes"
-          :query "maildir:/roth@booomtown.de/INBOX"
-          :key ?i))
+    ;; (if (string= (system-name) "work")
+    ;;   (add-to-list 'mu4e-bookmarks
+    ;;     (make-mu4e-bookmark
+    ;;       :name "All Inboxes"
+    ;;       :query "maildir:/roth@booomtown.de/INBOX"
+    ;;       :key ?i))
 
-      (add-to-list 'mu4e-bookmarks
-        (make-mu4e-bookmark
-          :name "All Inboxes"
-          :query "maildir:/mail@henn1nk.com/INBOX OR maildir:/hi@hendrikroth.com/INBOX"
-          :key ?i))
-    )
+    ;;   (add-to-list 'mu4e-bookmarks
+    ;;     (make-mu4e-bookmark
+    ;;       :name "All Inboxes"
+    ;;       :query "maildir:/mail@henn1nk.com/INBOX OR maildir:/hi@hendrikroth.com/INBOX"
+    ;;       :key ?i))
+    ;; )
 
     (setq message-kill-buffer-on-exit t)
 
@@ -1023,36 +1023,39 @@ Dashboard..
 *** Development
 **** Git
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
-  (use-package magit
-    :commands (magit-status magit-get-current-branch)
-    :custom
-    (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+    (use-package magit
+      :commands (magit-status magit-get-current-branch)
+      :custom
+      (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 
-  (use-package magit-todos
-    :defer t)
+    (use-package magit-todos
+      :defer t)
 
-  (use-package git-gutter
-    :diminish
-    :hook ((text-mode . git-gutter-mode)
-           (prog-mode . git-gutter-mode))
-    :config
-    (setq git-gutter:update-interval 2))
+    (use-package forge
+      :after magit)
 
-  (hr/leader-key-def
-    "g" '(:ignore t :which-key "git")
-    "gs" 'magit-status
-    "gd" 'magit-diff-unstaged
-    "gc" 'magit-branch-or-checkout
-    "gi" 'magit-init
-    "gl" '(:ignore t :which-key "log")
-    "glc" 'magit-log-current
-    "glf" 'magit-log-buffer-file
-    "gb" 'magit-branch
-    "gP" 'magit-push-current
-    "gp" 'magit-pull-branch
-    "gf" 'magit-fetch
-    "gF" 'magit-fetch-all
-    "gr" 'magit-rebase)
+    (use-package git-gutter
+      :diminish
+      :hook ((text-mode . git-gutter-mode)
+             (prog-mode . git-gutter-mode))
+      :config
+      (setq git-gutter:update-interval 2))
+
+    (hr/leader-key-def
+      "g" '(:ignore t :which-key "git")
+      "gs" 'magit-status
+      "gd" 'magit-diff-unstaged
+      "gc" 'magit-branch-or-checkout
+      "gi" 'magit-init
+      "gl" '(:ignore t :which-key "log")
+      "glc" 'magit-log-current
+      "glf" 'magit-log-buffer-file
+      "gb" 'magit-branch
+      "gP" 'magit-push-current
+      "gp" 'magit-pull-branch
+      "gf" 'magit-fetch
+      "gF" 'magit-fetch-all
+      "gr" 'magit-rebase)
 #+end_src
 **** Projectile
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el
