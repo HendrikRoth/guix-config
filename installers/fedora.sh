@@ -71,6 +71,7 @@ sudo dnf -y install \
   xbacklight \
   xset \
   xsetroot \
+  setxkbmap \
   xrdb \
   zathura \
   zathura-plugins-all \

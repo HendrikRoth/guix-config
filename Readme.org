@@ -1658,6 +1658,7 @@ Usage in projects =.envrc=:
   xsetroot -solid "$color0" -cursor_name left_ptr
   feh --bg-fill --conversion-timeout 10 ~/.wallpaper &
   xset s 300 5
+  xsetkbmap eu
   xss-lock -- xsecurelock &
 
   pkill autorandr
