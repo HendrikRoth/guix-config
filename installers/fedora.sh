@@ -12,6 +12,7 @@ sudo dnf -y install \
 	chromium \
 	curl \
   util-linux-user \
+  libpng12 \
   feh \
   ImageMagick \
 	dmenu \
