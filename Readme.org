@@ -1708,6 +1708,7 @@ Usage in projects =.envrc=:
   bspc rule -a Chromium-browser desktop=^9 manage=on focus=off follow=off
   bspc rule -a Firefox desktop=^9 manage=on focus=off follow=off
   bspc rule -a Pavucontrol state=floating sticky=on rectangle=400x300+100+100
+  bspc rule -a test desktop=^8 focus=off follow=off
 
   #. "${HOME}/.config/scripts/bspwm_workspaces"
   bspc monitor $(bspc query -M | sed -n 1p) -d "1" "2" "3" "4" "5"
