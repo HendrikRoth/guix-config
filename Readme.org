@@ -1655,10 +1655,13 @@ Usage in projects =.envrc=:
     fi
   fi
 
+  eval $(gnome-keyring-daemon --start)
+  export SSH_AUTH_SOCK
+
   xsetroot -solid "$color0" -cursor_name left_ptr
   feh --bg-fill --conversion-timeout 10 ~/.wallpaper &
   xset s 300 5
-  xsetkbmap eu
+  setxkbmap eu
   xss-lock -- xsecurelock &
 
   pkill autorandr
@@ -1680,6 +1683,7 @@ Usage in projects =.envrc=:
 
   emacs &
   nyxt &
+  flameshot&
 #+end_src
 ** Bspwm
 #+begin_src bash :mkdirp yes :tangle ~/.config/bspwm/bspwmrc :tangle-mode (identity #o755)
@@ -2049,6 +2053,7 @@ Some modules don't support click events, workaround: https://github.com/polybar/
   export FZF_DEFAULT_COMMAND="rg --files"
   export BROWSER="$(command -v nyxt)"
   export EDITOR="$(command -v emacs)"
+  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/hendrik/.vray/bin
 #+end_src
 #+begin_src bash :mkdirp yes :tangle ~/.zshrc
   wal -Rq

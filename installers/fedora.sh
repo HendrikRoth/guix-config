@@ -23,6 +23,7 @@ sudo dnf -y install \
 	fira-code-fonts \
 	firefox \
 	fontconfig \
+  flameshot \
 	fzf \
 	gimp \
 	git \
